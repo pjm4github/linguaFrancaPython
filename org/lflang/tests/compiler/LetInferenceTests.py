@@ -38,7 +38,7 @@ from org.lflang.lf import *
 
 @ExtendWith(InjectionExtension.__class__)
 @InjectWith(LFInjectorProvider.__class__)
-class LetInferenceTest(object):
+class LetInferenceTest:
     """ generated source for class LetInferenceTest """
     #  * Test for getting minimum delay in reactions.
     #  * Checking the actions and port's delay,then get the minimum reaction delay.
@@ -70,10 +70,10 @@ class LetInferenceTest(object):
         for reactorInstance in mainInstance.children:
             if reactorInstance.isGeneratedDelay():
                 for reactionInstance in reactorInstance.reactions:
-                    Assertions.assertEquals(reactionInstance.assignLogicalExecutionTime(), TimeValue.ZERO)
+                    Assertions.assertEquals(reactionInstance.assignLogicalExecutionTime, TimeValue.ZERO)
             elif reactorInstance.__name__.contains("ramp"):
                 for reactionInstance in reactorInstance.reactions:
-                    Assertions.assertEquals(TimeValue(20, TimeUnit.MILLI), reactionInstance.assignLogicalExecutionTime())
+                    Assertions.assertEquals(TimeValue(20, TimeUnit.MILLI), reactionInstance.assignLogicalExecutionTime)
             elif reactorInstance.__name__.contains("print"):
                 for reactionInstance in reactorInstance.reactions:
-                    Assertions.assertEquals(TimeValue.ZERO, reactionInstance.assignLogicalExecutionTime())
+                    Assertions.assertEquals(TimeValue.ZERO, reactionInstance.assignLogicalExecutionTime)

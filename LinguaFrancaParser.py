@@ -8,6 +8,47 @@ if sys.version_info[1] > 5:
 else:
 	from typing.io import TextIO
 
+
+class ModelContext(ParserRuleContext):
+    __slots__ = 'parser'
+
+    def __init__(self, parser, parent: ParserRuleContext = None, invokingState: int = -1):
+        super().__init__(parent, invokingState)
+        self.parser = parser
+
+    def targetDecl(self):
+        return self.getTypedRuleContext(LinguaFrancaParser.TargetDeclContext, 0)
+
+    def importDecl(self, i: int = None):
+        if i is None:
+            return self.getTypedRuleContexts(LinguaFrancaParser.ImportDeclContext)
+        else:
+            return self.getTypedRuleContext(LinguaFrancaParser.ImportDeclContext, i)
+
+    def preamble(self, i: int = None):
+        if i is None:
+            return self.getTypedRuleContexts(LinguaFrancaParser.PreambleContext)
+        else:
+            return self.getTypedRuleContext(LinguaFrancaParser.PreambleContext, i)
+
+    def reactor(self, i: int = None):
+        if i is None:
+            return self.getTypedRuleContexts(LinguaFrancaParser.ReactorContext)
+        else:
+            return self.getTypedRuleContext(LinguaFrancaParser.ReactorContext, i)
+
+    def getRuleIndex(self):
+        return LinguaFrancaParser.RULE_model
+
+    def enterRule(self, listener: ParseTreeListener):
+        if hasattr(listener, "enterModel"):
+            listener.enterModel(self)
+
+    def exitRule(self, listener: ParseTreeListener):
+        if hasattr(listener, "exitModel"):
+            listener.exitModel(self)
+
+
 def serializedATN():
     return [
         4,1,86,896,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
@@ -579,55 +620,6 @@ class LinguaFrancaParser ( Parser ):
         self.checkVersion("4.10.1")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
-
-
-
-
-    class ModelContext(ParserRuleContext):
-        __slots__ = 'parser'
-
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
-            super().__init__(parent, invokingState)
-            self.parser = parser
-
-        def targetDecl(self):
-            return self.getTypedRuleContext(LinguaFrancaParser.TargetDeclContext,0)
-
-
-        def importDecl(self, i:int=None):
-            if i is None:
-                return self.getTypedRuleContexts(LinguaFrancaParser.ImportDeclContext)
-            else:
-                return self.getTypedRuleContext(LinguaFrancaParser.ImportDeclContext,i)
-
-
-        def preamble(self, i:int=None):
-            if i is None:
-                return self.getTypedRuleContexts(LinguaFrancaParser.PreambleContext)
-            else:
-                return self.getTypedRuleContext(LinguaFrancaParser.PreambleContext,i)
-
-
-        def reactor(self, i:int=None):
-            if i is None:
-                return self.getTypedRuleContexts(LinguaFrancaParser.ReactorContext)
-            else:
-                return self.getTypedRuleContext(LinguaFrancaParser.ReactorContext,i)
-
-
-        def getRuleIndex(self):
-            return LinguaFrancaParser.RULE_model
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterModel" ):
-                listener.enterModel(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitModel" ):
-                listener.exitModel(self)
-
-
-
 
     def model(self):
 

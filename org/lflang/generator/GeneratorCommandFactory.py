@@ -42,7 +42,7 @@ from org.lflang.util import LFCommand
 #  * optionally warnings) are shown when a command is not found and that certain environment variables are set (see
 #  * {@link #createCommand(String, List, Path, boolean) createCommand}).
 #  
-class GeneratorCommandFactory(object):
+class GeneratorCommandFactory:
     """ generated source for class GeneratorCommandFactory """
     errorReporter = None
     fileConfig = None
@@ -128,10 +128,10 @@ class GeneratorCommandFactory(object):
             dir = Paths.get("")
         command = LFCommand.get(cmd, args, self.quiet, dir)
         if command != None:
-            command.setEnvironmentVariable("LF_CURRENT_WORKING_DIRECTORY", dir.__str__())
-            command.setEnvironmentVariable("LF_SOURCE_DIRECTORY", self.fileConfig.srcPath.__str__())
+            command.setEnvironmentVariable("LF_CURRENT_WORKING_DIRECTORY", str(dir)())
+            command.setEnvironmentVariable("LF_SOURCE_DIRECTORY", str(self.fileConfig.srcPath)())
             command.setEnvironmentVariable("LF_SOURCE_GEN_DIRECTORY", self.fileConfig.getSrcGenPath().__str__())
-            command.setEnvironmentVariable("LF_BIN_DIRECTORY", self.fileConfig.binPath.__str__())
+            command.setEnvironmentVariable("LF_BIN_DIRECTORY", str(self.fileConfig.binPath))
         else:
             message = "The command " + cmd + " could not be found in the current working directory or in your PATH. " + "Make sure that your PATH variable includes the directory where " + cmd + " is installed. " + "You can set PATH in ~/.bash_profile on Linux or Mac."
             if failOnError:

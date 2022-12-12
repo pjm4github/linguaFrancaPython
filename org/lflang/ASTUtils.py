@@ -27,8 +27,54 @@
 #  * @author {Edward A. Lee <eal@berkeley.edu>}
 #  * @author {Christian Menard <christian.menard@tu-dresden.de>}
 #
+from include.Multimap import HashMultimap
+from include.SpecialExceptions import IllegalArgumentException
+from include.overloading import overloaded
+from lflang.InferredType import InferredType
+from lflang.LFast.Nodemodels import NodeModelUtils
+from lflang.LFast.ToLf import Collectors, ICompositeNode
+from lflang.TimeUnit import TimeUnit
+from lflang.TimeValue import TimeValue
+from lflang.diagram.synthesis.LinguaFrancaSynthesis import IterableExtensions
+from lflang.diagram.synthesis.styles.LinguaFrancaStyleExtensions import EcoreUtil
+from lflang.diagram.synthesis.util.LayoutPostProcessing import EObject
+from lflang.generator.CodeMap import CodeMap
+from lflang.generator.GeneratorBase import GeneratorBase
+from lflang.generator.LFGeneratorContext import Mode
+from lflang.generator.c.CGenerator import IteratorExtensions, StringExtensions
 from lflang.lf import LfFactory, LfPackage
 import re
+
+from lflang.lf.Action import Action
+from lflang.lf.ActionOrigin import ActionOrigin
+from lflang.lf.Connection import Connection
+from lflang.lf.Expression import Expression
+from lflang.lf.ImportedReactor import ImportedReactor
+from lflang.lf.Instantiation import Instantiation
+from lflang.lf.LFCode import Code
+from lflang.lf.Literal import Literal
+from lflang.lf.Parameter import Parameter
+from lflang.lf.ParameterReference import ParameterReference
+from lflang.lf.Port import Port
+from lflang.lf.Reaction import Reaction
+from lflang.lf.Reactor import Reactor
+from lflang.lf.StateVar import StateVar
+from lflang.lf.TargetDecl import TargetDecl
+from lflang.lf.Time import Time
+from lflang.util.IteratorUtil import StreamSupport
+
+
+class HiddenLeafNode:
+    pass
+
+
+class TerminalRule:
+    pass
+
+
+class XtextResource:
+    pass
+
 
 class ASTUtils(object):
     """ generated source for class ASTUtils """
@@ -45,7 +91,18 @@ class ASTUtils(object):
 
     #      * A mapping from Reactor features to corresponding Mode features for collecting contained elements.
     #      
-    reactorModeFeatureMap = Map.of(featurePackage.getReactor_Actions(), featurePackage.getMode_Actions(), featurePackage.getReactor_Connections(), featurePackage.getMode_Connections(), featurePackage.getReactor_Instantiations(), featurePackage.getMode_Instantiations(), featurePackage.getReactor_Reactions(), featurePackage.getMode_Reactions(), featurePackage.getReactor_StateVars(), featurePackage.getMode_StateVars(), featurePackage.getReactor_Timers(), featurePackage.getMode_Timers())
+    reactorModeFeatureMap = {featurePackage.getReactor_Actions(), 
+                                   featurePackage.getMode_Actions(), 
+                                   featurePackage.getReactor_Connections(), 
+                                   featurePackage.getMode_Connections(), 
+                                   featurePackage.getReactor_Instantiations(), 
+                                   featurePackage.getMode_Instantiations(), 
+                                   featurePackage.getReactor_Reactions(), 
+                                   featurePackage.getMode_Reactions(), 
+                                   featurePackage.getReactor_StateVars(), 
+                                   featurePackage.getMode_StateVars(), 
+                                   featurePackage.getReactor_Timers(), 
+                                   featurePackage.getMode_Timers()}
 
     # Get all reactors defined in the given resource.
     # @param resource the resource to extract reactors from
@@ -54,90 +111,122 @@ class ASTUtils(object):
     @classmethod
     def getAllReactors(cls, resource):
         """ generated source for method getAllReactors """
-        return StreamSupport.stream(IteratorExtensions.toIterable(resource.getAllContents()).spliterator(), False).filter(Reactor.__class__.isInstance).map(Reactor.__class__.cast).collect(Collectors.toList())
+        r = []
+        for c in resource.getAllContents():
+            if isinstance(c, Reactor):
+                r.extend([Reactor.__class__.cast(Collectors)])
+        return r
+        # return StreamSupport.stream(
+        #     IteratorExtensions.toIterable(resource.getAllContents()).spliterator(), False).\
+        #     filter(Reactor.__class__.isInstance).\
+        #     map(Reactor.__class__.cast).collect(Collectors.toList())
 
     @classmethod
     def insertGeneratedDelays(cls, resource, generator):
         """ generated source for method insertGeneratedDelays """
         oldConnections = []
         newConnections = {}
-        Map()
-        for container in getAllReactors(resource):
-            for connection in allConnections(container):
-                if connection.getDelay() != None:
+        delayInstances = {}
+        # Map()
+        for container in cls.getAllReactors(resource):
+            for connection in cls.allConnections(container):
+                if connection.getDelay() is not None:
                     parent = connection.eContainer()
                     type = (connection.getRightPorts().get(0).getVariable()).getType()
-                    delayClass = getDelayClass(type, generator)
-                    generic = generator.getTargetTypes().getTargetType(InferredType.fromAST(type)) if generator.getTargetTypes().supportsGenerics() else ""
-                    delayInstance = getDelayInstance(delayClass, connection, generic, not generator.generateAfterDelaysWithVariableWidth())
-                    connections = convertToEmptyListIfNull(newConnections.get(parent))
-                    connections.extend(rerouteViaDelay(connection, delayInstance))
+                    delayClass = cls.getDelayClass(type, generator)
+                    generic = generator.getTargetTypes().getTargetType(InferredType.fromAST(type)) \
+                        if generator.getTargetTypes().supportsGenerics() else ""
+                    delayInstance = cls.getDelayInstance(
+                        delayClass, 
+                        connection, 
+                        generic, 
+                        not generator.generateAfterDelaysWithVariableWidth()
+                    )
+                    connections = cls.convertToEmptyListIfNull(newConnections.get(parent))
+                    connections.extend(cls.rerouteViaDelay(connection, delayInstance))
                     newConnections.put(parent, connections)
                     oldConnections.append(connection)
-                    instances = convertToEmptyListIfNull(delayInstances.get(parent))
+                    instances = cls.convertToEmptyListIfNull(delayInstances.get(parent))
                     instances.append(delayInstance)
                     delayInstances.put(parent, instances)
         for connection in oldConnections:
             container = connection.eContainer()
-            if isinstance(container, (Reactor)):
-                (container).getConnections().remove(connection)
-            elif isinstance(container, (Mode)):
-                (container).getConnections().remove(connection)
+            if isinstance(container, Reactor):
+                container.getConnections().remove(connection)
+            elif isinstance(container, Mode):
+                container.getConnections().remove(connection)
         for connections in newConnections:
-            if isinstance(container, (Reactor)):
-                (container).getConnections().extend(connections)
-            elif isinstance(container, (Mode)):
-                (container).getConnections().addAll(connections)
+            if isinstance(container, Reactor):
+                container.getConnections().extend(connections)
+            elif isinstance(container, Mode):
+                container.getConnections().addAll(connections)
         for container in delayInstances:
-            for instantiation in instantiations:
+            for instantiation in cls.instantiations:
                 if isinstance(container, (Reactor)):
-                    instantiation.setName(getUniqueIdentifier(container, "delay"))
+                    instantiation.setName(cls.getUniqueIdentifier(container, "delay"))
                     (container).getInstantiations().append(instantiation)
                 elif isinstance(container, (Mode)):
-                    instantiation.setName(getUniqueIdentifier(container.eContainer(), "delay"))
+                    instantiation.setName(cls.getUniqueIdentifier(container.eContainer(), "delay"))
                     (container).getInstantiations().append(instantiation)
 
     @classmethod
     def findConflictingConnectionsInModalReactors(cls, resource):
         """ generated source for method findConflictingConnectionsInModalReactors """
-        transform = set()
-        for reactor in getAllReactors(resource):
+        transform = []
+        for reactor in cls.getAllReactors(resource):
             if not reactor.getModes().isEmpty():
                 allWriters = HashMultimap()
-                for rea in allReactions(reactor):
+                for rea in cls.allReactions(reactor):
                     for eff in rea.getEffects():
-                        if isinstance(, (Port)):
-                            allWriters.put(Tuples.pair(eff.getContainer(), eff.getVariable()), rea)
-                for con in ASTUtils.collectElements(reactor, featurePackage.getReactor_Connections(), False, True):
+                        if isinstance(eff, Port):
+                            allWriters.put((eff.getContainer(), eff.getVariable()), rea)
+                for con in ASTUtils.collectElements(reactor, cls.featurePackage.getReactor_Connections(), False, True):
                     for port in con.getRightPorts():
-                        allWriters.put(Tuples.pair(port.getContainer(), port.getVariable()), con)
+                        allWriters.put((port.getContainer(), port.getVariable()), con)
                 for key in allWriters.keySet():
                     writers = allWriters.get(key)
                     if len(writers) > 1:
                         writerModes = HashMultimap()
                         for writer in writers:
-                            if isinstance(, (Mode)):
+                            if isinstance(writer, Mode):
                                 writerModes.put(writer.eContainer(), writer)
                             else:
                                 writerModes.put(None, writer)
-                        if not writerModes.containsKey(None) and writerModes.keySet().stream().map("writerModes.get").allMatch(len(writersInMode) == 1 or writersInMode.stream().allMatch(isinstance(w, (Reaction)))):
-                            writers.stream().filter(isinstance(w, (Connection))).forEach(transform.append(c))
+                        # if not writerModes.containsKey(None) and \
+                        #         writerModes.keySet().stream().map("writerModes.get").\
+                        #                 allMatch(len(writersInMode) == 1 or
+                        #                          writersInMode.stream().allMatch(isinstance(w, Reaction))):
+                        writersInMode = writerModes.keys()
+                        _writers = []
+                        for k in writersInMode:
+                            if isinstance(allWriters.get(k), Reaction):
+                                _writers.append(k)
+                                for c in writers:
+                                    if isinstance(c, Connection):
+                                        transform.append(c)
         return transform
 
     @classmethod
     def getEnclosingReactor(cls, obj):
         """ generated source for method getEnclosingReactor """
-        if isinstance(, (Reactor)):
+        if isinstance(obj, Reactor):
             return obj.eContainer()
-        elif isinstance(, (Mode)):
+        elif isinstance(obj, Mode):
             return obj.eContainer().eContainer()
         return None
 
     @classmethod
     def makeFederated(cls, resource):
         """ generated source for method makeFederated """
-        r = IteratorExtensions.findFirst(Iterators.filter(resource.getAllContents(), Reactor.__class__), "Reactor.isMain")
-        if r == None:
+        r = None
+        for t in resource.getAllContents():
+            if isinstance(t, Reactor.__class__):
+                if t.find("Reactor.isMain")>=0:
+                    r = t
+                    break
+        # r = IteratorExtensions.findFirst(Iterators.filter(resource.getAllContents(), 
+        #                                  Reactor.__class__), "Reactor.isMain")
+        if r is None:
             return False
         r.setMain(False)
         r.setFederated(True)
@@ -146,16 +235,16 @@ class ASTUtils(object):
     @classmethod
     def changeTargetName(cls, resource, newTargetName):
         """ generated source for method changeTargetName """
-        targetDecl(resource).setName(newTargetName)
+        cls.targetDecl(resource).setName(newTargetName)
         return True
 
     @classmethod
     def addTargetProperty(cls, resource, name, value):
         """ generated source for method addTargetProperty """
-        config = targetDecl(resource).getConfig()
-        if config == None:
+        config = cls.targetDecl(resource).getConfig()
+        if config is None:
             config = LfFactory.eINSTANCE.createKeyValuePairs()
-            targetDecl(resource).setConfig(config)
+            cls.targetDecl(resource).setConfig(config)
         newProperty = LfFactory.eINSTANCE.createKeyValuePair()
         newProperty.setName(name)
         newProperty.setValue(value)
@@ -173,7 +262,10 @@ class ASTUtils(object):
         rightContainer = rightPort.getContainer()
         leftPortAsPort = leftPort.getVariable()
         rightPortAsPort = rightPort.getVariable()
-        return leftPortAsPort.getWidthSpec() != None or leftContainer != None and leftContainer.getWidthSpec() != None or rightPortAsPort.getWidthSpec() != None or rightContainer != None and rightContainer.getWidthSpec() != None
+        return (leftPortAsPort.getWidthSpec() is not None) or \
+               (leftContainer is not None and leftContainer.getWidthSpec() is not None) or \
+               rightPortAsPort.getWidthSpec() is not None or \
+               (rightContainer is not None and rightContainer.getWidthSpec() is not None)
 
     @classmethod
     def rerouteViaDelay(cls, connection, delayInstance):
@@ -183,7 +275,7 @@ class ASTUtils(object):
         downstream = cls.factory.createConnection()
         input = cls.factory.createVarRef()
         output = cls.factory.createVarRef()
-        delayClass = toDefinition(delayInstance.getReactorClass())
+        delayClass = cls.toDefinition(delayInstance.getReactorClass())
         input.setContainer(delayInstance)
         input.setVariable(delayClass.getInputs().get(0))
         output.setContainer(delayInstance)
@@ -231,10 +323,10 @@ class ASTUtils(object):
         if generator.getTargetTypes().supportsGenerics():
             className = GeneratorBase.GEN_DELAY_CLASS_NAME
         else:
-            id = Integer.toHexString(InferredType.fromAST(type).toText().hashCode())
+            id = f"{type.hashCode():'0x'}" # Integer.toHexString(InferredType.fromAST(type).toText().hashCode())
             className = "{:s}_{:s}".format(GeneratorBase.GEN_DELAY_CLASS_NAME, id)
         classDef = generator.findDelayClass(className)
-        if classDef != None:
+        if classDef is not None:
             return classDef
         delayClass = cls.factory.createReactor()
         delayParameter = cls.factory.createParameter()
@@ -298,22 +390,30 @@ class ASTUtils(object):
     @classmethod
     def getUniqueIdentifier(cls, reactor, name):
         """ generated source for method getUniqueIdentifier """
-        vars = {}
-        allActions(reactor).forEach(vars.append(it.__name__))
-        allTimers(reactor).forEach(vars.append(it.__name__))
-        allParameters(reactor).forEach(vars.append(it.__name__))
-        allInputs(reactor).forEach(vars.append(it.__name__))
-        allOutputs(reactor).forEach(vars.append(it.__name__))
-        allStateVars(reactor).forEach(vars.append(it.__name__))
-        allInstantiations(reactor).forEach(vars.append(it.__name__))
+        vars = []
+        for it in cls.allActions(reactor):
+            vars.append(it.__name__)
+        for it in cls.allTimers(reactor):
+            vars.append(it.__name__)
+        for it in cls.allParameters(reactor):
+            vars.append(it.__name__)
+        for it in cls.allInputs(reactor):
+            vars.append(it.__name__)
+        for it in cls.allOutputs(reactor):
+            vars.append(it.__name__)
+        for it in cls.allStateVars(reactor):
+            vars.append(it.__name__)
+        for it in cls.allInstantiations(reactor):
+            vars.append(it.__name__)
         index = 0
         suffix = ""
         exists = True
         while exists:
             id = name + suffix
-            if IterableExtensions.exists(vars, it == id):
-                suffix = "_" + index
-                index += 1
+            for it in vars:
+                if it == id:
+                    suffix = f"_{index}"
+                    index += 1
             else:
                 exists = False
         return name + suffix
@@ -386,21 +486,21 @@ class ASTUtils(object):
         return ASTUtils.collectElements(definition, feature, True, True)
 
     @classmethod
-    @collectElements.register(object, Reactor, EStructuralFeature, bool, bool)
-    @SuppressWarnings("unchecked")
+    @collectElements.register(object, Reactor, object, bool, bool)
+    #@SuppressWarnings("unchecked")
     def collectElements_0(cls, definition, feature, includeSuperClasses, includeModes):
         """ generated source for method collectElements_0 """
         result = []
         if includeSuperClasses:
             s = cls.superClasses(definition)
-            if s != None:
+            if s is not None:
                 for superClass in s:
                     result.addAll(superClass.eGet(feature))
         result.addAll(definition.eGet(feature))
         if includeModes and cls.reactorModeFeatureMap.containsKey(feature):
             modeFeature = cls.reactorModeFeatureMap.get(feature)
-            for mode in allModes(definition) if includeSuperClasses else definition.getModes():
-                insertModeElementsAtTextualPosition(result, mode.eGet(modeFeature), mode)
+            for mode in cls.allModes(definition) if includeSuperClasses else definition.getModes():
+                cls.insertModeElementsAtTextualPosition(result, mode.eGet(modeFeature), mode)
         return result
 
     @classmethod
@@ -412,11 +512,11 @@ class ASTUtils(object):
         if idx > 0:
             if mode.eContainer() == list.get(len(list) - 1).eContainer():
                 modeAstNode = NodeModelUtils.getNode(mode)
-                if modeAstNode != None:
+                if modeAstNode is not None:
                     modePos = modeAstNode.getOffset()
                     while True:
                         astNode = NodeModelUtils.getNode(list.get(idx - 1))
-                        if astNode != None and astNode.getOffset() > modePos:
+                        if astNode is not None and astNode.getOffset() > modePos:
                             idx -= 1
                         else:
                             break
@@ -427,21 +527,21 @@ class ASTUtils(object):
     @classmethod
     def toText(cls, node):
         """ generated source for method toText """
-        if node == None:
+        if node is None:
             return ""
-        return CodeMap.Correspondence.tag(node, toOriginalText(node), isinstance(node, (Code)))
+        return CodeMap.Correspondence.tag(node, cls.toOriginalText(node), isinstance(node, Code))
 
     @classmethod
     def toOriginalText(cls, node):
         """ generated source for method toOriginalText """
-        if node == None:
+        if node is None:
             return ""
-        return ToText.instance.doSwitch(node)
+        return f"{cls.instance.doSwitch(node)}"
 
     @classmethod
     def toInteger(cls, e):
         """ generated source for method toInteger """
-        return Integer.decode(e.getLiteral())
+        return int(e.getLiteral())
 
     @classmethod
     @overloaded
@@ -453,21 +553,21 @@ class ASTUtils(object):
     @toTimeValue.register(object, Time)
     def toTimeValue_0(cls, e):
         """ generated source for method toTimeValue_0 """
-        if not isValidTime(e):
+        if not cls.isValidTime(e):
             raise IllegalArgumentException()
         return TimeValue(e.getInterval(), TimeUnit.fromName(e.getUnit()))
 
     @classmethod
     def toBoolean(cls, e):
         """ generated source for method toBoolean """
-        return elementToSingleString(e).lower() == "true".lower()
+        return cls.elementToSingleString(e).lower() == "true".lower()
 
     @classmethod
     def elementToSingleString(cls, e):
         """ generated source for method elementToSingleString """
-        if e.getLiteral() != None:
-            return StringUtil.removeQuotes(e.getLiteral()).trim()
-        elif e.getId() != None:
+        if e.getLiteral() is not None:
+            return (e.getLiteral()).trim().relplace("'",'').replace('"','')
+        elif e.getId() is not None:
             return e.getId()
         return ""
 
@@ -475,7 +575,7 @@ class ASTUtils(object):
     def elementToListOfStrings(cls, value):
         """ generated source for method elementToListOfStrings """
         elements = []
-        if value.getArray() != None:
+        if value.getArray() is not None:
             for element in value.getArray().getElements():
                 elements.addAll(cls.elementToListOfStrings(element))
             return elements
@@ -488,20 +588,21 @@ class ASTUtils(object):
     @classmethod
     def baseType(cls, type):
         """ generated source for method baseType """
-        if type != None:
-            if type.getCode() != None:
+        if type is not None:
+            if type.getCode() is not None:
                 return cls.toText(type.getCode())
             else:
                 if type.isTime():
                     return "time"
                 else:
                     stars = ""
-                    iterList = convertToEmptyListIfNull(type.getStars())
+                    iterList = cls.convertToEmptyListIfNull(type.getStars())
                     for s in iterList:
                         stars.append(s)
                     if not IterableExtensions.isNullOrEmpty(type.getTypeParms()):
                         typeParamsStr = []
-                        type.getTypeParms().forEach(typeParamsStr.append(cls.toText(it)))
+                        for it in type.getTypeParms():
+                            typeParamsStr.append(cls.toText(it))
                         return "{:s}<{:s}>".format(type.getId(), ", ".join( typeParamsStr))
                     else:
                         return type.getId() + stars
@@ -512,9 +613,9 @@ class ASTUtils(object):
     def isZero(cls, literal):
         """ generated source for method isZero """
         try:
-            if literal != None and Integer.parseInt(literal) == 0:
+            if literal is not None and int(cls.parseInt(literal)) == 0:
                 return True
-        except NumberFormatException as e:
+        except Exception as e:
             pass
         return False
 
@@ -522,15 +623,15 @@ class ASTUtils(object):
     @isZero.register(object, Code)
     def isZero_0(cls, code_):
         """ generated source for method isZero_0 """
-        return code_ != None and cls.isZero(cls.toOriginalText(code_))
+        return code_ is not None and cls.isZero(cls.toOriginalText(code_))
 
     @classmethod
     @isZero.register(object, Expression)
     def isZero_1(cls, expr):
         """ generated source for method isZero_1 """
-        if isinstance(expr, (Literal)):
+        if isinstance(expr, Literal):
             return cls.isZero((expr).getLiteral())
-        elif isinstance(expr, (Code)):
+        elif isinstance(expr, Code):
             return cls.isZero(expr)
         return False
 
@@ -539,8 +640,8 @@ class ASTUtils(object):
     def isInteger(cls, literal):
         """ generated source for method isInteger """
         try:
-            Integer.decode(literal)
-        except NumberFormatException as e:
+            int(literal)
+        except Exception as e:
             return False
         return True
 
@@ -554,9 +655,9 @@ class ASTUtils(object):
     @isInteger.register(object, Expression)
     def isInteger_1(cls, expr):
         """ generated source for method isInteger_1 """
-        if isinstance(expr, (Literal)):
+        if isinstance(expr, Literal):
             return cls.isInteger((expr).getLiteral())
-        elif isinstance(expr, (Code)):
+        elif isinstance(expr, Code):
             return cls.isInteger(expr)
         return False
 
@@ -564,13 +665,13 @@ class ASTUtils(object):
     @overloaded
     def isValidTime(cls, expr):
         """ generated source for method isValidTime """
-        if isinstance(expr, (ParameterReference)):
-            return isOfTimeType((expr).getParameter())
-        elif isinstance(expr, (Time)):
+        if isinstance(expr, ParameterReference):
+            return cls.isOfTimeType(expr.getParameter())
+        elif isinstance(expr, Time):
             return cls.isValidTime(expr)
-        elif isinstance(expr, (Literal)):
-            return cls.isZero((expr).getLiteral())
-        elif isinstance(expr, (Code)):
+        elif isinstance(expr, Literal):
+            return cls.isZero(expr.getLiteral())
+        elif isinstance(expr, Code):
             return cls.isZero(expr)
         return False
 
@@ -578,7 +679,7 @@ class ASTUtils(object):
     @isValidTime.register(object, Time)
     def isValidTime_0(cls, t):
         """ generated source for method isValidTime_0 """
-        if t == None:
+        if t is None:
             return False
         unit = t.getUnit()
         return t.getInterval() == 0 or TimeUnit.isValidUnit(unit)
@@ -587,9 +688,9 @@ class ASTUtils(object):
     @overloaded
     def getInferredType(cls, type, initList):
         """ generated source for method getInferredType """
-        if type != None:
+        if type is not None:
             return InferredType.fromAST(type)
-        elif initList == None:
+        elif initList is None:
             return InferredType.undefined()
         if len(initList) == 1:
             expr = initList.get(0)
@@ -644,13 +745,13 @@ class ASTUtils(object):
     @classmethod
     def isMultiport(cls, port):
         """ generated source for method isMultiport """
-        return port.getWidthSpec() != None
+        return port.getWidthSpec() is not None
 
     @classmethod
     def generateVarRef(cls, reference):
         """ generated source for method generateVarRef """
         prefix = ""
-        if reference.getContainer() != None:
+        if reference.getContainer() is not None:
             prefix = reference.getContainer().__name__ + "."
         return prefix + reference.getVariable().__name__
 
@@ -667,9 +768,9 @@ class ASTUtils(object):
     @classmethod
     def getDefaultAsTimeValue(cls, p):
         """ generated source for method getDefaultAsTimeValue """
-        if isOfTimeType(p):
+        if cls.isOfTimeType(p):
             init = p.getInit().get(0)
-            if init != None:
+            if init is not None:
                 return cls.getLiteralTimeValue(init)
         return None
 
@@ -690,15 +791,15 @@ class ASTUtils(object):
     @classmethod
     def initialValue(cls, parameter, instantiations):
         """ generated source for method initialValue """
-        if instantiations != None and len(instantiations) > 0:
+        if instantiations is not None and len(instantiations) > 0:
             instantiation = instantiations.get(0)
-            if not belongsTo(parameter, instantiation):
+            if not cls.belongsTo(parameter, instantiation):
                 raise IllegalArgumentException("Parameter " + parameter.__name__ + " is not a parameter of reactor instance " + instantiation.__name__ + ".")
             lastAssignment = None
             for assignment in instantiation.getParameters():
                 if assignment.getLhs() == parameter:
                     lastAssignment = assignment
-            if lastAssignment != None:
+            if lastAssignment is not None:
                 result = []
                 for expr in lastAssignment.getRhs():
                     if isinstance(expr, (ParameterReference)):
@@ -714,7 +815,7 @@ class ASTUtils(object):
     @overloaded
     def belongsTo(cls, eobject, instantiation):
         """ generated source for method belongsTo """
-        reactor = toDefinition(instantiation.getReactorClass())
+        reactor = cls.toDefinition(instantiation.getReactorClass())
         return cls.belongsTo(eobject, reactor)
 
     @classmethod
@@ -724,7 +825,7 @@ class ASTUtils(object):
         if eobject.eContainer() == reactor:
             return True
         for baseClass in reactor.getSuperClasses():
-            if cls.belongsTo(eobject, toDefinition(baseClass)):
+            if cls.belongsTo(eobject, cls.toDefinition(baseClass)):
                 return True
         return False
 
@@ -734,56 +835,56 @@ class ASTUtils(object):
         expressions = cls.initialValue(parameter, instantiations)
         result = 0
         for expr in expressions:
-            if not (isinstance(expr, (Literal))):
+            if not isinstance(expr, Literal):
                 return None
             try:
-                result += Integer.decode((expr).getLiteral())
-            except NumberFormatException as ex:
+                result += int(expr.getLiteral())
+            except Exception as ex:
                 return None
         return result
 
     @classmethod
     def width(cls, spec, instantiations):
         """ generated source for method width """
-        if spec == None:
+        if spec is None:
             return 1
-        if spec.isOfVariableLength() and isinstance(, (Instantiation)):
-            return inferWidthFromConnections(spec, instantiations)
+        if spec.isOfVariableLength() and isinstance(spec, Instantiation):
+            return cls.inferWidthFromConnections(spec, instantiations)
         result = 0
         for term in spec.getTerms():
-            if term.getParameter() != None:
+            if term.getParameter() is not None:
                 termWidth = cls.initialValueInt(term.getParameter(), instantiations)
-                if termWidth != None:
+                if termWidth is not None:
                     result += termWidth
                 else:
                     return -1
             elif term.getWidth() > 0:
                 result += term.getWidth()
             else:
-                if isinstance(, (Instantiation)):
+                if isinstance(term, Instantiation):
                     try:
-                        return inferWidthFromConnections(spec, instantiations)
-                    except InvalidSourceException as e:
+                        return cls.inferWidthFromConnections(spec, instantiations)
+                    except Exception as e:
                         return -1
         return result
 
     @classmethod
     def inferPortWidth(cls, reference, connection, instantiations):
         """ generated source for method inferPortWidth """
-        if isinstance(, (Port)):
+        if isinstance(reference, Port):
             extended = instantiations
-            if reference.getContainer() != None:
+            if reference.getContainer() is not None:
                 extended = []
                 extended.append(reference.getContainer())
-                if instantiations != None:
+                if instantiations is not None:
                     extended.addAll(instantiations)
             portWidth = cls.width((reference.getVariable()).getWidthSpec(), extended)
             if portWidth < 0:
                 return -1
             bankWidth = 1
-            if reference.getContainer() != None:
+            if reference.getContainer() is not None:
                 bankWidth = cls.width(reference.getContainer().getWidthSpec(), instantiations)
-                if bankWidth < 0 and connection != None:
+                if bankWidth < 0 and connection is not None:
                     if reference.getContainer().getWidthSpec().isOfVariableLength():
                         leftWidth = 0
                         rightWidth = 0
@@ -791,7 +892,7 @@ class ASTUtils(object):
                         for leftPort in connection.getLeftPorts():
                             if leftPort == reference:
                                 if leftOrRight != 0:
-                                    raise InvalidSourceException("Multiple ports with variable width on a connection.")
+                                    raise Exception("Multiple ports with variable width on a connection.")
                                 leftOrRight = -1
                             else:
                                 otherWidth = cls.inferPortWidth(leftPort, connection, instantiations)
@@ -801,7 +902,7 @@ class ASTUtils(object):
                         for rightPort in connection.getRightPorts():
                             if rightPort == reference:
                                 if leftOrRight != 0:
-                                    raise InvalidSourceException("Multiple ports with variable width on a connection.")
+                                    raise Exception("Multiple ports with variable width on a connection.")
                                 leftOrRight = 1
                             else:
                                 otherWidth = cls.inferPortWidth(rightPort, connection, instantiations)
@@ -826,51 +927,59 @@ class ASTUtils(object):
         """ generated source for method widthSpecification """
         result = cls.width(instantiation.getWidthSpec(), None)
         if result < 0:
-            raise InvalidSourceException("Cannot determine width for the instance " + instantiation.__name__)
+            raise Exception("Cannot determine width for the instance " + instantiation.__name__)
         return result
 
     @classmethod
     def isInitialized(cls, v):
         """ generated source for method isInitialized """
-        return v != None and (v.getParens().size() == 2 or v.getBraces().size() == 2)
+        return v is not None and (v.getParens().size() == 2 or v.getBraces().size() == 2)
 
     @classmethod
     def isParameterized(cls, s):
         """ generated source for method isParameterized """
-        return s.getInit() != None and IterableExtensions.exists(s.getInit(), isinstance(it, (ParameterReference)))
+        r = []
+        for it in s.getInit():
+            if isinstance(it, ParameterReference):
+                r.append(True)
+            else:
+                r.append(False)
+        return all(r)
+        # return s.getInit() is not None and \
+        #        IterableExtensions.exists(s.getInit(), isinstance(it, (ParameterReference)))
 
     @classmethod
     def isGeneric(cls, r):
         """ generated source for method isGeneric """
-        if r == None:
+        if r is None:
             return False
         return r.getTypeParms().size() != 0
 
     @classmethod
     def toDefinition(cls, r):
         """ generated source for method toDefinition """
-        if r == None:
+        if r is None:
             return None
-        if isinstance(r, (Reactor)):
+        if isinstance(r, Reactor):
             return r
-        elif isinstance(r, (ImportedReactor)):
-            return (r).getReactorClass()
+        elif isinstance(r, ImportedReactor):
+            return r.getReactorClass()
         return None
 
     @classmethod
     def getPrecedingComments(cls, compNode, filter):
         """ generated source for method getPrecedingComments """
-        return getPrecedingCommentNodes(compNode, filter).map("INode.getText")
+        return cls.getPrecedingCommentNodes(compNode, filter).map("INode.getText")
 
     @classmethod
     def getPrecedingCommentNodes(cls, compNode, filter):
         """ generated source for method getPrecedingCommentNodes """
-        if compNode == None:
-            return Stream.of()
-        ret = ArrayList()
+        if compNode is None:
+            return []
+        ret = []
         for node in compNode.getAsTreeIterable():
             if not (isinstance(node, (ICompositeNode))):
-                if isComment(node):
+                if cls.isComment(node):
                     if filter.test(node):
                         ret.append(node)
                 elif not node.getText().isBlank():
@@ -880,9 +989,9 @@ class ASTUtils(object):
     @classmethod
     def isComment(cls, node):
         """ generated source for method isComment """
-        t0 = isinstance(node, (HiddenLeafNode))
+        t0 = isinstance(node, HiddenLeafNode)
         hlNode = None
-        t1 = isinstance(, (TerminalRule))
+        t1 = isinstance(node, TerminalRule)
         tRule = None
         t2 = tRule.__name__.endsWith("_COMMENT")
         return t0 and t1 and t2
@@ -895,24 +1004,51 @@ class ASTUtils(object):
     @classmethod
     def findAnnotationInComments(cls, object, key):
         """ generated source for method findAnnotationInComments """
-        if not (isinstance(, (XtextResource))):
+        if not isinstance(object, XtextResource):
             return None
         node = NodeModelUtils.findActualNodeFor(object)
-        return cls.getPrecedingComments(node, True).flatMap("String.lines").filter(line.contains(key)).map("String.trim").map(it.substring(it.indexOf(key) + len(key))).map(it.substring(0, "*/".length() - len(it)) if it.endsWith("*/") else it).findFirst().orElse(None)
+        # cls.getPrecedingComments(node, True).\
+        #     flatMap("String.lines").filter(line.contains(key)).map("String.trim").\
+        #         map(it.substring(it.indexOf(key) + len(key))).\
+        #         map(it.substring(0, "*/".length() - len(it)) if it.endsWith("*/") else it).\
+        #         findFirst().orElse(None)
+
+        lines = cls.getPrecedingComments(node, True).split('\n')
+        for it in lines:
+            c = it.strip()
+            k = c.find(key)
+            if k >= 0:
+                w = it[0:it[k:].find('*/')]
+                if w:
+                    return w
+                else:
+                    return it
+        return None
+
+
 
     @classmethod
     def setMainName(cls, resource, name):
         """ generated source for method setMainName """
-        main = IteratorExtensions.findFirst(Iterators.filter(resource.getAllContents(), Reactor.__class__), it.isMain() or it.isFederated())
-        if main != None and StringExtensions.isNullOrEmpty(main.__name__):
-            main.setName(name)
+        # main = IteratorExtensions.findFirst(Iterators.filter(resource.getAllContents(),
+        #                                                      Reactor.__class__),
+        #                                     it.isMain() or it.isFederated())
+        main = None
+        for it in resource.getAllContents():
+            if isinstance(it, Reactor):
+                if it.isMain() or it.isFederated():
+                    main = it
+                    break
+        if main is not None:
+            if main.__name__:
+                main.setName(name)
 
     @classmethod
     def createInstantiation(cls, reactor):
         """ generated source for method createInstantiation """
         inst = LfFactory.eINSTANCE.createInstantiation()
         inst.setReactorClass(reactor)
-        if reactor.__name__ == None:
+        if reactor.__name__ is None:
             if reactor.isFederated() or reactor.isMain():
                 inst.setName("main")
             else:
@@ -922,37 +1058,47 @@ class ASTUtils(object):
         return inst
 
     @classmethod
-    @overloaded
+    # @overloaded
     def targetDecl(cls, model):
         """ generated source for method targetDecl """
-        return IteratorExtensions.head(Iterators.filter(model.eAllContents(), TargetDecl.__class__))
+        # return IteratorExtensions.head(Iterators.filter(model.eAllContents(), TargetDecl.__class__))
+        r = []
+        for it in model.eAllContents():
+            if isinstance(it, TargetDecl):
+                r.append(it)
+        return r
 
-    @classmethod
-    @targetDecl.register(object, Resource)
-    def targetDecl_0(cls, model):
-        """ generated source for method targetDecl_0 """
-        return IteratorExtensions.head(Iterators.filter(model.getAllContents(), TargetDecl.__class__))
+    # @classmethod
+    # @targetDecl.register(object, object)
+    # def targetDecl_0(cls, model):
+    #     """ generated source for method targetDecl_0 """
+    #     # return IteratorExtensions.head(Iterators.filter(model.getAllContents(), TargetDecl.__class__))
+    #     r = []
+    #     for it in model.eAllContents():
+    #         if isinstance(it, TargetDecl):
+    #             r.append(it)
+    #     return r
 
     @classmethod
     def convertToEmptyListIfNull(cls, list):
         """ generated source for method convertToEmptyListIfNull """
-        return list if list != None else ArrayList()
+        return list if list is not None else []
 
     @classmethod
-    @superClasses.register(object, Reactor, Set)
+    @superClasses.register(object, Reactor, set)
     def superClasses_0(cls, reactor, extensions):
         """ generated source for method superClasses_0 """
         result = {}
-        for superDecl in convertToEmptyListIfNull(reactor.getSuperClasses()):
+        for superDecl in cls.convertToEmptyListIfNull(reactor.getSuperClasses()):
             r = cls.toDefinition(superDecl)
-            if r == reactor or r == None:
+            if r == reactor or r is None:
                 return None
             if extensions.contains(r):
                 return None
             extensions.append(r)
             baseExtends = cls.superClasses(r, extensions)
             extensions.remove(r)
-            if baseExtends == None:
+            if baseExtends is None:
                 return None
             result.addAll(baseExtends)
             result.append(r)
@@ -968,14 +1114,14 @@ class ASTUtils(object):
             for leftPort in c.getLeftPorts():
                 if leftPort.getContainer() == spec.eContainer():
                     if leftOrRight != 0:
-                        raise InvalidSourceException("Multiple ports with variable width on a connection.")
+                        raise Exception("Multiple ports with variable width on a connection.")
                     leftOrRight = -1
                 else:
                     leftWidth += cls.inferPortWidth(leftPort, c, instantiations)
             for rightPort in c.getRightPorts():
                 if rightPort.getContainer() == spec.eContainer():
                     if leftOrRight != 0:
-                        raise InvalidSourceException("Multiple ports with variable width on a connection.")
+                        raise Exception("Multiple ports with variable width on a connection.")
                     leftOrRight = 1
                 else:
                     rightWidth += cls.inferPortWidth(rightPort, c, instantiations)

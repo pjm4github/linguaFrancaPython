@@ -20,7 +20,7 @@ from org.lflang.federated.serialization import SupportedSerializers
 
 from org.lflang.generator import ReactionInstance
 
-class PythonNetworkGenerator(object):
+class PythonNetworkGenerator:
     """ generated source for class PythonNetworkGenerator """
     #      * Generate code for the body of a reaction that handles the
     #      * action that is triggered by receiving a message from a remote
@@ -48,7 +48,7 @@ class PythonNetworkGenerator(object):
         result.append(PyUtil.generateGILAcquireCode() + "\n")
         result.append(PythonGeneratorExtension.generateNetworkReceiverBody(action, sendingPort, receivingPort, receivingPortID, sendingFed, receivingFed, receivingBankIndex, receivingChannelIndex, type, isPhysical, serializer, coordinationType))
         result.append(PyUtil.generateGILReleaseCode() + "\n")
-        return result.__str__()
+        return str(result)
 
     #      * Generate code for the body of a reaction that handles an output
     #      * that is to be sent over the network.
@@ -74,4 +74,4 @@ class PythonNetworkGenerator(object):
         result.append(PyUtil.generateGILAcquireCode() + "\n")
         result.append(PythonGeneratorExtension.generateNetworkSenderBody(sendingPort, receivingPort, receivingPortID, sendingFed, sendingBankIndex, sendingChannelIndex, receivingFed, type, isPhysical, delay, serializer, coordinationType))
         result.append(PyUtil.generateGILReleaseCode() + "\n")
-        return result.__str__()
+        return str(result)

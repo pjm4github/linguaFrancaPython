@@ -1,51 +1,45 @@
 #!/usr/bin/env python
 """ generated source for module CCmakeGenerator """
 # 
-#  * Copyright (c) 2019-2021, The University of California at Berkeley.
-#  * Redistribution and use in source and binary forms, with or without modification,
-#  * are permitted provided that the following conditions are met:
-#  * 1. Redistributions of source code must retain the above copyright notice,
-#  *    this list of conditions and the following disclaimer.
-#  * 2. Redistributions in binary form must reproduce the above copyright notice,
-#  *    this list of conditions and the following disclaimer in the documentation
-#  *    and/or other materials provided with the distribution.
-#  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-#  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-#  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-#  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-#  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-#  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-#  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-#  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-#  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-#  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# Copyright (c) 2019-2021, The University of California at Berkeley.
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #  
 # package: org.lflang.generator.c
 # import java.nio.file.Paths
 # import java.util.ArrayList
 # import java.util.List
+from pathlib import Path
 
 from org.lflang import ErrorReporter
-
 from org.lflang import FileConfig
-
 from org.lflang import TargetConfig
-
 from org.lflang.TargetProperty import Platform
-
 from org.lflang.generator import CodeBuilder
-
 from org.lflang.util import FileUtil
 
-# 
-#  * A helper class that generates a CMakefile that can be used to compile the generated C code.
-#  *
-#  * Adapted from @see org.lflang.generator.CppCmakeGenerator.kt
-#  *
-#  * @author Soroush Bateni <soroush@utdallas.edu>
-#  *
+# A helper class that generates a CMakefile that can be used to compile the generated C code.
+#
+# Adapted from @see org.lflang.generator.CppCmakeGenerator.kt
+#
+# @author Soroush Bateni <soroush@utdallas.edu>
 #  
-class CCmakeGenerator(object):
+class CCmakeGenerator:
     """ generated source for class CCmakeGenerator """
     fileConfig = None
     targetConfig = None
@@ -75,8 +69,8 @@ class CCmakeGenerator(object):
         """ generated source for method generateCMakeCode """
         cMakeCode = CodeBuilder()
         additionalSources = []
-        for file in targetConfig.compileAdditionalSources:
-            relativePath = self.fileConfig.getSrcGenPath().relativize(self.fileConfig.getSrcGenPath().resolve(Paths.get(file)))
+        for file in self.targetConfig.compileAdditionalSources:
+            relativePath = self.fileConfig.getSrcGenPath().relativize(self.fileConfig.getSrcGenPath().resolve(Path.resolve(file)))
             additionalSources.append(FileUtil.toUnixString(relativePath))
         cMakeCode.newLine()
         cMakeCode.pr("cmake_minimum_required(VERSION 3.13)")
@@ -166,7 +160,7 @@ class CCmakeGenerator(object):
             cMakeCode.newLine()
         #  Set the compiler flags
         #  We can detect a few common libraries and use the proper target_link_libraries to find them
-        for compilerFlag in targetConfig.compilerFlags:
+        for compilerFlag in self.targetConfig.compilerFlags:
             if compilerFlag.trim() == "-lm":
                 cMakeCode.pr("target_link_libraries( ${LF_MAIN_TARGET} m)")
             elif compilerFlag.trim() == "-lprotobuf-c":
@@ -199,11 +193,9 @@ class CCmakeGenerator(object):
             cMakeCode.pr("target_link_arduino_libraries ( ${LF_MAIN_TARGET} PRIVATE core)")
             cMakeCode.pr("target_enable_arduino_upload(${LF_MAIN_TARGET})")
         #  Add the include file
-        for includeFile in targetConfig.cmakeIncludesWithoutPath:
+        for includeFile in self.targetConfig.cmakeIncludesWithoutPath:
             cMakeCode.pr("include(\"" + includeFile + "\")")
         cMakeCode.newLine()
         cMakeCode.pr(cMakeExtras)
         cMakeCode.newLine()
         return cMakeCode
-
-CCmakeGenerator.# Create an instance of CCmakeGenerator.

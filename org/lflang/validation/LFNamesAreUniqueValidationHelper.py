@@ -16,4 +16,4 @@ class LFNamesAreUniqueValidationHelper(NamesAreUniqueValidationHelper):
         """ generated source for method getAssociatedClusterType """
         if LfPackage.Literals.INPUT == eClass or LfPackage.Literals.OUTPUT == eClass or LfPackage.Literals.TIMER == eClass or LfPackage.Literals.ACTION == eClass or LfPackage.Literals.PARAMETER == eClass or LfPackage.Literals.INSTANTIATION == eClass:
             return LfPackage.Literals.VARIABLE
-        return super(LFNamesAreUniqueValidationHelper, self).getAssociatedClusterType(eClass)
+        return super().getAssociatedClusterType(eClass)

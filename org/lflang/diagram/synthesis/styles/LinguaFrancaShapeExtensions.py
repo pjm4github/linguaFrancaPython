@@ -384,7 +384,7 @@ class LinguaFrancaShapeExtensions(AbstractSynthesisExtensions):
             self._kRenderingExtensions.setHorizontalAlignment(placement, HorizontalAlignment.LEFT)
             stopWatchFigure = self.addStopwatchFigure(labelContainer)
             self._kRenderingExtensions.setLeftTopAlignedPointPlacementData(stopWatchFigure, 0, 0, 0, 0)
-            stopWatchText = self._kContainerRenderingExtensions.addText(labelContainer, reaction.declaredDeadline.maxDelay.__str__())
+            stopWatchText = self._kContainerRenderingExtensions.addText(labelContainer, str(reaction.declaredDeadline.maxDelay))
             self.associateWith(stopWatchText, reaction.getDefinition().getDeadline().getDelay())
             self._kRenderingExtensions.setForeground(stopWatchText, Colors.BROWN)
             self._kRenderingExtensions.setFontBold(stopWatchText, True)

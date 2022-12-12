@@ -189,28 +189,27 @@ class CargoDependencySpec(object):
                 raise InvalidLfSourceException(element.getKeyvalue(), "Must specify one of 'version', 'path', or 'git'")
         raise InvalidLfSourceException(element, "Expected string or dictionary")
 
-    class CargoDependenciesPropertyType(TargetPropertyType):
-        """ generated source for class CargoDependenciesPropertyType """
-        INSTANCE = CargoDependenciesPropertyType()
+class CargoDependenciesPropertyType(TargetPropertyType):
+    """ generated source for class CargoDependenciesPropertyType """
+    INSTANCE = CargoDependenciesPropertyType()
 
-        def __init__(self):
-            """ generated source for method __init__ """
-            super(CargoDependenciesPropertyType, self).__init__()
+    def __init__(self):
+        """ generated source for method __init__ """
+        super(CargoDependenciesPropertyType, self).__init__()
 
-        def validate(self, e):
-            """ generated source for method validate """
-            return e.getKeyvalue() != None
+    def validate(self, e):
+        """ generated source for method validate """
+        return e.getKeyvalue() != None
 
-        def check(self, element, name, v):
-            """ generated source for method check """
-            for pair in element.getKeyvalue().getPairs():
-                try:
-                    self.parseValue(pair)
-                except InvalidLfSourceException as e:
-                    v.getErrorReporter().reportError(e.getNode(), e.getProblem())
+    def check(self, element, name, v):
+        """ generated source for method check """
+        for pair in element.getKeyvalue().getPairs():
+            try:
+                self.parseValue(pair)
+            except InvalidLfSourceException as e:
+                v.getErrorReporter().reportError(e.getNode(), e.getProblem())
 
-        def __str__(self):
-            """ generated source for method toString """
-            return "<cargo dependency spec>"
+    def __str__(self):
+        """ generated source for method toString """
+        return "<cargo dependency spec>"
 
-CargoDependencySpec.#      * Parse an element into a CargoDependencySpec. This is used

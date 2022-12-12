@@ -297,13 +297,13 @@ class LinkedHashMap(dict):
             v.append(self[k])
         return v
 
-class LinkedHashMultimap(HashMultimap):
-    class Node:
-        def __init__(self, key, value):
-            self.key = key
-            self.value = value
-            self.next = None
+class Node:
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+        self.next = None
 
+class LinkedHashMultimap(HashMultimap):
     def __init__(self, *values: Iterable[Any]):
         """    Creates a new, empty LinkedHashMultimap with the default initial capacities."""
         super().__init__(*values)
@@ -388,15 +388,14 @@ class LinkedHashMultimap(HashMultimap):
         """    Returns a collection of all values in the multimap."""
         pass
 
+class Node:
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+        self.next = None
 
 class HashMap:
     # see https://stackoverflow.com/questions/8703496/hash-map-in-python
-    class Node:
-        def __init__(self, key, value):
-            self.key = key
-            self.value = value
-            self.next = None
-
     def __init__(self):
         self.store = []
 

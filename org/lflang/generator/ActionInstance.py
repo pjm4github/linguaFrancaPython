@@ -59,7 +59,7 @@ class ActionInstance(TriggerInstance, Action):
     #      
     def __init__(self, definition, parent):
         """ generated source for method __init__ """
-        super(ActionInstance, self).__init__(parent)
+        super().__init__(parent)
         if parent == None:
             raise InvalidSourceException("Cannot create an ActionInstance with no parent.")
         if definition != None:

@@ -45,7 +45,7 @@ from org.lflang.lf import Type
 #  *
 #  * @author Clément Fournier - TU Dresden, INSA Rennes
 #  
-class TargetTypes(object):
+class TargetTypes:
     """ generated source for interface TargetTypes """
     __metaclass__ = ABCMeta
     # Return true if the target supports generics (i.e., parametric

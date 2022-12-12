@@ -5,7 +5,7 @@
 
 from org.lflang import FileConfig
 
-class PythonInfoGenerator(object):
+class PythonInfoGenerator:
     """ generated source for class PythonInfoGenerator """
     #      * Print information about necessary steps to install the supporting
     #      * Python C extension for the generated program.

@@ -43,7 +43,7 @@ from lflang.generator.c.CUtil import CUtil
 from lflang.lf.ParameterReference import ParameterReference
 
 
-class CGeneratorExtension(object):
+class CGeneratorExtension:
     """ generated source for class CGeneratorExtension """
     #      * Generate C code that allocates sufficient memory for the following two
     #      * critical data structures that support network control reactions: 
@@ -78,7 +78,7 @@ class CGeneratorExtension(object):
             if len(federate.networkInputControlReactionsTriggers) > 0:
                 #  Proliferate the network input control reaction trigger array
                 builder.append("// Initialize the array of pointers to network input port triggers\n" + "_fed.triggers_for_network_input_control_reactions_size = " + len(federate.networkInputControlReactionsTriggers) + ";\n" + "_fed.triggers_for_network_input_control_reactions = (trigger_t**)malloc(" + "_fed.triggers_for_network_input_control_reactions_size * sizeof(trigger_t*)" + ");\n")
-        return builder.__str__()
+        return str(builder)()
 
     #      * Generate C code that initializes three critical structures that support
     #      * network control reactions: 
@@ -122,7 +122,7 @@ class CGeneratorExtension(object):
         #  Initialize the trigger for network output control reactions if it doesn't exist.
         if federate.networkOutputControlReactionsTrigger != None:
             builder.append("_fed.trigger_for_network_output_control_reactions=&" + nameOfSelfStruct + "->_lf__outputControlReactionTrigger;\n")
-        return builder.__str__()
+        return str(builder)()
 
     #      * Create a port status field variable for a network input port "input" in
     #      * the self struct of a reactor.
@@ -146,7 +146,7 @@ class CGeneratorExtension(object):
         #  If it is not a multiport, then we could re-use the port trigger,
         #  and nothing needs to be
         #  done
-        return builder.__str__()
+        return str(builder)()
 
     #      * Given a connection 'delay' predicate, return a string that represents the 
     #      * interval_t value of the additional delay that needs to be applied to the

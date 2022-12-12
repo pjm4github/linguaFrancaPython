@@ -42,7 +42,7 @@ from org.lflang.tests.lsp.ErrorInserter.AlteredTest
 #  *
 #  * @author Peter Donovan <peterdonovan@berkeley.edu>
 #  
-class LspTests(object):
+class LspTests:
     """ generated source for class LspTests """
     #  The test categories that should be excluded from LSP tests. 
     EXCLUDED_CATEGORIES = [TestCategory.SERIALIZATION, TestCategory.DOCKER, TestCategory.DOCKER_FEDERATED]

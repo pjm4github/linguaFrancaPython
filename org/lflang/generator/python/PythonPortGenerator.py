@@ -24,7 +24,7 @@ from org.lflang.generator import CodeBuilder
 from org.lflang.generator.c import CGenerator
 
 
-class PythonPortGenerator(object):
+class PythonPortGenerator:
     """ generated source for class PythonPortGenerator """
     NONMULTIPORT_WIDTHSPEC = "-2"
 
@@ -151,7 +151,7 @@ class PythonPortGenerator(object):
                 pyObjects.append(cls.generateConvertCPortToPy(definition.__name__ + "." + port.__name__))
             else:
                 pyObjects.append(cls.generateConvertCPortToPy(definition.__name__ + "." + port.__name__, cls.NONMULTIPORT_WIDTHSPEC))
-        return code_.__str__()
+        return str(code_)
 
     #      * Generate code that creates a Python list (i.e., []) for contained banks to be passed to Python reactions.
     #      * The Python reaction will then subsequently be able to address each individual bank member of the contained

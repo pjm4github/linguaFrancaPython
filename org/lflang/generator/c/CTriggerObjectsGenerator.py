@@ -46,7 +46,7 @@ from org.lflang.generator import SendRange
 #  * @author {Soroush Bateni <soroush@utdallas.edu>}
 #  * @author {Hou Seng Wong <housengw@berkeley.edu>}
 #  
-class CTriggerObjectsGenerator(object):
+class CTriggerObjectsGenerator:
     """ generated source for class CTriggerObjectsGenerator """
     #      * Generate the _lf_initialize_trigger_objects function for 'federate'.
     #      
@@ -102,7 +102,7 @@ class CTriggerObjectsGenerator(object):
         code_.pr(generateSchedulerInitializer(main, targetConfig))
         code_.unindent()
         code_.pr("}\n")
-        return code_.__str__()
+        return str(code_)
 
     #     * Generate code to initialize the scheduler for the threaded C runtime.
     #     
@@ -115,7 +115,7 @@ class CTriggerObjectsGenerator(object):
         numReactionsPerLevel = main.assignLevels().getNumReactionsPerLevel()
         numReactionsPerLevelJoined = Arrays.stream(numReactionsPerLevel).map(String.valueOf).collect(Collectors.joining(", "))
         code_.pr("\n".join([ "// Initialize the scheduler", "] = " + len(numReactionsPerLevel), "    {" + numReactionsPerLevelJoined + "};", "sched_params_t sched_params = (sched_params_t) {", "                        .num_reactions_per_level = &num_reactions_per_level[0],", "};" + len(numReactionsPerLevel), "lf_sched_init(", "    (size_t)_lf_number_of_workers,", "    &sched_params", ");")])
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def initializeFederate(cls, federate, main, targetConfig, federationRTIProperties, isFederated, clockSyncIsOn):
@@ -153,7 +153,7 @@ class CTriggerObjectsGenerator(object):
             code_.pr("\n".join([ "// Create a socket server to listen to other federates.", "// If a port is specified by the user, that will be used", "// as the only possibility for the server. If not, the port", "// will start from STARTING_PORT. The function will", "// keep incrementing the port until the number of tries reaches PORT_RANGE_LIMIT.", "create_server(" + federate.port + ");", "// Connect to remote federates for each physical connection.", "// This is done in a separate thread because this thread will call", "// connect_to_federate for each outbound physical connection at the same", "// time that the new thread is listening for such connections for inbound", "// physical connections. The thread will live until all connections", "// have been established.", "lf_thread_create(&_fed.inbound_p2p_handling_thread_id, handle_p2p_connections_from_federates, NULL);")])
         for remoteFederate in federate.outboundP2PConnections:
             code_.pr("connect_to_federate(" + remoteFederate.id + ");")
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     @overloaded
@@ -161,7 +161,7 @@ class CTriggerObjectsGenerator(object):
         """ generated source for method setReactionPriorities """
         code_ = CodeBuilder()
         cls.setReactionPriorities(currentFederate, reactor, code_, isFederated)
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     @setReactionPriorities.register(object, FederateInstance, ReactorInstance, CodeBuilder, bool)
@@ -219,7 +219,7 @@ class CTriggerObjectsGenerator(object):
                 code_.pr(connectPortToEventualDestinations(currentFederate, output, isFederated))
         for child in instance.children:
             code_.pr(cls.deferredConnectInputsToOutputs(currentFederate, child, isFederated))
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def connectPortToEventualDestinations(cls, currentFederate, src, isFederated):
@@ -245,7 +245,7 @@ class CTriggerObjectsGenerator(object):
                             code_.pr(CUtil.portRef(dst, dr, db, dc) + "->sparse_record = " + CUtil.portRefName(dst, dr, db, dc) + "__sparse;")
                             code_.pr(CUtil.portRef(dst, dr, db, dc) + "->destination_channel = " + dc + ";")
                     code_.endScopedRangeBlock(srcRange, dstRange, isFederated)
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def deferredOptimizeForSingleDominatingReaction(cls, currentFederate, r, isFederated):
@@ -291,7 +291,7 @@ class CTriggerObjectsGenerator(object):
                     end += 1
                 if end > start:
                     printOptimizeForSingleDominatingReaction(currentFederate, previousRuntime, start, end, domStart, same, divisor, isFederated)
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def printOptimizeForSingleDominatingReaction(cls, currentFederate, runtime, start, end, domStart, same, divisor, isFederated):
@@ -323,7 +323,7 @@ class CTriggerObjectsGenerator(object):
                 dominatingRef = "&(" + CUtil.reactionRef(runtime.dominating.getReaction(), "" + domStart) + ")"
             if not isFederated or (start / divisor == currentFederate.bankIndex) and (runtime.dominating == None or domStart / domDivisor == currentFederate.bankIndex):
                 code_.pr(String.join("\n", "// " + runtime.getReaction().getFullName() + " dominating upstream reaction.", reactionRef + ".last_enabling_reaction = " + dominatingRef + ";"))
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def deferredFillTriggerTable(cls, currentFederate, reactions, isFederated):
@@ -383,7 +383,7 @@ class CTriggerObjectsGenerator(object):
                     cumulativePortWidth += port.getWidth()
             if foundPort:
                 code_.endScopedBlock()
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def deferredInputNumDestinations(cls, currentFederate, reactions, isFederated):
@@ -400,7 +400,7 @@ class CTriggerObjectsGenerator(object):
                         connector = "->" if (port.isMultiport()) else "."
                         code_.pr(CUtil.portRefNested(port, sr, sb, sc) + connector + "num_destinations = " + sendingRange.getNumberOfDestinationReactors() + ";")
                         code_.endScopedRangeBlock(sendingRange, isFederated)
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def deferredOutputNumDestinations(cls, currentFederate, reactor, isFederated):
@@ -412,7 +412,7 @@ class CTriggerObjectsGenerator(object):
                 code_.startScopedRangeBlock(currentFederate, sendingRange, sr, sb, sc, sendingRange.instance.isInput(), isFederated, True)
                 code_.pr(CUtil.portRef(output, sr, sb, sc) + ".num_destinations = " + sendingRange.getNumberOfDestinationReactors() + ";")
                 code_.endScopedRangeBlock(sendingRange, isFederated)
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def deferredInitializeNonNested(cls, currentFederate, reactor, main, reactions, isFederated):
@@ -428,7 +428,7 @@ class CTriggerObjectsGenerator(object):
             if currentFederate.contains(child):
                 code_.pr(cls.deferredInitializeNonNested(currentFederate, child, main, child.reactions, isFederated))
         code_.pr("// **** End of non-nested deferred initialize for " + reactor.getFullName())
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def deferredCreateDefaultTokens(cls, reactor, types):
@@ -442,7 +442,7 @@ class CTriggerObjectsGenerator(object):
                 code_.startChannelIteration(output)
                 code_.pr(CUtil.portRef(output) + ".token = _lf_create_token(" + size + ");")
                 code_.endChannelIteration(output)
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def deferredReactionOutputs(cls, currentFederate, reaction, targetConfig, isFederated):
@@ -481,8 +481,8 @@ class CTriggerObjectsGenerator(object):
         code_.pr(String.join("\n", "// Total number of outputs (single ports and multiport channels)", "// produced by " + reaction + ".", CUtil.reactionRef(reaction) + ".num_outputs = " + outputCount + ";"))
         if outputCount > 0:
             code_.pr(String.join("\n", "// Allocate memory for triggers[] and triggered_sizes[] on the reaction_t", "// struct for this reaction.", CUtil.reactionRef(reaction) + ".triggers = (trigger_t***)_lf_allocate(", "        " + outputCount + ", sizeof(trigger_t**),", "        &" + reactorSelfStruct + "->base.allocations);", CUtil.reactionRef(reaction) + ".triggered_sizes = (int*)_lf_allocate(", "        " + outputCount + ", sizeof(int),", "        &" + reactorSelfStruct + "->base.allocations);", CUtil.reactionRef(reaction) + ".output_produced = (bool**)_lf_allocate(", "        " + outputCount + ", sizeof(bool*),", "        &" + reactorSelfStruct + "->base.allocations);"))
-        code_.pr(String.join("\n", init.__str__(), "// ** End initialization for reaction " + reaction.index + " of " + name))
-        return code_.__str__()
+        code_.pr(String.join("\n", str(init), "// ** End initialization for reaction " + reaction.index + " of " + name))
+        return str(code_)
 
     @classmethod
     def deferredReactionMemory(cls, currentFederate, reactions, targetConfig, isFederated):
@@ -499,7 +499,7 @@ class CTriggerObjectsGenerator(object):
                     portStructType = CGenerator.variableStructType(trigger)
                     code_.pr(String.join("\n", CUtil.reactorRefNested(trigger.getParent()) + "." + trigger.__name__ + "_width = " + width + ";", CUtil.reactorRefNested(trigger.getParent()) + "." + trigger.__name__, "        = (" + portStructType + "**)_lf_allocate(", "                " + width + ", sizeof(" + portStructType + "*),", "                &" + reactorSelfStruct + "->base.allocations); "))
                     code_.endScopedBlock()
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def deferredAllocationForEffectsOnInputs(cls, currentFederate, reactor, isFederated):
@@ -517,7 +517,7 @@ class CTriggerObjectsGenerator(object):
                     effectRef = CUtil.portRefNestedName(effect)
                     code_.pr(String.join("\n", effectRef + "_width = " + effect.getWidth() + ";", "// Allocate memory to store output of reaction feeding ", "// a multiport input of a contained reactor.", effectRef + " = (" + portStructType + "**)_lf_allocate(", "        " + effect.getWidth() + ", sizeof(" + portStructType + "*),", "        &" + reactorSelfStruct + "->base.allocations); ", "for (int i = 0; i < " + effect.getWidth() + "; i++) {", "    " + effectRef + "[i] = (" + portStructType + "*)_lf_allocate(", "            1, sizeof(" + portStructType + "),", "            &" + reactorSelfStruct + "->base.allocations); ", "}"))
                     code_.endScopedBlock()
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def deferredInitialize(cls, currentFederate, reactor, reactions, targetConfig, types, isFederated):

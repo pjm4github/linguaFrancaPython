@@ -24,7 +24,7 @@ class TypeScriptTest(RuntimeTest):
     """ generated source for class TypeScriptTest """
     def __init__(self):
         """ generated source for method __init__ """
-        super(TypeScriptTest, self).__init__(Target.TS)
+        super().__init__(Target.TS)
 
     def supportsDockerOption(self):
         """ generated source for method supportsDockerOption """
@@ -36,33 +36,33 @@ class TypeScriptTest(RuntimeTest):
 
     def runGenericTests(self):
         """ generated source for method runGenericTests """
-        super(TypeScriptTest, self).runGenericTests()
+        super().runGenericTests()
 
     def runTargetSpecificTests(self):
         """ generated source for method runTargetSpecificTests """
-        super(TypeScriptTest, self).runTargetSpecificTests()
+        super().runTargetSpecificTests()
 
     def runMultiportTests(self):
         """ generated source for method runMultiportTests """
-        super(TypeScriptTest, self).runMultiportTests()
+        super().runMultiportTests()
 
     def runConcurrentTests(self):
         """ generated source for method runConcurrentTests """
-        super(TypeScriptTest, self).runConcurrentTests()
+        super().runConcurrentTests()
 
     def runFederatedTests(self):
         """ generated source for method runFederatedTests """
         Assumptions.assumeFalse(isWindows(), Message.NO_WINDOWS_SUPPORT)
-        super(TypeScriptTest, self).runFederatedTests()
+        super().runFederatedTests()
 
     def runDockerTests(self):
         """ generated source for method runDockerTests """
-        super(TypeScriptTest, self).runDockerTests()
+        super().runDockerTests()
 
     def runDockerFederatedTests(self):
         """ generated source for method runDockerFederatedTests """
         Assumptions.assumeFalse(isWindows(), Message.NO_WINDOWS_SUPPORT)
-        super(TypeScriptTest, self).runDockerFederatedTests()
+        super().runDockerFederatedTests()
 
     def runAsFederated(self):
         """ generated source for method runAsFederated """

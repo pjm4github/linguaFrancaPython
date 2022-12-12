@@ -215,6 +215,9 @@ class Lfc(CliBase):
             print("Code generation finished.")
 
 
+# This is the main class to run the compiler
+
+
 if __name__ == '__main__':
     import sys
     Lfc.main(sys.argv)

@@ -33,7 +33,7 @@ from org.lflang.tests.TestRegistry import TestCategory
 #  * @author Clément Fournier
 #  * @author Marten Lohstroh <marten@berkeley.edu>
 #  
-class Configurator(object):
+class Configurator:
     #      * Configure the given test to use single-threaded execution.
     #      *
     #      * For targets that provide a threaded and an unthreaded runtime,
@@ -54,7 +54,7 @@ class Configurator(object):
     @abstractmethod
     def configure(self, test):
         """ generated source for method configure """
-class Configurators(object):
+class Configurators:
     """ generated source for class Configurators """
     #  Test configuration function. 
 

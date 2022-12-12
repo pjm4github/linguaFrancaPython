@@ -46,7 +46,7 @@ class FedTSLauncher(FedLauncher):
     #      
     def __init__(self, targetConfig, fileConfig, errorReporter):
         """ generated source for method __init__ """
-        super(FedTSLauncher, self).__init__(errorReporter)
+        super().__init__(errorReporter)
 
     #      * Return the command that will execute a local federate, assuming that the current
     #      * directory is the top-level project folder. This is used to create a launcher script

@@ -31,7 +31,7 @@ class SubContext(LFGeneratorContext):
     #      
     def __init__(self, containingContext, startPercentProgress, endPercentProgress):
         """ generated source for method __init__ """
-        super(SubContext, self).__init__()
+        super().__init__()
         self.containingContext = containingContext
         self.startPercentProgress = startPercentProgress
         self.endPercentProgress = endPercentProgress

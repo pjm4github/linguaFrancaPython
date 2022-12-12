@@ -31,30 +31,37 @@ from org.lflang import TimeUnit
 #  * Encapsulates logic for representing {@code Value}s in a
 #  * target language.
 #  
-class ExpressionGenerator(object):
+
+
+class TimeInTargetLanguage:
+    """ generated source for interface TimeInTargetLanguage """
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def apply(self, t):
+        """ generated source for method apply """
+
+
+#      * A {@code GetTargetReference} instance is a
+#      * target-language-specific function. It provides the
+#      * target language code that refers to the given
+#      * parameter {@code param}.
+#
+class GetTargetReference:
+    """ generated source for interface GetTargetReference """
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def apply(self, param):
+        """ generated source for method apply """
+
+
+class ExpressionGenerator:
     """ generated source for class ExpressionGenerator """
     #      * A {@code TimeInTargetLanguage} is a
     #      * target-language-specific time representation
     #      * strategy.
     #      
-    class TimeInTargetLanguage(object):
-        """ generated source for interface TimeInTargetLanguage """
-        __metaclass__ = ABCMeta
-        @abstractmethod
-        def apply(self, t):
-            """ generated source for method apply """
-
-    #      * A {@code GetTargetReference} instance is a
-    #      * target-language-specific function. It provides the
-    #      * target language code that refers to the given
-    #      * parameter {@code param}.
-    #      
-    class GetTargetReference(object):
-        """ generated source for interface GetTargetReference """
-        __metaclass__ = ABCMeta
-        @abstractmethod
-        def apply(self, param):
-            """ generated source for method apply """
 
     #      * Instantiates a target-language-specific
     #      * ExpressionGenerator parameterized by {@code f}.

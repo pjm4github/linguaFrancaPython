@@ -7,7 +7,7 @@
 #  *
 #  * @author {Soroush Bateni <soroush@berkeley.edu>}
 #  
-class PythonMethodGenerator(object):
+class PythonMethodGenerator:
     """ generated source for class PythonMethodGenerator """
     #      * Generate a Python method definition for {@code method}.
     #      

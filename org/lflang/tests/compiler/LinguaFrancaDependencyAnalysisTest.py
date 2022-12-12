@@ -36,7 +36,7 @@ import
 
 @ExtendWith(InjectionExtension.__class__)
 @InjectWith(LFInjectorProvider.__class__)
-class LinguaFrancaDependencyAnalysisTest(object):
+class LinguaFrancaDependencyAnalysisTest:
     """ generated source for class LinguaFrancaDependencyAnalysisTest """
     #  * A collection of tests to ensure dependency analysis is done correctly.
     #  * @author{Marten Lohstroh <marten@berkeley.edu>}

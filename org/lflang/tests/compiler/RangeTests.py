@@ -4,7 +4,7 @@
 # import java.util.List
 # import java.util.Set
 
-class RangeTests(object):
+class RangeTests:
     """ generated source for class RangeTests """
     reporter = DefaultErrorReporter()
     factory = LfFactory.eINSTANCE

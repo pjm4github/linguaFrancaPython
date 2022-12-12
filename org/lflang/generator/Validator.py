@@ -2,10 +2,15 @@
 """ generated source for module Validator """
 # package: org.lflang.generator
 # import org.eclipse.xtext.util.CancelIndicator
+import sys
 
-from org.lflang.ErrorReporter
+from lflang.diagram.lsp.LFLanguageServerExtension import CompletableFuture
+from lflang.generator.LFGeneratorContext import LFGeneratorContext
+from lflang.generator.ReactionInstance import Runtime
+from lflang.generator.c.CGenerator import Executors
+from lflang.ErrorReporter import ErrorReporter
+from lflang.util.LFCommand import LFCommand
 
-from org.lflang.util.LFCommand
 # import java.nio.file.Path
 # import java.util.ArrayList
 # import java.util.Collection
@@ -26,7 +31,16 @@ from org.lflang.util.LFCommand
 #  *
 #  * @author Peter Donovan <peterdonovan@berkeley.edu>
 #  
-class Validator(object):
+
+
+class Pair:
+    def __init__(self, first, second):
+        """ generated source for method __init__ """
+        self.first = first
+        self.second = second
+
+
+class Validator:
     """ generated source for class Validator """
     #      * Files older than {@code FILE_AGE_THRESHOLD_MILLIS} may be skipped in validation on the
     #      * grounds that they probably have not been updated since the last validator pass.
@@ -34,48 +48,38 @@ class Validator(object):
     #  This will cause silent validation failures if it takes too long to write all generated code to the file system.
     FILE_AGE_THRESHOLD_MILLIS = 10000
 
-    class Pair(object):
-        """ generated source for class Pair """
-        first = None
-        second = None
-
-        def __init__(self, first, second):
-            """ generated source for method __init__ """
-            self.first = first
-            self.second = second
-
-    errorReporter = None
-    codeMaps = None
-
-    #      * Initialize a {@code Validator} that reports errors to {@code errorReporter} and adjusts
-    #      * document positions using {@code codeMaps}.
-    #      
     def __init__(self, errorReporter, codeMaps):
+        """
+        Initialize a {@code Validator} that reports errors to {@code errorReporter} and adjusts
+        document positions using {@code codeMaps}.
+        :param errorReporter:
+        :param codeMaps:
+        """
         """ generated source for method __init__ """
         self.errorReporter = errorReporter
-        self.codeMaps = ImmutableMap.copyOf(codeMaps)
+        self.codeMaps = dict(codeMaps)
 
-    #      * Validate this Validator's group of generated files.
-    #      * @param context The context of the current build.
-    #      
     def doValidate(self, context):
-        """ generated source for method doValidate """
-        if not validationEnabled(context):
+        """
+        Validate this Validator's group of generated files.
+        :param context: The context of the current build.
+        :return:
+        """
+        if not self.validationEnabled(context):
             return
         tasks = []
-        #          getValidationStrategies().stream().map(
-        #              it -> (Callable) () -> {
-        #                  it.second.run(context.getCancelIndicator());
-        #                  return it;
-        #              }
-        #          ).collect(Collectors.toList());
-        for f in getFutures(tasks):
-            f.get().first.getErrorReportingStrategy().report(f.get().second.getErrors().__str__(), self.errorReporter, self.codeMaps)
-            f.get().first.getOutputReportingStrategy().report(f.get().second.getOutput().__str__(), self.errorReporter, self.codeMaps)
+        for it in self.getValidationStrategies():
+            tasks.append(it.second.run(context.getCancelIndicator()))
+
+        for f in self.getFutures(tasks):
+            f.get().first.getErrorReportingStrategy().report(str(f.get().second.getErrors()),
+                                                             self.errorReporter, self.codeMaps)
+            f.get().first.getOutputReportingStrategy().report(str(f.get().second.getOutput()),
+                                                              self.errorReporter, self.codeMaps)
 
     def validationEnabled(self, context):
         """ generated source for method validationEnabled """
-        return context.getArgs().containsKey("lint") or validationEnabledByDefault(context)
+        return context.getArgs().containsKey("lint") or self.validationEnabledByDefault(context)
 
     def validationEnabledByDefault(self, context):
         """ generated source for method validationEnabledByDefault """
@@ -86,11 +90,12 @@ class Validator(object):
         """ generated source for method getFutures """
         futures = list()
         if len(tasks) == 0:
+            pass
         elif len(tasks) == 1:
             try:
                 futures = list(CompletableFuture.completedFuture(tasks.get(0).call()))
             except Exception as e:
-                System.err.println(e.getMessage())
+                sys.stderr.write(e.getMessage())
         else:
             service = Executors.newFixedThreadPool(min(Runtime.getRuntime().availableProcessors(), len(tasks)))
             futures = service.invokeAll(tasks)
@@ -100,17 +105,17 @@ class Validator(object):
     def run(self, command, cancelIndicator):
         """ generated source for method run """
         returnCode = command.run(cancelIndicator)
-        getBuildReportingStrategies().first.report(command.getErrors().__str__(), self.errorReporter, self.codeMaps)
-        getBuildReportingStrategies().second.report(command.getOutput().__str__(), self.errorReporter, self.codeMaps)
+        self.getBuildReportingStrategies().first.report(command.getErrors().__str__(), self.errorReporter, self.codeMaps)
+        self.getBuildReportingStrategies().second.report(command.getOutput().__str__(), self.errorReporter, self.codeMaps)
         return returnCode
 
     def getValidationStrategies(self):
         """ generated source for method getValidationStrategies """
         commands = []
         mostRecentDateModified = 0.0
-        for generatedFile in codeMaps.keySet():
+        for generatedFile in self.codeMaps.keySet():
             if generatedFile.toFile().lastModified() > mostRecentDateModified - self.FILE_AGE_THRESHOLD_MILLIS:
-                p = getValidationStrategy(generatedFile)
+                p = self.getValidationStrategy(generatedFile)
                 if p.first == None or p.second == None:
                     continue 
                 commands.append(p)

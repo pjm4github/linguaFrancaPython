@@ -39,7 +39,7 @@ from org.lflang.generator import NamedInstance
 import configparser
 config = configparser.RawConfigParser()
 
-class NamedInstanceUtil(object):
+class NamedInstanceUtil:
     """ generated source for class NamedInstanceUtil """
     LINKED_INSTANCE = config.get("org.lflang.linguafranca.diagram.synthesis.graph.instance")
 

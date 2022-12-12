@@ -54,7 +54,7 @@ from org.lflang.lf import VarRef
 #  * @author Soroush Bateni {soroush@utdallas.edu}
 #  *
 #  
-class PythonGeneratorExtension(object):
+class PythonGeneratorExtension:
     """ generated source for class PythonGeneratorExtension """
     #      * Generate code for the body of a reaction that handles an output
     #      * that is to be sent over the network.
@@ -117,7 +117,7 @@ class PythonGeneratorExtension(object):
             raise TypeError("Protbuf serialization is not supported yet.")
         elif serializer == SupportedSerializers.ROS2:
             raise TypeError("ROS2 serialization is not supported yet.")
-        return result.__str__()
+        return str(result)()
 
     @classmethod
     def generateNetworkReceiverBody(cls, action, sendingPort, receivingPort, receivingPortID, sendingFed, receivingFed, receivingBankIndex, receivingChannelIndex, type, isPhysical, serializer, coordinationType):
@@ -156,4 +156,4 @@ class PythonGeneratorExtension(object):
             raise TypeError("Protbuf serialization is not supported yet.")
         elif serializer == SupportedSerializers.ROS2:
             raise TypeError("ROS2 serialization is not supported yet.")
-        return result.__str__()
+        return str(result)()

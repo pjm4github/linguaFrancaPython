@@ -9,7 +9,7 @@ from abc import ABCMeta, abstractmethod
 #  * @author Soroush Bateni <soroush@utdallas.edu>
 #  *
 #  
-class FedSerialization(object):
+class FedSerialization:
     """ generated source for interface FedSerialization """
     __metaclass__ = ABCMeta
     #      * Variable name in the target language for the serialized data.

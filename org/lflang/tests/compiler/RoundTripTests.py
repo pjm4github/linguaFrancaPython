@@ -43,7 +43,7 @@ from org.lflang.tests.TestRegistry import TestRegistry.TestCategory
 
 @ExtendWith(InjectionExtension.__class__)
 @InjectWith(LFInjectorProvider.__class__)
-class RoundTripTests(object):
+class RoundTripTests:
     """ generated source for class RoundTripTests """
     def roundTripTest(self):
         """ generated source for method roundTripTest """

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-""" generated source for module GeneratorBase """
-# 
+#
 # Copyright (c) 2019-2020, The University of California at Berkeley.
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -21,29 +20,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #  
 # package: org.lflang.generator
-# import java.io.IOException
-# import java.nio.file.Path
-# import java.nio.file.Paths
-# import java.util.ArrayList
-# import java.util.HashSet
-# import java.util.LinkedHashMap
-# import java.util.LinkedHashSet
-# import java.util.List
-# import java.util.Map
-# import java.util.Set
-# import java.util.regex.Matcher
-# import java.util.regex.Pattern
-# import org.eclipse.core.resources.IMarker
-# import org.eclipse.emf.ecore.EObject
-# import org.eclipse.emf.ecore.resource.Resource
-# import org.eclipse.emf.ecore.util.EcoreUtil
-# import org.eclipse.xtext.util.CancelIndicator
-# import org.eclipse.xtext.xbase.lib.CollectionLiterals
-# import org.eclipse.xtext.xbase.lib.IterableExtensions
-# import org.eclipse.xtext.xbase.lib.IteratorExtensions
-# import org.eclipse.xtext.xbase.lib.Pair
 import os
-import sys
 
 from lflang import ASTUtils, TimeUnit
 from lflang.MainConflictChecker import MainConflictChecker
@@ -61,8 +38,6 @@ from lflang.graph.InstantiationGraph import InstantiationGraph
 from lflang.lf import Reactor, LfFactory, Model, Time, Expression
 import re
 from include.overloading import *
-# import com.google.common.base.Objects
-# import com.google.common.collect.Iterables
 
 # 
 # Generator base class for specifying core functionality
@@ -78,6 +53,24 @@ from lflang.validation import AbstractLFValidator
 
 class IMarker:
     pass
+
+
+class ErrorFileAndLine:
+    """
+    * Parsed error message from a compiler is returned here.
+    """
+    filepath = None
+    line = "1"
+    character = "0"
+    message = ""
+    isError = True
+
+    def __str__(self):
+        """ generated source for method toString """
+        return ("Error" if self.isError else "Non-error") + " at " + self.line + ":" \
+               + self.character + " of file " + self.filepath + ": " + self.message
+
+
 
 class GeneratorBase(AbstractLFValidator):
     # Constant that specifies how to name generated delay reactors.
@@ -105,7 +98,7 @@ class GeneratorBase(AbstractLFValidator):
         self.targetConfig = TargetConfig()
 
         # Collection of generated delay classes.
-        self.delayClasses = set()
+        self.delayClasses = []
 
         # Definition of the main (top-level) reactor.
         # This is an automatically generated AST node for the top-level
@@ -139,7 +132,7 @@ class GeneratorBase(AbstractLFValidator):
         # known to be safe to be unordered because they do not interact with the
         # state of the containing reactor. To make a reaction unordered, when
         # the Reaction instance is created, add that instance to this set.
-        self.unorderedReactions = set()
+        self.unorderedReactions = []
     
         # Map from reactions to bank indices
         self.reactionBankIndices = None
@@ -223,8 +216,7 @@ class GeneratorBase(AbstractLFValidator):
         for that top-level reactor and set the field mainDef to refer to it.
         :return:
         """
-        """ generated source for method createMainInstantiation """
-        nodes = IteratorExtensions.toIterable(self.fileConfig.resource.getAllContents())
+        nodes = self.fileConfig.resource.getAllContents()
         for reactor in nodes:
             if type(reactor) == type(Reactor):
                 if reactor.isMain() or reactor.isFederated():
@@ -250,7 +242,7 @@ class GeneratorBase(AbstractLFValidator):
                                        self.targetConfig, self.errorReporter)
         self.cleanIfNeeded(context)
         print(context.getMode())
-        if isinstance(self.errorReporter, (EclipseErrorReporter)):
+        if isinstance(self.errorReporter, EclipseErrorReporter):
             (self.errorReporter).clearMarkers()
         ASTUtils.setMainName(self.fileConfig.resource, self.fileConfig.name)
         self.createMainInstantiation()
@@ -316,7 +308,6 @@ class GeneratorBase(AbstractLFValidator):
         :param context:
         :return:
         """
-        """ generated source for method cleanIfNeeded """
         if context.getArgs().containsKey("clean"):
             try:
                 self.fileConfig.doClean()
@@ -345,7 +336,7 @@ class GeneratorBase(AbstractLFValidator):
         # If there is no main reactor or if all reactors in the file need to be validated, then make sure the reactors
         # list includes even reactors that are not instantiated anywhere.
         if self.mainDef == None or mode == LFGeneratorContext.Mode.LSP_MEDIUM:
-            nodes = IteratorExtensions.toIterable(self.fileConfig.resource.getAllContents())
+            nodes = self.fileConfig.resource.getAllContents()
             for r in nodes:
                 if type(r) == type(Reactor):
                     if not self.reactors.contains(r):
@@ -427,7 +418,7 @@ class GeneratorBase(AbstractLFValidator):
         :param reaction:
         :return: True if the reaction has been marked unordered.
         """
-        return (self.unorderedReactions is not None) and self.unorderedReactions.contains(reaction)
+        return (self.unorderedReactions is not None) and self.unorderedReactions.find(reaction) >= 0
 
     def makeUnordered(self, reaction):
         """
@@ -667,20 +658,6 @@ class GeneratorBase(AbstractLFValidator):
         """
         return self.isFederated and self.targetConfig.coordination == CoordinationType.CENTRALIZED
 
-    class ErrorFileAndLine(object):
-        """
-        * Parsed error message from a compiler is returned here.
-        """
-        filepath = None
-        line = "1"
-        character = "0"
-        message = ""
-        isError = True
-
-        def __str__(self):
-            """ generated source for method toString """
-            return ("Error" if self.isError else "Non-error") + " at " + self.line + ":" \
-                   + self.character + " of file " + self.filepath + ": " + self.message
 
     def parseCommandOutput(self, line):
         """
@@ -721,9 +698,9 @@ class GeneratorBase(AbstractLFValidator):
             if parsed != None:
                 if 0 > len(message):
                     if severity == IMarker.SEVERITY_ERROR:
-                        self.errorReporter.reportError(path, lineNumber, message.__str__())
+                        self.errorReporter.reportError(path, lineNumber, str(message))
                     else:
-                        self.errorReporter.reportWarning(path, lineNumber, message.__str__())
+                        self.errorReporter.reportWarning(path, lineNumber, str(message))
                     if not (originalPath.toFile() == path.toFile()):
                         if severity == IMarker.SEVERITY_ERROR:
                             self.errorReporter.reportError(originalPath, 1, "Error in imported file: " + path)
@@ -750,9 +727,9 @@ class GeneratorBase(AbstractLFValidator):
                 message.append(line)
         if 0 > len(message):
             if severity == IMarker.SEVERITY_ERROR:
-                self.errorReporter.reportError(path, lineNumber, message.__str__())
+                self.errorReporter.reportError(path, lineNumber, str(message))
             else:
-                self.errorReporter.reportWarning(path, lineNumber, message.__str__())
+                self.errorReporter.reportWarning(path, lineNumber, str(message))
             if originalPath.toFile() != path.toFile():
                 if severity == IMarker.SEVERITY_ERROR:
                     self.errorReporter.reportError(originalPath, 1, "Error in imported file: " + path)

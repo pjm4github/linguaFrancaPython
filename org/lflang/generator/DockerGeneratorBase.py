@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """ generated source for module DockerGeneratorBase """
+import platform
 import sys
 from abc import ABCMeta, abstractmethod
 
@@ -36,87 +37,72 @@ from org.lflang.util.FileUtil import FileUtil
 #  *
 #  * @author{Hou Seng Wong <housengw@berkeley.edu>}
 #  
-class DockerGeneratorBase(object):
+
+
+class GeneratorData:
+    """ generated source for interface GeneratorData """
+    __metaclass__ = ABCMeta
+
+
+class DockerData:
+    """ generated source for class DockerData """
+    def __init__(self, dockerFilePath, dockerFileContent, dockerBuildContext):
+        """ generated source for method __init__ """
+        if dockerFilePath == None or dockerFileContent == None or dockerBuildContext == None:
+            raise RuntimeException("Missing fields in DockerData instance")
+        if not dockerFilePath.toFile().isAbsolute():
+            raise RuntimeException("Non-absolute docker file path in DockerData instance")
+        if not str(dockerFilePath)().endsWith(".Dockerfile"):
+            raise RuntimeException("Docker file path does not end with \".Dockerfile\" in DockerData instance")
+        #          * The absolute path to the docker file.
+        self.filePath = dockerFilePath
+        #          * The content of the docker file to be generated.
+        self.fileContent = dockerFileContent
+        #          * The name of the docker compose service for the LF module.
+        self.composeServiceName = self.filePath.getFileName().__str__().replace(".Dockerfile", "").lower()
+        #          * The build context of the docker container.
+        self.buildContext = dockerBuildContext
+
+    def getFilePath(self):
+        """ generated source for method getFilePath """
+        return self.filePath
+
+    def getFileContent(self):
+        """ generated source for method getFileContent """
+        return self.fileContent
+
+    def getComposeServiceName(self):
+        """ generated source for method getComposeServiceName """
+        return self.composeServiceName
+
+    def getBuildContext(self):
+        """ generated source for method getBuildContext """
+        return self.buildContext
+
+
+class DockerGeneratorBase:
     """ generated source for class DockerGeneratorBase """
-    #      * The docker compose services representing each federate.
-    #      * Ideally, this would be a list of Strings instead of a StringBuilder.
-    #      
-    composeServices = None
-
-    #      * A docker file will be generated for each lingua franca module.
-    #      * This maps the name of the LF module to the data related to the docker
-    #      * file for that module.
-    #      
-    dockerDataList = None
-
-    #      * Indicates whether or not the program is federated.
-    #      
-    isFederated = bool()
-
-    #      * In federated execution, the host of the rti.
-    #      
-    host = None
-
     #      * Generates the docker file related code for the Python target.
     #      * The type specified in the following javadoc refers to the
     #      * type of the object stored in `moduleNameToData.get(lfModuleName)`
     #      
-    class DockerData(object):
-        """ generated source for class DockerData """
-            #          * The absolute path to the docker file.
-        #          
-        filePath = None
-
-            #          * The content of the docker file to be generated.
-        #          
-        fileContent = None
-
-            #          * The name of the docker compose service for the LF module.
-        #          
-        composeServiceName = None
-
-            #          * The build context of the docker container.
-        #          
-        buildContext = None
-
-        def __init__(self, dockerFilePath, dockerFileContent, dockerBuildContext):
-            """ generated source for method __init__ """
-            if dockerFilePath == None or dockerFileContent == None or dockerBuildContext == None:
-                raise RuntimeException("Missing fields in DockerData instance")
-            if not dockerFilePath.toFile().isAbsolute():
-                raise RuntimeException("Non-absolute docker file path in DockerData instance")
-            if not dockerFilePath.__str__().endsWith(".Dockerfile"):
-                raise RuntimeException("Docker file path does not end with \".Dockerfile\" in DockerData instance")
-            self.filePath = dockerFilePath
-            self.fileContent = dockerFileContent
-            self.composeServiceName = self.filePath.getFileName().__str__().replace(".Dockerfile", "").lower()
-            self.buildContext = dockerBuildContext
-
-        def getFilePath(self):
-            """ generated source for method getFilePath """
-            return self.filePath
-
-        def getFileContent(self):
-            """ generated source for method getFileContent """
-            return self.fileContent
-
-        def getComposeServiceName(self):
-            """ generated source for method getComposeServiceName """
-            return self.composeServiceName
-
-        def getBuildContext(self):
-            """ generated source for method getBuildContext """
-            return self.buildContext
-
-    class GeneratorData(object):
-        """ generated source for interface GeneratorData """
-        __metaclass__ = ABCMeta
 
     def __init__(self, isFederated):
         """ generated source for method __init__ """
+        #      * A docker file will be generated for each lingua franca module.
+        #      * This maps the name of the LF module to the data related to the docker
+        #      * file for that module.
         self.dockerDataList = []
+        #      * The docker compose services representing each federate.
+        #      * Ideally, this would be a list of Strings instead of a StringBuilder.
+        #
         self.composeServices = ""
+
+        #      * Indicates whether or not the program is federated.
         self.isFederated = isFederated
+
+        #      * In federated execution, the host of the rti
+        self.host = None
 
     def generateDockerData(self, generatorData):
         """ generated source for method generateDockerData """
@@ -149,8 +135,8 @@ class DockerGeneratorBase(object):
     @classmethod
     def getDockerComposeCommand(cls):
         """ generated source for method getDockerComposeCommand """
-        OS = sys.getProperty("os.name").lower()
-        return "docker-compose" if (OS.indexOf("nux") >= 0) else "docker compose"
+        OS = platform.system().lower()
+        return "docker-compose" if (OS.find("nux") >= 0) else "docker compose"
 
     def getDockerBuildCommandMsg(self, dockerComposeFilePath, dockerData):
         """ generated source for method getDockerBuildCommandMsg """
@@ -176,7 +162,7 @@ class DockerGeneratorBase(object):
         contents = CodeBuilder()
         contents.pr("\n".join([ "version: \"3.9\"",
                                 "services:",
-                                self.composeServices.__str__(),
+                                str(self.composeServices)(),
                                 "networks:",
                                 "    lingua-franca:",
                                 "        name: " + networkName]))

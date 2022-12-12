@@ -34,7 +34,7 @@ import
 
 import org.junit.jupiter.api.Test
 
-class StringUtilTest(object):
+class StringUtilTest:
     """ generated source for class StringUtilTest """
     def testRemoveQuotes(self):
         """ generated source for method testRemoveQuotes """

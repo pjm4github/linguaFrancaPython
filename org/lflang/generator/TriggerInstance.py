@@ -39,6 +39,36 @@ from include.overloading import overloaded
 #  *  @author{Edward A. Lee <eal@berkeley.edu>}
 #  *  @author{Alexander Schulz-Rosengarten <als@informatik.uni-kiel.de>}
 #  
+
+# ///////////////////////////////////////////
+# // Special class for builtin triggers
+#      * This class allows to have BuiltinTriggers represented by a Variable type.
+#
+
+
+class BuiltinTriggerVariable(VariableImpl):
+    """ generated source for class BuiltinTriggerVariable """
+    #  The builtin trigger type represented by this variable.
+    type = None
+
+    #  The actual TriggerRef definition in the AST.
+    definition = None
+
+    def __init__(self, type, trigger):
+        """ generated source for method __init__ """
+        super().__init__()
+        self.type = type
+        self.definition = trigger
+
+    def getName(self):
+        """ generated source for method getName """
+        return self.type.name().lower()
+
+    def setName(self, newName):
+        """ generated source for method setName """
+        raise TypeError(self.__class__.__name__ + " has an immutable name.")
+
+
 class TriggerInstance(NamedInstance, T):
     """ generated source for class TriggerInstance """
     #  Construct a new instance with the specified definition
@@ -52,7 +82,7 @@ class TriggerInstance(NamedInstance, T):
     @overloaded
     def __init__(self, definition, parent):
         """ generated source for method __init__ """
-        super(TriggerInstance, self).__init__(parent)
+        super().__init__(parent)
 
     #      * Construct a new instance for a special builtin trigger.
     #      * This constructor must be used with Variable or BuiltinTriggerVariable
@@ -65,7 +95,7 @@ class TriggerInstance(NamedInstance, T):
     @__init__.register(object, BuiltinTrigger, TriggerRef, ReactorInstance)
     def __init___0(self, type, trigger, parent):
         """ generated source for method __init___0 """
-        super(TriggerInstance, self).__init__(parent)
+        super().__init__(parent)
         builtinTriggerType = type
 
     # ///////////////////////////////////////////
@@ -151,28 +181,3 @@ class TriggerInstance(NamedInstance, T):
     #      
     dependsOnReactions = {}
 
-    # ///////////////////////////////////////////
-    # // Special class for builtin triggers
-    #      * This class allows to have BuiltinTriggers represented by a Variable type.
-    #      
-    class BuiltinTriggerVariable(VariableImpl):
-        """ generated source for class BuiltinTriggerVariable """
-        #  The builtin trigger type represented by this variable. 
-        type = None
-
-        #  The actual TriggerRef definition in the AST. 
-        definition = None
-
-        def __init__(self, type, trigger):
-            """ generated source for method __init__ """
-            super(BuiltinTriggerVariable, self).__init__()
-            self.type = type
-            self.definition = trigger
-
-        def getName(self):
-            """ generated source for method getName """
-            return self.type.name().lower()
-
-        def setName(self, newName):
-            """ generated source for method setName """
-            raise TypeError(self.__class__.__name__ + " has an immutable name.")

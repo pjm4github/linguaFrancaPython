@@ -74,7 +74,7 @@ class EclipseErrorReporter(ErrorReporter):
 
     def __init__(self, fc):
         """ generated source for method __init__ """
-        super(EclipseErrorReporter, self).__init__()
+        super().__init__()
         self.fileConfig = fc
 
     #  private val EObject.node get() = NodeModelUtils.getNode(this)
@@ -140,7 +140,7 @@ class EclipseErrorReporter(ErrorReporter):
             marker.setAttribute(self.__class__.__name__, True)
             marker.setAttribute(IMarker.MESSAGE, message)
             marker.setAttribute(IMarker.LINE_NUMBER, 1 if line == None else line)
-            marker.setAttribute(IMarker.LOCATION, "1" if line == None else line.__str__())
+            marker.setAttribute(IMarker.LOCATION, "1" if line == None else str(line)())
             marker.setAttribute(IMarker.SEVERITY,
                                 IMarker.SEVERITY_ERROR if isError else
                                     (IMarker.SEVERITY_INFO if isInfo else IMarker.SEVERITY_WARNING)
@@ -148,7 +148,7 @@ class EclipseErrorReporter(ErrorReporter):
             marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH)
             marker.setAttribute(IMarker.USER_EDITABLE, False)
         except CoreException as e:
-            sys.stderr("WARNING: Setting markers in the IDE failed:\n" + e.__str__())
+            sys.stderr("WARNING: Setting markers in the IDE failed:\n" + str(e)())
         return header + ": " + message
 
     @overloaded

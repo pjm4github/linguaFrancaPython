@@ -36,9 +36,9 @@ class UnsupportedGeneratorFeatureException(GenerationException):
     @overloaded
     def __init__(self, feature):
         """ generated source for method __init__ """
-        super(UnsupportedGeneratorFeatureException, self).__init__("Unsupported generator feature: " + feature)
+        super().__init__("Unsupported generator feature: " + feature)
 
     @__init__.register(object, EObject, str)
     def __init___0(self, location, feature):
         """ generated source for method __init___0 """
-        super(UnsupportedGeneratorFeatureException, self).__init__("Unsupported generator feature: " + feature)
+        super().__init__("Unsupported generator feature: " + feature)

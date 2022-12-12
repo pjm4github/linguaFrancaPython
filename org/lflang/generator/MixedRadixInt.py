@@ -57,7 +57,7 @@ from include.overloading import overloaded
 #  * 
 #  * @author{Edward A. Lee <eal@berkeley.edu>}
 #  
-class MixedRadixInt(object):
+class MixedRadixInt:
     """ generated source for class MixedRadixInt """
     #      * Create a mixed radix number with the specified digits and radixes,
     #      * which are given low-order digits first.

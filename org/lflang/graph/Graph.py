@@ -30,7 +30,7 @@ from abc import ABCMeta, abstractmethod
 #  *
 #  * @param <T> Type of vertices of the graph
 #  
-class Graph(object):
+class Graph:
     """ generated source for interface Graph """
     __metaclass__ = ABCMeta
     #      * Return an unmodifiable set of nodes in this graph.

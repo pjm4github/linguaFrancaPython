@@ -35,7 +35,7 @@ from org.lflang.util import StringUtil
 #  * @author{Alexander Schulz-Rosengarten <als@informatik.uni-kiel.de>}
 #  * @author{Hou Seng Wong <housengw@berkeley.edu>}
 #  
-class CPreambleGenerator(object):
+class CPreambleGenerator:
     """ generated source for class CPreambleGenerator """
     #  Add necessary source files specific to the target language.  
     @classmethod
@@ -65,7 +65,7 @@ class CPreambleGenerator(object):
             code_.pr("#include \"core/trace.c\"")
         code_.pr("#include \"core/mixed_radix.h\"")
         code_.pr("#include \"core/port.h\"")
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def generateDefineDirectives(cls, targetConfig, numFederates, isFederated, srcGenPath, clockSyncIsOn, hasModalReactors):
@@ -92,7 +92,7 @@ class CPreambleGenerator(object):
         if clockSyncIsOn:
             code_.pr(generateClockSyncDefineDirective(targetConfig.clockSync, targetConfig.clockSyncOptions))
         code_.newLine()
-        return code_.__str__()
+        return str(code_)
 
     #      * Returns the #define directive for the given coordination type.
     #      *

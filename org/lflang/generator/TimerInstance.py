@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-""" generated source for module TimerInstance """
-#  Instance of a timer. 
+#  Instance of a timer.
 # 
 # Copyright (c) 2019, The University of California at Berkeley.
 # Redistribution and use in source and binary forms, with or without modification,
@@ -21,16 +20,18 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 # package: org.lflang.generator
-from org.lflang.TimeValue
-
+from include.SpecialExceptions import IllegalArgumentException
+from lflang.generator.InvalidSourceException import InvalidSourceException
+from lflang.generator.TriggerInstance import TriggerInstance
+from org.lflang.TimeValue import TimeValue
 from org.lflang.lf import Timer
 
-# 
-#  * Instance of a timer.
-#  * 
-#  * @author{Marten Lohstroh <marten@berkeley.edu>}
-#  * @author{Edward A. Lee <eal@berkeley.edu>}
-#  
+# Instance of a timer.
+#
+# @author{Marten Lohstroh <marten@berkeley.edu>}
+# @author{Edward A. Lee <eal@berkeley.edu>}
+
+
 class TimerInstance(TriggerInstance, Timer):
     """ generated source for class TimerInstance """
     #  The global default for offset. 
@@ -38,39 +39,36 @@ class TimerInstance(TriggerInstance, Timer):
 
     #  The global default for period. 
     DEFAULT_PERIOD = TimeValue.ZERO
-    offset = DEFAULT_OFFSET
-    period = DEFAULT_PERIOD
 
-    # 	 * Create a new timer instance.
-    # 	 * If the definition is null, then this is a startup timer.
-    # 	 * @param definition The AST definition, or null for startup.
-    # 	 * @param parent The parent reactor.
-    # 	 
     def __init__(self, definition, parent):
-        """ generated source for method __init__ """
-        super(TimerInstance, self).__init__(parent)
+        """
+        Create a new timer instance.
+        If the definition is null, then this is a startup timer.
+        :param definition: The AST definition, or null for startup.
+        :param parent: The parent reactor.
+        """
+        super().__init__(parent)
+        self.offset = self.DEFAULT_OFFSET
+        self.period = self.DEFAULT_PERIOD
+
         if parent == None:
             raise InvalidSourceException("Cannot create an TimerInstance with no parent.")
-        if definition != None:
-            if definition.getOffset() != None:
+        if definition is not None:
+            if definition.getOffset() is not None:
                 try:
                     self.offset = parent.getTimeValue(definition.getOffset())
                 except IllegalArgumentException as ex:
-                    parent.reporter.reportError(definition.getOffset(), "Invalid time.")
-            if definition.getPeriod() != None:
+                    parent.reporter.reportError(definition.getOffset(), f"Invalid time. {ex}")
+            if definition.getPeriod() is not None:
                 try:
                     self.period = parent.getTimeValue(definition.getPeriod())
                 except IllegalArgumentException as ex:
-                    parent.reporter.reportError(definition.getPeriod(), "Invalid time.")
+                    parent.reporter.reportError(definition.getPeriod(), f"Invalid time. {ex}")
 
-    #      * Get the value of the offset parameter.
-    #      
     def getOffset(self):
-        """ generated source for method getOffset """
+        """ Get the value of the offset parameter. """
         return self.offset
 
-    #      * Get the value of the offset parameter.
-    #      
     def getPeriod(self):
-        """ generated source for method getPeriod """
+        """  Get the value of the offset parameter. """
         return self.period

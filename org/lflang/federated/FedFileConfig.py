@@ -37,15 +37,13 @@ from org.lflang import FileConfig
 
 class FedFileConfig(FileConfig):
 
-    def __init__(self, fileConfig, federateName):
+    def __init__(self, fileConfig: FileConfig, federateName: str):
         """
         Create an instance of FedFileConfig for federate 'federateName' from an existing
         'fileConfig' instance (an instance of 'FileConfig').
         :param fileConfig: The existing instance of the 'FileConfig' class.
         :param federateName: The name of the federate.
-
         """
-        """ generated source for method __init__ """
         super().__init__(fileConfig.useHierarchicalBin)
         self.federateName = federateName  # Name of the federate for this FedFileConfig
         #  The generated code for each federate should be located at fileConfig.srcGenPath + "/federateName/"

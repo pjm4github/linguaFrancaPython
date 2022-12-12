@@ -14,7 +14,7 @@ from lflang.generator.python import PythonStateGenerator
 from lflang.lf import LfFactory
 
 
-class PythonModeGenerator(object):
+class PythonModeGenerator:
     """ generated source for class PythonModeGenerator """
     #      * Generate reset reactions in modes to reset state variables.
     #      *

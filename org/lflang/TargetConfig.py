@@ -28,19 +28,19 @@
 # import java.util.Map
 # import java.util.Set
 
-from org.lflang.TargetProperty.BuildType
+from org.lflang.TargetProperty import BuildType
 
-from org.lflang.TargetProperty.ClockSyncMode
+from org.lflang.TargetProperty import ClockSyncMode
 
-from org.lflang.TargetProperty.CoordinationType
+from org.lflang.TargetProperty import CoordinationType
 
-from org.lflang.TargetProperty.LogLevel
+from org.lflang.TargetProperty import LogLevel
 
-from org.lflang.TargetProperty.Platform
+from org.lflang.TargetProperty import Platform
 
-from org.lflang.TargetProperty.SchedulerOption
+from org.lflang.TargetProperty import SchedulerOption
 
-from org.lflang.generator import rust.RustTargetConfig
+from org.lflang.generator.rust import RustTargetConfig
 
 #  
 #  * A class for keeping the current target configuration.
@@ -49,6 +49,77 @@ from org.lflang.generator import rust.RustTargetConfig
 #  * unless otherwise stated.
 #  * @author Marten Lohstroh <marten@berkeley.edu>
 #  
+
+class ClockSyncOptions(object):
+    """ generated source for class ClockSyncOptions """
+    #          * Dampen the adjustments to the clock synchronization offset by this rate.
+    #          * The default is 10.
+    #
+    attenuation = 10
+
+    #          * Whether or not to collect statistics while performing clock synchronization.
+    #          * This setting is only considered when clock synchronization has been activated.
+    #          * The default is true.
+    #
+    collectStats = True
+
+    #          * Enable clock synchronization for federates on the same machine.
+    #          * Default is false.
+    #
+    localFederatesOn = False
+
+    #          * Interval at which clock synchronization is initiated by the RTI (will be passed
+    #          * to it as an argument on the command-line).
+    #          * The default is 5 milliseconds.
+    #
+    period = TimeValue(5, TimeUnit.MILLI)
+
+    #          * Indicate the number of exchanges to be had per each clock synchronization round.
+    #          * See /lib/core/federated/clock-sync.h for more details.
+    #          * The default is 10.
+    #
+    trials = 10
+
+    #          * Used to create an artificial clock synchronization error for the purpose of testing.
+    #          * The default is null.
+    #
+    testOffset = None
+
+
+#      * Settings related to coordination of federated execution.
+#
+class CoordinationOptions(object):
+    """ generated source for class CoordinationOptions """
+    #          * For centralized coordination, if a federate has a physical action that can trigger
+    #          * an output, directly or indirectly, then it will send NET (next event tag) messages
+    #          * to the RTI periodically as its physical clock advances. This option sets the amount
+    #          * of time to wait between sending such messages. Increasing this value results in
+    #          * downstream federates that lag further behind physical time (if the "after" delays
+    #          * are insufficient).
+    #          * The default is null, which means it is up the implementation to choose an interval.
+    #
+    advance_message_interval = None
+
+
+#      * Settings related to Docker options.
+#
+class DockerOptions(object):
+    """ generated source for class DockerOptions """
+    #          * The base image and tag from which to build the Docker image. The default is "alpine:latest".
+    #
+    from_ = "alpine:latest"
+
+
+#      * Settings related to tracing options.
+#
+class TracingOptions(object):
+    """ generated source for class TracingOptions """
+    #          * The name to use as the root of the trace file produced.
+    #          * This defaults to the name of the .lf file.
+    #
+    traceFileName = None
+
+
 class TargetConfig(object):
     """ generated source for class TargetConfig """
     #      * Keep track of every target property that is explicitly set by the user.
@@ -239,68 +310,3 @@ class TargetConfig(object):
 
     #      * Settings related to clock synchronization.
     #      
-    class ClockSyncOptions(object):
-        """ generated source for class ClockSyncOptions """
-            #          * Dampen the adjustments to the clock synchronization offset by this rate.
-        #          * The default is 10.
-        #          
-        attenuation = 10
-
-            #          * Whether or not to collect statistics while performing clock synchronization.
-        #          * This setting is only considered when clock synchronization has been activated.
-        #          * The default is true.
-        #          
-        collectStats = True
-
-            #          * Enable clock synchronization for federates on the same machine.
-        #          * Default is false.
-        #          
-        localFederatesOn = False
-
-            #          * Interval at which clock synchronization is initiated by the RTI (will be passed
-        #          * to it as an argument on the command-line).
-        #          * The default is 5 milliseconds.
-        #          
-        period = TimeValue(5, TimeUnit.MILLI)
-
-            #          * Indicate the number of exchanges to be had per each clock synchronization round.
-        #          * See /lib/core/federated/clock-sync.h for more details.
-        #          * The default is 10.
-        #          
-        trials = 10
-
-            #          * Used to create an artificial clock synchronization error for the purpose of testing.
-        #          * The default is null.
-        #          
-        testOffset = None
-
-    #      * Settings related to coordination of federated execution.
-    #      
-    class CoordinationOptions(object):
-        """ generated source for class CoordinationOptions """
-            #          * For centralized coordination, if a federate has a physical action that can trigger
-        #          * an output, directly or indirectly, then it will send NET (next event tag) messages
-        #          * to the RTI periodically as its physical clock advances. This option sets the amount
-        #          * of time to wait between sending such messages. Increasing this value results in
-        #          * downstream federates that lag further behind physical time (if the "after" delays
-        #          * are insufficient).
-        #          * The default is null, which means it is up the implementation to choose an interval.
-        #          
-        advance_message_interval = None
-
-    #      * Settings related to Docker options.
-    #      
-    class DockerOptions(object):
-        """ generated source for class DockerOptions """
-            #          * The base image and tag from which to build the Docker image. The default is "alpine:latest".
-        #          
-        from_ = "alpine:latest"
-
-    #      * Settings related to tracing options.
-    #      
-    class TracingOptions(object):
-        """ generated source for class TracingOptions """
-            #          * The name to use as the root of the trace file produced.
-        #          * This defaults to the name of the .lf file.
-        #          
-        traceFileName = None

@@ -17,7 +17,7 @@ class PythonDockerGenerator(CDockerGenerator):
 
     def __init__(self, isFederated, targetConfig):
         """ generated source for method __init__ """
-        super(PythonDockerGenerator, self).__init__(targetConfig)
+        super().__init__(targetConfig)
 
     #      * Generates the contents of the docker file.
     #      *

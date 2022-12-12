@@ -37,7 +37,7 @@ class RustTest(RuntimeTest):
     """ generated source for class RustTest """
     def __init__(self):
         """ generated source for method __init__ """
-        super(RustTest, self).__init__(Target.Rust)
+        super().__init__(Target.Rust)
 
     def addExtraLfcArgs(self, args):
         """ generated source for method addExtraLfcArgs """

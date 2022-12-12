@@ -51,7 +51,7 @@ class MainContext(LFGeneratorContext):
     @overloaded
     def __init__(self, mode, cancelIndicator):
         """ generated source for method __init__ """
-        super(MainContext, self).__init__()
+        super().__init__()
         self.__init__(mode, cancelIndicator, None, Properties(), False, DefaultErrorReporter())
 
     #      * Initialize the context of a build process whose cancellation is
@@ -71,7 +71,7 @@ class MainContext(LFGeneratorContext):
     @__init__.register(object, Mode, CancelIndicator, ReportProgress, Properties, bool, Function)
     def __init___0(self, mode, cancelIndicator, reportProgress, args, hierarchicalBin, constructErrorReporter):
         """ generated source for method __init___0 """
-        super(MainContext, self).__init__()
+        super().__init__()
         self.mode = mode
         self.cancelIndicator = False if cancelIndicator == None else cancelIndicator
         self.reportProgress = reportProgress

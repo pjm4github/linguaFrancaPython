@@ -31,7 +31,7 @@ class LFGrammarAccess(AbstractElementFinder, AbstractGrammarElementFinder):
 
     def __init__(self, grammarProvider):
         """ generated source for method __init__ """
-        super(LFGrammarAccess, self).__init__()
+        super().__init__()
         self.grammar = self.internalFindGrammar(grammarProvider)
         self.pModel = self.ModelElements()
         self.pImport = self.ImportElements()

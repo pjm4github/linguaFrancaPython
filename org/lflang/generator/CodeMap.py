@@ -33,164 +33,166 @@ from org.lflang.lf.impl import ParameterReferenceImpl
 class TreeMap:
     pass
 
-class CodeMap(object):
-    """ generated source for class CodeMap """
-    class Correspondence(object):
-        @overloaded
-        def __init__(self, generatedCode, map, isVerbatimByLfSourceByRange):
-            # The content of the generated file represented by
-            # this.
-            self.generatedCode = generatedCode
-            # A mapping from Lingua Franca source paths to mappings
-            # from ranges in the generated file represented by this
-            # to ranges in Lingua Franca files.
-            self.map = map
-            # A mapping from Lingua Franca source paths to mappings
-            # from ranges in the generated file represented by this
-            # to whether those ranges are copied verbatim from the
-            # source.
-            self.isVerbatimByLfSourceByRange = isVerbatimByLfSourceByRange
-            # This pattern has the markers "/* */", which some languages use as line comments. This does not
-            #  represent any serious effort to embed the string representation of this object in generated code
-            #  without introducing a syntax error. Instead, it is done simply because it is easy.
-            self.PATTERN = re.compile(
-                f"/\\*Correspondence: (?P(lfRange){Position.removeNamedCapturingGroups(Range.PATTERN)}) \\-> "
-                f"(?P(generatedRange){Position.removeNamedCapturingGroups(Range.PATTERN)}) \\(verbatim=(?P(verbatim)true|false); src=(?P(path)%s)\\)\\*/",
-                ".*?"
-            )
+class Correspondence:
+    @overloaded
+    def __init__(self, generatedCode, map, isVerbatimByLfSourceByRange):
+        # The content of the generated file represented by
+        # this.
+        self.generatedCode = generatedCode
+        # A mapping from Lingua Franca source paths to mappings
+        # from ranges in the generated file represented by this
+        # to ranges in Lingua Franca files.
+        self.map = map
+        # A mapping from Lingua Franca source paths to mappings
+        # from ranges in the generated file represented by this
+        # to whether those ranges are copied verbatim from the
+        # source.
+        self.isVerbatimByLfSourceByRange = isVerbatimByLfSourceByRange
+        # This pattern has the markers "/* */", which some languages use as line comments. This does not
+        #  represent any serious effort to embed the string representation of this object in generated code
+        #  without introducing a syntax error. Instead, it is done simply because it is easy.
+        self.PATTERN = re.compile(
+            f"/\\*Correspondence: (?P(lfRange){Position.removeNamedCapturingGroups(Range.PATTERN)}) \\-> "
+            f"(?P(generatedRange){Position.removeNamedCapturingGroups(Range.PATTERN)}) \\(verbatim=(?P(verbatim)true|false); src=(?P(path)%s)\\)\\*/",
+            ".*?"
+        )
 
-        @overloaded
-        @__init__.register(object, Path, Range, Range, bool)
-        def __init___0(self, path, lfRange, generatedRange, verbatim):
-            self.path = path
-            self.lfRange = lfRange
-            self.generatedRange = generatedRange
-            self.verbatim = verbatim
+    @overloaded
+    @__init__.register(object, Path, Range, Range, bool)
+    def __init___0(self, path, lfRange, generatedRange, verbatim):
+        self.path = path
+        self.lfRange = lfRange
+        self.generatedRange = generatedRange
+        self.verbatim = verbatim
 
-        def getPath(self):
-            """
-            Returns a path to the LF source file described by
-            @return a path to the LF source file described by
-            this Correspondence
-            :return:
-            """
-            return self.path
+    def getPath(self):
+        """
+        Returns a path to the LF source file described by
+        @return a path to the LF source file described by
+        this Correspondence
+        :return:
+        """
+        return self.path
 
-        def getLfRange(self):
-            """
-            Returns a range in an LF source file.
-            @return a range in an LF source file
-            :return:
-            """
-            return self.lfRange
+    def getLfRange(self):
+        """
+        Returns a range in an LF source file.
+        @return a range in an LF source file
+        :return:
+        """
+        return self.lfRange
 
-        def getGeneratedRange(self):
-            """
-            Returns a range in a generated file that
-            corresponds to a range in an LF file.
-            @return a range in a generated file that
-            corresponds to a range in an LF file
+    def getGeneratedRange(self):
+        """
+        Returns a range in a generated file that
+        corresponds to a range in an LF file.
+        @return a range in a generated file that
+        corresponds to a range in an LF file
 
-            :return:
-            """
-            return self.generatedRange
+        :return:
+        """
+        return self.generatedRange
 
-        def toString(self):
-            return f"/*Correspondence: {self.lfRange.__str__()} -> {self.generatedRange.__str__()} " \
-                   f"(verbatim={self.verbatim}; src={self.path.__str__()})*/",
+    def toString(self):
+        return f"/*Correspondence: {self.lfRange.__str__()} -> {self.generatedRange.__str__()} " \
+               f"(verbatim={self.verbatim}; src={self.path.__str__()})*/",
 
-        def fromString(self, s, relativeTo):
-            """
-            Returns the Correspondence represented by
-            {@code s}.
-            :param s: a String that represents a
-                     Correspondence, formatted like the
-                     output of Correspondence::toString
-            :param relativeTo: the offset relative to which
-                              the offsets given are given
-            :return: the Correspondence represented by
-                     {@code s}
-            """
-            matcher = self.PATTERN.match(s)
-            if matcher.matches():
-                lfRange = Range.fromString(matcher.group("lfRange"))
-                generatedRange = Range.fromString(matcher.group("generatedRange"), relativeTo)
-                return self.__init__(
-                    Path.of(matcher.group("path")),
-                    lfRange,
-                    generatedRange,
-                    bool(matcher.group("verbatim"))
-                )
-
-        def tag(self, astNode, representation, verbatim):
-            """
-            Returns {@code representation}, tagged with
-            a Correspondence to the source code associated
-            with {@code astNode}.
-
-            :param astNode: an arbitrary AST node
-            :param representation: the code generated from
-                                   that AST node
-            :param verbatim: whether {@code representation}
-                             is copied verbatim from the
-                             part of the source code
-                             associated with {@code astNode}
-            :return: {@code representation}, tagged with
-                     a Correspondence to the source code associated
-                     with {@code astNode}
-            """
-            node = NodeModelUtils.getNode(astNode)
-            # If the EObject originates from an AST transformation, then it does not correspond directly
-            # to any LF code, and it need not be tagged at all.
-            if node == None:
-                return representation
-            oneBasedLfLineAndColumn = NodeModelUtils.getLineAndColumn(node, node.getTotalOffset())
-            lfStart = Position.fromOneBased(
-                oneBasedLfLineAndColumn.getLine(), oneBasedLfLineAndColumn.getColumn()
-            )
-            lfPath = Path.of(self.bestEffortGetEResource(astNode).getURI().path())
-            if verbatim:
-                lfStart = lfStart.plus(node.getText().substring(0, node.getText().find(representation)))
-            t =  representation if verbatim else node.getText()
+    def fromString(self, s, relativeTo):
+        """
+        Returns the Correspondence represented by
+        {@code s}.
+        :param s: a String that represents a
+                 Correspondence, formatted like the
+                 output of Correspondence::toString
+        :param relativeTo: the offset relative to which
+                          the offsets given are given
+        :return: the Correspondence represented by
+                 {@code s}
+        """
+        matcher = self.PATTERN.match(s)
+        if matcher.matches():
+            lfRange = Range.fromString(matcher.group("lfRange"))
+            generatedRange = Range.fromString(matcher.group("generatedRange"), relativeTo)
             return self.__init__(
-                lfPath,
-                Range(lfStart, lfStart.plus(t)),
-                Range(Position.ORIGIN, Position.displacementOf(representation)),
-                verbatim) + representation
+                Path.of(matcher.group("path")),
+                lfRange,
+                generatedRange,
+                bool(matcher.group("verbatim"))
+            )
 
-        @classmethod
-        def bestEffortGetEResource(cls, astNode):
-            """
-            Return the {@code eResource} associated with the given AST node.
-            This is a dangerous operation which can cause an unrecoverable error.
+    def tag(self, astNode, representation, verbatim):
+        """
+        Returns {@code representation}, tagged with
+        a Correspondence to the source code associated
+        with {@code astNode}.
 
-            :param astNode:
-            :return:
-            """
-            """ generated source for method bestEffortGetEResource """
-            #                if (astNode instanceof ParameterReferenceImpl pri)
-            #                  return pri.getParameter().eResource();
-            ret = astNode.eResource()
-            if ret is not None:
-                return ret
-            raise RuntimeException("Every non-null AST node should have an EResource, but \""
-                                   + astNode + "\" does not.")
+        :param astNode: an arbitrary AST node
+        :param representation: the code generated from
+                               that AST node
+        :param verbatim: whether {@code representation}
+                         is copied verbatim from the
+                         part of the source code
+                         associated with {@code astNode}
+        :return: {@code representation}, tagged with
+                 a Correspondence to the source code associated
+                 with {@code astNode}
+        """
+        node = NodeModelUtils.getNode(astNode)
+        # If the EObject originates from an AST transformation, then it does not correspond directly
+        # to any LF code, and it need not be tagged at all.
+        if node == None:
+            return representation
+        oneBasedLfLineAndColumn = NodeModelUtils.getLineAndColumn(node, node.getTotalOffset())
+        lfStart = Position.fromOneBased(
+            oneBasedLfLineAndColumn.getLine(), oneBasedLfLineAndColumn.getColumn()
+        )
+        lfPath = Path.of(self.bestEffortGetEResource(astNode).getURI().path())
+        if verbatim:
+            lfStart = lfStart.plus(node.getText().substring(0, node.getText().find(representation)))
+        t =  representation if verbatim else node.getText()
+        return self.__init__(
+            lfPath,
+            Range(lfStart, lfStart.plus(t)),
+            Range(Position.ORIGIN, Position.displacementOf(representation)),
+            verbatim) + representation
 
-        @classmethod
-        def indexOf(cls, s, imperfectSubstring):
-            """
-            Make a best-effort attempt to find the index of
-            a near substring whose first line is expected to
-            be an exact substring of {@code s}. Return 0
-            upon failure.
+    @classmethod
+    def bestEffortGetEResource(cls, astNode):
+        """
+        Return the {@code eResource} associated with the given AST node.
+        This is a dangerous operation which can cause an unrecoverable error.
 
-            :param s: an arbitrary string
-            :param imperfectSubstring: an approximate substring of {@code s}
-            :return: the index of {@code imperfectSubstring}
-                     within {@code s}
-            """
-            firstLine = imperfectSubstring.lines().findFirst().orElse("")
-            return max(0, s.indexOf(firstLine))
+        :param astNode:
+        :return:
+        """
+        """ generated source for method bestEffortGetEResource """
+        #                if (astNode instanceof ParameterReferenceImpl pri)
+        #                  return pri.getParameter().eResource();
+        ret = astNode.eResource()
+        if ret is not None:
+            return ret
+        raise RuntimeException("Every non-null AST node should have an EResource, but \""
+                               + astNode + "\" does not.")
+
+    @classmethod
+    def indexOf(cls, s, imperfectSubstring):
+        """
+        Make a best-effort attempt to find the index of
+        a near substring whose first line is expected to
+        be an exact substring of {@code s}. Return 0
+        upon failure.
+
+        :param s: an arbitrary string
+        :param imperfectSubstring: an approximate substring of {@code s}
+        :return: the index of {@code imperfectSubstring}
+                 within {@code s}
+        """
+        firstLine = imperfectSubstring.lines().findFirst().orElse("")
+        return max(0, s.indexOf(firstLine))
+
+
+class CodeMap:
+    """ generated source for class CodeMap """
 
     @classmethod
     def fromGeneratedCode(cls, internalGeneratedCode):
@@ -306,4 +308,4 @@ class CodeMap(object):
             isVerbatimByLfSourceByRange.get(c.path).put(c.generatedRange, c.verbatim)
             lastEnd = matcher.end()
         cleanedLine.append(line.substring(lastEnd))
-        return cleanedLine.__str__()
+        return str(cleanedLine)()

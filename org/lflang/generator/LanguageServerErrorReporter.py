@@ -46,7 +46,7 @@ class LanguageServerErrorReporter(ErrorReporter):
     #      
     def __init__(self, parseRoot):
         """ generated source for method __init__ """
-        super(LanguageServerErrorReporter, self).__init__()
+        super().__init__()
         self.parseRoot = parseRoot
         self.diagnostics = dict()
 
@@ -137,7 +137,7 @@ class LanguageServerErrorReporter(ErrorReporter):
     def publishDiagnostics(self):
         """ generated source for method publishDiagnostics """
         if self.client == None:
-            System.err.println("WARNING: Cannot publish diagnostics because the language client has not yet been found.")
+            sys.stderr.write("WARNING: Cannot publish diagnostics because the language client has not yet been found.")
             return
         for file in diagnostics.keySet():
             publishDiagnosticsParams = PublishDiagnosticsParams()

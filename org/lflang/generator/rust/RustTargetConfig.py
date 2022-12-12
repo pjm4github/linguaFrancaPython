@@ -42,7 +42,7 @@ from org.lflang.TargetProperty.BuildType
 #  *
 #  * @author Clément Fournier - TU Dresden, INSA Rennes
 #  
-class RustTargetConfig(object):
+class RustTargetConfig:
     """ generated source for class RustTargetConfig """
     # List of Cargo features of the generated crate to enable.
     #       

@@ -28,6 +28,20 @@ from org.lflang.lf
 #  * @author Marten Lohstroh <marten@berkeley.edu>
 #  *
 #  
+
+class PackageVisitor(SimpleFileVisitor):
+    """ generated source for class PackageVisitor """
+
+    def visitFile(self, path, attr):
+        """ generated source for method visitFile """
+        path = path.normalize()
+        if attr.isRegularFile() and path.__str__().endsWith(".lf"):
+            r = self.rs.getResource(URI.createFileURI(path.toFile().getAbsolutePath()), True)
+            if r.getErrors().isEmpty():
+                reactors = Iterables.filter(IteratorExtensions.toIterable(r.getAllContents()),
+                                            Reactor.__class__).iterator()
+        return CONTINUE
+
 class MainConflictChecker(object):
     """ generated source for class MainConflictChecker """
     #      * List of conflict encountered while traversing the package.
@@ -48,16 +62,6 @@ class MainConflictChecker(object):
         try:
             Files.walkFileTree(fileConfig.srcPkgPath, PackageVisitor())
         except IOError as e:
-            System.err.println("Error while checking for name conflicts in package.")
+            sys.stderr.write("Error while checking for name conflicts in package.")
             e.printStackTrace()
 
-    class PackageVisitor(SimpleFileVisitor):
-        """ generated source for class PackageVisitor """
-        def visitFile(self, path, attr):
-            """ generated source for method visitFile """
-            path = path.normalize()
-            if attr.isRegularFile() and path.__str__().endsWith(".lf"):
-                r = self.rs.getResource(URI.createFileURI(path.toFile().getAbsolutePath()), True)
-                if r.getErrors().isEmpty():
-                    reactors = Iterables.filter(IteratorExtensions.toIterable(r.getAllContents()), Reactor.__class__).iterator()
-            return CONTINUE

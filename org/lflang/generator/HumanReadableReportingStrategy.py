@@ -10,7 +10,11 @@
 # import org.eclipse.lsp4j.DiagnosticSeverity
 # import org.eclipse.xtext.xbase.lib.Procedures.Procedure0
 # import org.eclipse.xtext.xbase.lib.Procedures.Procedure2
+from pathlib import Path
+
 from include.overloading import overloaded
+from lflang.generator.DiagnosticReporting import DiagnosticReporting, Strategy
+from lflang.generator.Position import Position
 from org.lflang import ErrorReporter
 
 # 
@@ -18,7 +22,9 @@ from org.lflang import ErrorReporter
 #  * output.
 #  *
 #  * @author Peter Donovan <peterdonovan@berkeley.edu>
-#  
+#
+
+
 class HumanReadableReportingStrategy(DiagnosticReporting, Strategy):
     """ generated source for class HumanReadableReportingStrategy """
     #  A pattern that matches lines that should be reported via this strategy. 
@@ -49,7 +55,7 @@ class HumanReadableReportingStrategy(DiagnosticReporting, Strategy):
     @overloaded
     def __init__(self, diagnosticMessagePattern, labelPattern):
         """ generated source for method __init__ """
-        super(HumanReadableReportingStrategy, self).__init__()
+        super().__init__()
         self.__init__(diagnosticMessagePattern, labelPattern, None)
 
     #      * Instantiate a reporting strategy for lines of
@@ -66,11 +72,11 @@ class HumanReadableReportingStrategy(DiagnosticReporting, Strategy):
     #      *                     and "column" groups.
     #      * @param relativeTo The path against which any paths should be resolved.
     #      
-    @__init__.register(object, Pattern, Pattern, Path)
+    @__init__.register(object, str, str, str)
     def __init___0(self, diagnosticMessagePattern, labelPattern, relativeTo):
         """ generated source for method __init___0 """
-        super(HumanReadableReportingStrategy, self).__init__()
-        for groupName in [None] * :
+        super().__init__()
+        for groupName in ["path", "line", "column", "message", "severity"]:
             assert diagnosticMessagePattern.pattern().contains(groupName)
         self.diagnosticMessagePattern = diagnosticMessagePattern
         self.labelPattern = labelPattern
@@ -82,10 +88,10 @@ class HumanReadableReportingStrategy(DiagnosticReporting, Strategy):
         it = validationOutput.lines().iterator()
         while it.hasNext() or self.bufferedLine != None:
             if self.bufferedLine != None:
-                reportErrorLine(self.bufferedLine, it, errorReporter, map)
+                self.reportErrorLine(self.bufferedLine, it, errorReporter, map)
                 self.bufferedLine = None
             else:
-                reportErrorLine(it.next(), it, errorReporter, map)
+                self.reportErrorLine(it.next(), it, errorReporter, map)
 
     #      * Report the validation message contained in the given line of text.
     #      * @param line The current line.
@@ -96,10 +102,12 @@ class HumanReadableReportingStrategy(DiagnosticReporting, Strategy):
     #      
     def reportErrorLine(self, line, it, errorReporter, maps):
         """ generated source for method reportErrorLine """
-        matcher = self.diagnosticMessagePattern.matcher(stripEscaped(line))
+        matcher = self.diagnosticMessagePattern.matcher(self.stripEscaped(line))
         if matcher.matches():
-            path = Paths.get(matcher.group("path"))
-            generatedFilePosition = Position.fromOneBased(Integer.parseInt(matcher.group("line")), Integer.parseInt(matcher.group("column") if matcher.group("column") != None else "0"))
+            path = Path.resolve(matcher.group("path"))
+            generatedFilePosition = Position.fromOneBased(
+                int(matcher.group("line")),
+                int(matcher.group("column") if matcher.group("column") is not None else "0"))
             message = DiagnosticReporting.messageOf(matcher.group("message"), path, generatedFilePosition)
             map = maps.get(self.relativeTo.resolve(path) if self.relativeTo != None else path)
             severity = DiagnosticReporting.severityOf(matcher.group("severity"))
@@ -108,10 +116,9 @@ class HumanReadableReportingStrategy(DiagnosticReporting, Strategy):
                 return
             for srcFile in map.lfSourcePaths():
                 lfFilePosition = map.adjusted(srcFile, generatedFilePosition)
-                if matcher.group("column") != None:
-                    #                      reportAppropriateRange(
-                    #                          (p0, p1) -> errorReporter.report(srcFile, severity, message, p0, p1), lfFilePosition, it
-                    #                      );
+                if matcher.group("column") is not None:
+                    (p0, p1) = errorReporter.report(srcFile, severity, message)
+                    self.reportAppropriateRange((p0 ,p1), lfFilePosition, it)
                 else:
                     errorReporter.report(srcFile, severity, message, lfFilePosition.getOneBasedLine())
 
@@ -128,13 +135,16 @@ class HumanReadableReportingStrategy(DiagnosticReporting, Strategy):
     def reportAppropriateRange(self, report, lfFilePosition, it):
         """ generated source for method reportAppropriateRange """
         #          Procedure0 failGracefully = () -> report.apply(lfFilePosition, lfFilePosition.plus(" "));
+        def failGracefully():
+            report.apply(lfFilePosition, lfFilePosition.plus(" "))
         if not it.hasNext():
             failGracefully.apply()
             return
         line = it.next()
         labelMatcher = self.labelPattern.matcher(line)
         if labelMatcher.find():
-            report.apply(Position.fromZeroBased(lfFilePosition.getZeroBasedLine(), lfFilePosition.getZeroBasedColumn() - len(length)), lfFilePosition.plus(labelMatcher.group(2)))
+            report.apply(Position.fromZeroBased(lfFilePosition.getZeroBasedLine(), lfFilePosition.getZeroBasedColumn()
+                                                - len(self.length)), lfFilePosition.plus(labelMatcher.group(2)))
             return
         if self.diagnosticMessagePattern.matcher(line).find():
             failGracefully.apply()

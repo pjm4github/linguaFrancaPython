@@ -13,7 +13,7 @@ from lflang.generator.CodeBuilder import CodeBuilder
 from lflang.generator.c import CUtil, CGenerator, CCoreFilesUtils, CMethodGenerator
 
 
-class CReactionGenerator(object):
+class CReactionGenerator:
     """ generated source for class CReactionGenerator """
     DISABLE_REACTION_INITIALIZATION_MARKER = "// **** Do not include initialization code in this reaction."
 
@@ -40,7 +40,7 @@ class CReactionGenerator(object):
         #  Do not generate the initialization code if the body is marked
         #  to not generate it.
         if body.startsWith(cls.DISABLE_REACTION_INITIALIZATION_MARKER):
-            return code_.__str__()
+            return str(code_)
         #  A reaction may send to or receive from multiple ports of
         #  a contained reactor. The variables for these ports need to
         #  all be declared as fields of the same struct. Hence, we first
@@ -129,7 +129,7 @@ class CReactionGenerator(object):
             code_.pr("\n".join([ "struct " + containedReactor.__name__ + " {", "    " + fieldsForStructsForContainedReactors.get(containedReactor) + "", "} " + containedReactor.__name__ + array + ";")])
         #  Next generate all the collected setup code.
         code_.pr(reactionInitialization.__str__())
-        return code_.__str__()
+        return str(code_)
 
     # Return the maximum bank width for the given instantiation within all
     # instantiations of its parent reactor.
@@ -327,7 +327,7 @@ class CReactionGenerator(object):
                 builder.pr(action.__name__ + "->value = *(" + types.getTargetType(type) + "*)" + tokenPointer + "->value;")
             builder.unindent()
             builder.pr("}")
-        return builder.__str__()
+        return str(builder)
 
     #  Generate into the specified string builder the code to
     #  initialize local variables for the specified input port
@@ -376,7 +376,7 @@ class CReactionGenerator(object):
         #  for a variable-width multiport, which is not currently supported.
         #  It will be -2 if it is not multiport.
         builder.pr("int " + inputWidth + " = self->_lf_" + inputWidth + "; SUPPRESS_UNUSED_WARNING(" + inputWidth + ");")
-        return builder.__str__()
+        return str(builder)
 
     # Generate into the specified string builder the code to
     # initialize local variables for outputs in a reaction function
@@ -600,7 +600,7 @@ class CReactionGenerator(object):
                 s.append(String.join("\n", "    for (int i = 0; i < _lf_startup_reactions_size; i++) {", "        if (_lf_startup_reactions[i] != NULL) {", "            _lf_trigger_reaction(_lf_startup_reactions[i], -1);", "        }", "    }"))
             s.append("\n")
         s.append("}\n")
-        return s.__str__()
+        return str(s)
 
     # Generate the _lf_trigger_shutdown_reactions function.
     #       
@@ -618,7 +618,7 @@ class CReactionGenerator(object):
         else:
             s.append("    return false;\n")
         s.append("}\n")
-        return s.__str__()
+        return str(s)
 
     # Generate the _lf_handle_mode_triggered_reactions function.
     #       
@@ -640,7 +640,7 @@ class CReactionGenerator(object):
             s.append("        NULL, 0,\n")
         s.append("        _lf_modal_reactor_states, _lf_modal_reactor_states_size);\n")
         s.append("}\n")
-        return s.__str__()
+        return str(s)
 
     #  Generate a reaction function definition for a reactor.
     #  This function will have a single argument that is a void* pointing to
@@ -669,7 +669,7 @@ class CReactionGenerator(object):
             code_.pr(generateFunction(generateDeadlineFunctionHeader(decl, reactionIndex), init, reaction.getDeadline().getCode()))
         CMethodGenerator.generateMacroUndefsForMethods(ASTUtils.toDefinition(decl), code_)
         code_.pr("#include " + StringUtil.addDoubleQuotes(CCoreFilesUtils.getCTargetSetUndefHeader()))
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def generateFunction(cls, header, init, code_):
@@ -682,7 +682,7 @@ class CReactionGenerator(object):
         function_.pr(ASTUtils.toText(code_))
         function_.unindent()
         function_.pr("}")
-        return function_.__str__()
+        return str(function_)
 
     # Returns the name of the deadline function for reaction.
     # @param decl The reactor with the deadline

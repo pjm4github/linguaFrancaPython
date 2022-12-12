@@ -62,7 +62,7 @@ class ReactorInstance(NamedInstance):
     @overloaded
     def __init__(self, reactor, reporter):
         """ generated source for method __init__ """
-        super(ReactorInstance, self).__init__()
+        super().__init__()
         self.__init__(ASTUtils.createInstantiation(reactor), None, reporter, -1, None)
 
     #      * Create a new instantiation hierarchy that starts with the given top-level reactor
@@ -74,7 +74,7 @@ class ReactorInstance(NamedInstance):
     @__init__.register(object, Reactor, ErrorReporter, int)
     def __init___0(self, reactor, reporter, desiredDepth):
         """ generated source for method __init___0 """
-        super(ReactorInstance, self).__init__()
+        super().__init__()
         self.__init__(ASTUtils.createInstantiation(reactor), None, reporter, desiredDepth, None)
 
     #      * Create a new instantiation hierarchy that starts with the given reactor.
@@ -85,7 +85,7 @@ class ReactorInstance(NamedInstance):
     @__init__.register(object, Reactor, ErrorReporter, Set)
     def __init___1(self, reactor, reporter, unorderedReactions):
         """ generated source for method __init___1 """
-        super(ReactorInstance, self).__init__()
+        super().__init__()
         self.__init__(ASTUtils.createInstantiation(reactor), None, reporter, -1, unorderedReactions)
 
     #      * Create a new instantiation with the specified parent.
@@ -98,7 +98,7 @@ class ReactorInstance(NamedInstance):
     @__init__.register(object, Reactor, ReactorInstance, ErrorReporter)
     def __init___2(self, reactor, parent, reporter):
         """ generated source for method __init___2 """
-        super(ReactorInstance, self).__init__()
+        super().__init__()
         self.__init__(ASTUtils.createInstantiation(reactor), parent, reporter, -1, None)
 
     # ////////////////////////////////////////////////////

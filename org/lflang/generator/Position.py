@@ -88,7 +88,7 @@ class Position():
     #       
     def __init__(self, line, column):
         """ generated source for method __init__ """
-        super(Position, self).__init__()
+        super().__init__()
         #  Assertions about whether line and column are
         #  non-negative are deliberately omitted. Positions
         #  can be relative.
@@ -220,7 +220,7 @@ class Position():
     def removeNamedCapturingGroups(cls, regex):
         """ generated source for method removeNamedCapturingGroups """
         #  FIXME: Does this belong here?
-        return regex.__str__().replaceAll("\\(\\?<\\w+>", "(")
+        return str(regex).replaceAll("\\(\\?<\\w+>", "(")
 
 Position.ORIGIN = Position.fromZeroBased(0, 0)
 

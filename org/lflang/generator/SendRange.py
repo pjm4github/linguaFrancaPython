@@ -56,7 +56,7 @@ class SendRange(RuntimeRange, Port):
     @overloaded
     def __init__(self, instance, start, width, interleaved, connection):
         """ generated source for method __init__ """
-        super(SendRange, self).__init__(interleaved)
+        super().__init__(interleaved)
         self.connection = connection
 
     #      * Create a new send range representing sending from the specified
@@ -70,7 +70,7 @@ class SendRange(RuntimeRange, Port):
     @__init__.register(object, RuntimeRange, RuntimeRange, Set, Connection)
     def __init___0(self, src, dst, interleaved, connection):
         """ generated source for method __init___0 """
-        super(SendRange, self).__init__(interleaved)
+        super().__init__(interleaved)
         destinations.append(dst)
         _interleaved.extend(src._interleaved)
         self.connection = connection
@@ -104,7 +104,7 @@ class SendRange(RuntimeRange, Port):
     #      
     def compareTo(self, o):
         """ generated source for method compareTo """
-        result = super(SendRange, self).compareTo(o)
+        result = super().compareTo(o)
         if result == 0:
             #  Longer destination lists come first.
             if len(self.destinations) > (o)len(.destinations):
@@ -205,14 +205,14 @@ class SendRange(RuntimeRange, Port):
     def __str__(self):
         """ generated source for method toString """
         result = ""
-        result.append(super(SendRange, self).__str__())
+        result.append(super().__str__())
         result.append("->[")
         dsts = LinkedList()
         for dst in destinations:
             dsts.append(dst.__str__())
         result.append(", ".join( dsts))
         result.append("]")
-        return result.__str__()
+        return str(result)
 
     # ////////////////////////////////////////////////////////
     # // Protected methods

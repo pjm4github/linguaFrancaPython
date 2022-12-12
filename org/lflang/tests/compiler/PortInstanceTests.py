@@ -4,7 +4,7 @@
 # import java.util.List
 from include.overloading import overloaded
 
-class PortInstanceTests(object):
+class PortInstanceTests:
     """ generated source for class PortInstanceTests """
     reporter = DefaultErrorReporter()
     factory = LfFactory.eINSTANCE
@@ -24,18 +24,18 @@ class PortInstanceTests(object):
         connect(p, r)
         sr = p.eventualDestinations()
         #  Destinations should be empty because there are no reactions.
-        Assertions.assertEquals("[]", sr.__str__())
+        Assertions.assertEquals("[]", str(sr))
         #  Clear caches to make a mutation.
         maini.clearCaches()
         newReaction(q)
         #  Re-retrieve destinations.
         sr = p.eventualDestinations()
-        Assertions.assertEquals("[.A.p(0,1)->[.B.q(0,1)]]", sr.__str__())
+        Assertions.assertEquals("[.A.p(0,1)->[.B.q(0,1)]]", str(sr))
         maini.clearCaches()
         newReaction(r)
         #  Re-retrieve destinations.
         sr = p.eventualDestinations()
-        Assertions.assertEquals("[.A.p(0,1)->[.B.q(0,1), .C.r(0,1)]]", sr.__str__())
+        Assertions.assertEquals("[.A.p(0,1)->[.B.q(0,1), .C.r(0,1)]]", str(sr))
         #  Now test multiports.
         p.setWidth(3)
         r.setWidth(2)
@@ -46,7 +46,7 @@ class PortInstanceTests(object):
         connect(p, 1, 2, r, 0, 2)
         #  Re-retrieve destinations.
         sr = p.eventualDestinations()
-        Assertions.assertEquals("[.A.p(0,1)->[.B.q(0,1)], .A.p(1,2)->[.C.r(0,2)]]", sr.__str__())
+        Assertions.assertEquals("[.A.p(0,1)->[.B.q(0,1)], .A.p(1,2)->[.C.r(0,2)]]", str(sr))
         #  More complicated multiport connection.
         clearConnections(maini)
         maini.clearCaches()
@@ -58,7 +58,7 @@ class PortInstanceTests(object):
         connect(p, 0, 1, q, 2, 1)
         connect(p, 1, 2, r, 0, 2)
         sr = p.eventualDestinations()
-        Assertions.assertEquals("[.A.p(0,1)->[.B.q(2,1)], .A.p(1,2)->[.C.r(0,2)]]", sr.__str__())
+        Assertions.assertEquals("[.A.p(0,1)->[.B.q(2,1)], .A.p(1,2)->[.C.r(0,2)]]", str(sr))
         #  Additional multicast connection.
         maini.clearCaches()
         e = newReactor("E", maini)
@@ -67,7 +67,7 @@ class PortInstanceTests(object):
         newReaction(s)
         connect(p, s)
         sr = p.eventualDestinations()
-        Assertions.assertEquals("[.A.p(0,1)->[.B.q(2,1), .E.s(0,1)], .A.p(1,2)->[.C.r(0,2), .E.s(1,2)]]", sr.__str__())
+        Assertions.assertEquals("[.A.p(0,1)->[.B.q(2,1), .E.s(0,1)], .A.p(1,2)->[.C.r(0,2), .E.s(1,2)]]", str(sr))
         #  Add hierarchical reactors that further split the ranges.
         maini.clearCaches()
         f = newReactor("F", e)
@@ -81,7 +81,7 @@ class PortInstanceTests(object):
         connect(s, 1, 2, u, 0, 2)
         sr = p.eventualDestinations()
         #  FIXME: Multicast destinations should be able to be reported in arbitrary order.
-        Assertions.assertEquals("[.A.p(0,1)->[.E.F.t(0,1), .E.s(0,1), .B.q(2,1)], .A.p(1,2)->[.E.G.u(0,2), .E.s(1,2), .C.r(0,2)]]", sr.__str__())
+        Assertions.assertEquals("[.A.p(0,1)->[.E.F.t(0,1), .E.s(0,1), .B.q(2,1)], .A.p(1,2)->[.E.G.u(0,2), .E.s(1,2), .C.r(0,2)]]", str(sr))
 
     def multiportDestination(self):
         """ generated source for method multiportDestination """
@@ -95,11 +95,11 @@ class PortInstanceTests(object):
         connect(p, 0, 1, q, 0, 4)
         sr = p.eventualDestinations()
         #  Destination has no reactions, so empty list is right.
-        Assertions.assertEquals("[]", sr.__str__())
+        Assertions.assertEquals("[]", str(sr))
         maini.clearCaches()
         newReaction(q)
         sr = p.eventualDestinations()
-        Assertions.assertEquals("[.A.p(0,1)->[.B.q(0,4)]]", sr.__str__())
+        Assertions.assertEquals("[.A.p(0,1)->[.B.q(0,4)]]", str(sr))
 
     #      * Clear connections. This recursively clears them for all contained reactors.
     #      

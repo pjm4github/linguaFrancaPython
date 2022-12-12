@@ -44,7 +44,7 @@ from org.lflang.tests.LFInjectorProvider
 #  
 @ExtendWith(InjectionExtension.__class__)
 @InjectWith(LFInjectorProvider.__class__)
-class LinguaFrancaParsingTest(object):
+class LinguaFrancaParsingTest:
     """ generated source for class LinguaFrancaParsingTest """
     parser = None
 

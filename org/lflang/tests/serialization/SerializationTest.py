@@ -17,7 +17,7 @@ class SerializationTest(TestBase):
     """ generated source for class SerializationTest """
     def __init__(self):
         """ generated source for method __init__ """
-        super(SerializationTest, self).__init__(Target.ALL)
+        super().__init__(Target.ALL)
 
     def runSerializationTestsWithThreadingOff(self):
         """ generated source for method runSerializationTestsWithThreadingOff """

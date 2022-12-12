@@ -9,7 +9,7 @@
 import re
 
 
-class FormattingUtils(object):
+class FormattingUtils:
     """ generated source for class FormattingUtils """
     # The minimum number of columns that should be allotted to a comment.
     # This is relevant in case of high indentation/small wrapLength.
@@ -33,7 +33,7 @@ class FormattingUtils(object):
     def render(self, object, lineLength):
         pass
     #       public static String render(EObject object, int lineLength) {
-    #           MalleableString ms = ToLf.instance.doSwitch(object);
+    #           MalleableString ms = ToLf.instance.doSwitch(object;
     #            singleLineCommentPrefix = getSingleLineCommentPrefix(object);
     #            ms.findBestRepresentation(
     #                 ms.render(INDENTATION, singleLineCommentPrefix),

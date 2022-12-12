@@ -9,7 +9,7 @@ from lflang.generator.c import CUtil, CModesGenerator
 from lflang.lf import ParameterReference
 
 
-class CStateGenerator(object):
+class CStateGenerator:
     """ generated source for class CStateGenerator """
     #      * Generate code for state variables of a reactor in the form "stateVar.type stateVar.name;"
     #      * @param reactor The reactor
@@ -22,7 +22,7 @@ class CStateGenerator(object):
         for stateVar in ASTUtils.allStateVars(reactor):
             code_.prSourceLineNumber(stateVar)
             code_.pr(types.getTargetType(stateVar) + " " + stateVar.__name__ + ";")
-        return code_.__str__()
+        return str(code_)
 
     #      * If the state is initialized with a parameter, then do not use
     #      * a temporary variable. Otherwise, do, because
@@ -71,7 +71,7 @@ class CStateGenerator(object):
             code_.pr(CModesGenerator.generateStateResetStructure(modeRef, selfRef, stateVar.__name__, source, type))
             code_.unindent()
             code_.pr("} // End scoping.")
-            return code_.__str__()
+            return str(code_)
 
     #      * Return a C expression that can be used to initialize the specified
     #      * state variable within the specified parent. If the state variable

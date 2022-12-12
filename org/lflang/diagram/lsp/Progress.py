@@ -43,7 +43,7 @@ class ProgressParams:
     pass
 
 
-class Progress(object):
+class Progress:
     """ generated source for class Progress """
 
 

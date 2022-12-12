@@ -54,7 +54,7 @@ class ParameterInstance(NamedInstance):
     #      
     def __init__(self, definition, parent):
         """ generated source for method __init__ """
-        super(ParameterInstance, self).__init__(parent)
+        super().__init__(parent)
         if parent == None:
             raise InvalidSourceException("Cannot create a ParameterInstance with no parent.")
         self.type = ASTUtils.getInferredType(definition)

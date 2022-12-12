@@ -60,7 +60,7 @@ class PortInstance(TriggerInstance, Port):
     @overloaded
     def __init__(self, definition, parent):
         """ generated source for method __init__ """
-        super(PortInstance, self).__init__()
+        super().__init__()
         self.__init__(definition, parent, None)
 
     #      * Create a port instance from the specified definition
@@ -72,7 +72,7 @@ class PortInstance(TriggerInstance, Port):
     @__init__.register(object, Port, ReactorInstance, ErrorReporter)
     def __init___0(self, definition, parent, errorReporter):
         """ generated source for method __init___0 """
-        super(PortInstance, self).__init__(parent)
+        super().__init__(parent)
         if parent == None:
             raise NullPointerException("Cannot create a PortInstance with no parent.")
         setInitialWidth(errorReporter)

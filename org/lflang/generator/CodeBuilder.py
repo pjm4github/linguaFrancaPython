@@ -27,10 +27,8 @@ from org.lflang.util import FileUtil
 #  * 
 #  * @author Edward A. Lee
 #  * @author Peter Donovan
-#  
 class CommonPlugin:
     pass
-
 
 
 class CodeBuilder:
@@ -41,7 +39,7 @@ class CodeBuilder:
     def __init__(self):
         """ generated source for method __init__ """
 
-        self.code_ = ""
+        self.code_ = [""]
         self.indentation = ""
 
     # Construct a new code emitter with the text and indentation
@@ -61,7 +59,7 @@ class CodeBuilder:
     #      
     def getCode(self):
         """ generated source for method getCode """
-        return self.code_.__str__()
+        return str(self.code_)
 
     # Increase the indentation of the output code produced.
     #      

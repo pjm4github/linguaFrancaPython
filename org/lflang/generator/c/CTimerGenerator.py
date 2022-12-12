@@ -13,7 +13,7 @@ from org.lflang.generator import TimerInstance
 #  * @author {Edward A. Lee <eal@berkeley.edu>}
 #  * @author {Soroush Bateni <soroush@utdallas.edu>
 #  
-class CTimerGenerator(object):
+class CTimerGenerator:
     """ generated source for class CTimerGenerator """
     #      * Generate code to initialize the given timer.
     #      *

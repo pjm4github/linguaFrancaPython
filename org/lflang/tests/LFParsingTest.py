@@ -22,7 +22,7 @@ from org.lflang.lf import Model
 
 @ExtendWith(InjectionExtension.__class__)
 @InjectWith(LFInjectorProvider.__class__)
-class LFParsingTest(object):
+class LFParsingTest:
     """ generated source for class LFParsingTest """
     parseHelper = None
 

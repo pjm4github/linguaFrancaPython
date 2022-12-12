@@ -15,7 +15,7 @@ class StreamSupport:
     pass
 
 
-class IteratorUtil(object):
+class IteratorUtil:
     """ generated source for class IteratorUtil """
     def __init__(self):
         """ generated source for method __init__ """

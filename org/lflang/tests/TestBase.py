@@ -82,7 +82,7 @@ class AtomicReference:
     pass
 
 
-class TestBase(object):
+class TestBase:
     """ generated source for class TestBase """
     validator = None
     generator = None
@@ -107,16 +107,6 @@ class TestBase(object):
     #  The targets for which to run the tests. 
     targets = None
 
-    # An enumeration of test levels.
-    # @author Marten Lohstroh <marten@berkeley.edu>
-    #       *
-    #       
-    class TestLevel(Enum):
-        """ generated source for enum TestLevel """
-        VALIDATION = 'VALIDATION'
-        CODE_GEN = 'CODE_GEN'
-        BUILD = 'BUILD'
-        EXECUTION = 'EXECUTION'
 
     # Static function for converting a path to its associated test level.
     # @author Anirudh Rengarajan <arengarajan@berkeley.edu>
@@ -136,37 +126,6 @@ class TestBase(object):
     #       *
     # @author Marten Lohstroh <marten@berkeley.edu>
     #       *
-    #       
-    class Message(object):
-        """ generated source for class Message """
-        #  Reasons for not running tests. 
-        NO_WINDOWS_SUPPORT = "Not (yet) supported on Windows."
-        NO_SINGLE_THREADED_SUPPORT = "Target does not support single-threaded execution."
-        NO_FEDERATION_SUPPORT = "Target does not support federated execution."
-        NO_DOCKER_SUPPORT = "Target does not support the 'docker' property."
-        NO_DOCKER_TEST_SUPPORT = "Docker tests are only supported on Linux."
-        NO_GENERICS_SUPPORT = "Target does not support generic types."
-
-        #  Descriptions of collections of tests. 
-        DESC_SERIALIZATION = "Run serialization tests."
-        DESC_GENERIC = "Run generic tests."
-        DESC_TYPE_PARMS = "Run tests for reactors with type parameters."
-        DESC_MULTIPORT = "Run multiport tests."
-        DESC_AS_FEDERATED = "Run non-federated tests in federated mode."
-        DESC_FEDERATED = "Run federated tests."
-        DESC_DOCKER = "Run docker tests."
-        DESC_DOCKER_FEDERATED = "Run docker federated tests."
-        DESC_CONCURRENT = "Run concurrent tests."
-        DESC_TARGET_SPECIFIC = "Run target-specific tests"
-        DESC_ARDUINO = "Running Arduino tests."
-        DESC_AS_CCPP = "Running C tests as CCpp."
-        DESC_SINGLE_THREADED = "Run non-concurrent and non-federated tests with threading = off."
-        DESC_SCHED_SWAPPING = "Running with non-default runtime scheduler "
-        DESC_ROS2 = "Running tests using ROS2."
-        DESC_MODAL = "Run modal reactor tests."
-
-        #  Missing dependency messages 
-        MISSING_DOCKER = "Executable 'docker' not found or 'docker' daemon thread not running"
 
     #  Constructor for test classes that test a single target. 
     @overloaded
@@ -629,3 +588,46 @@ class TestBase(object):
             sys.stdout.write("=")
             marks += 1
         sys.stdout.write(sys.lineSeparator())
+
+#
+# An enumeration of test levels.
+# @author Marten Lohstroh <marten@berkeley.edu>
+#       *
+#
+class TestLevel(Enum):
+    """ generated source for enum TestLevel """
+    VALIDATION = 'VALIDATION'
+    CODE_GEN = 'CODE_GEN'
+    BUILD = 'BUILD'
+    EXECUTION = 'EXECUTION'
+
+class Message:
+    """ generated source for class Message """
+    #  Reasons for not running tests.
+    NO_WINDOWS_SUPPORT = "Not (yet) supported on Windows."
+    NO_SINGLE_THREADED_SUPPORT = "Target does not support single-threaded execution."
+    NO_FEDERATION_SUPPORT = "Target does not support federated execution."
+    NO_DOCKER_SUPPORT = "Target does not support the 'docker' property."
+    NO_DOCKER_TEST_SUPPORT = "Docker tests are only supported on Linux."
+    NO_GENERICS_SUPPORT = "Target does not support generic types."
+
+    #  Descriptions of collections of tests.
+    DESC_SERIALIZATION = "Run serialization tests."
+    DESC_GENERIC = "Run generic tests."
+    DESC_TYPE_PARMS = "Run tests for reactors with type parameters."
+    DESC_MULTIPORT = "Run multiport tests."
+    DESC_AS_FEDERATED = "Run non-federated tests in federated mode."
+    DESC_FEDERATED = "Run federated tests."
+    DESC_DOCKER = "Run docker tests."
+    DESC_DOCKER_FEDERATED = "Run docker federated tests."
+    DESC_CONCURRENT = "Run concurrent tests."
+    DESC_TARGET_SPECIFIC = "Run target-specific tests"
+    DESC_ARDUINO = "Running Arduino tests."
+    DESC_AS_CCPP = "Running C tests as CCpp."
+    DESC_SINGLE_THREADED = "Run non-concurrent and non-federated tests with threading = off."
+    DESC_SCHED_SWAPPING = "Running with non-default runtime scheduler "
+    DESC_ROS2 = "Running tests using ROS2."
+    DESC_MODAL = "Run modal reactor tests."
+
+    #  Missing dependency messages
+    MISSING_DOCKER = "Executable 'docker' not found or 'docker' daemon thread not running"

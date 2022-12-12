@@ -33,7 +33,7 @@
 from lflang.graph.NodeAnnotation import NodeAnnotation
 
 
-class NodeAnnotations(object):
+class NodeAnnotations:
     """ generated source for class NodeAnnotations """
     annotations = dict()
 

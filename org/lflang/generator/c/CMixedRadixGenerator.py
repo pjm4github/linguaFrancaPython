@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """ generated source for module CMixedRadixGenerator """
 # package: org.lflang.generator.c
-class CMixedRadixGenerator(object):
+class CMixedRadixGenerator:
     """ generated source for class CMixedRadixGenerator """
     #  Standardized name for channel index variable for a source. 
     sc = "src_channel"

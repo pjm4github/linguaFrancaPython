@@ -54,7 +54,7 @@ from lflang.lf.Timer import Timer
 from lflang.lf.VarRef import VarRef
 
 
-class FederateInstance(object):
+class FederateInstance:
     def __init__(self, instantiation, id, bankIndex, generator, errorReporter):
         """
         Construct a new instance with the specified instantiation of

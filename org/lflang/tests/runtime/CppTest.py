@@ -44,27 +44,27 @@ class CppTest(RuntimeTest):
     """ generated source for class CppTest """
     def __init__(self):
         """ generated source for method __init__ """
-        super(CppTest, self).__init__(Target.CPP)
+        super().__init__(Target.CPP)
 
     def runGenericTests(self):
         """ generated source for method runGenericTests """
-        super(CppTest, self).runGenericTests()
+        super().runGenericTests()
 
     def runTargetSpecificTests(self):
         """ generated source for method runTargetSpecificTests """
-        super(CppTest, self).runTargetSpecificTests()
+        super().runTargetSpecificTests()
 
     def runMultiportTests(self):
         """ generated source for method runMultiportTests """
-        super(CppTest, self).runMultiportTests()
+        super().runMultiportTests()
 
     def runConcurrentTests(self):
         """ generated source for method runConcurrentTests """
-        super(CppTest, self).runConcurrentTests()
+        super().runConcurrentTests()
 
     def runFederatedTests(self):
         """ generated source for method runFederatedTests """
-        super(CppTest, self).runFederatedTests()
+        super().runFederatedTests()
 
     def runRos2Tests(self):
         """ generated source for method runRos2Tests """

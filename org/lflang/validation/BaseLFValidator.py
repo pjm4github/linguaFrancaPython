@@ -42,6 +42,31 @@ from org.lflang import TimeUnit
 
 from org.lflang.lf import Time
 
+
+class ValidatorStateAccess:
+    """ generated source for class ValidatorStateAccess """
+
+    def getCurrentObject(self):
+        """ generated source for method getCurrentObject """
+        return BaseLFValidator.self.getCurrentObject()
+
+    def getCurrentMethod(self):
+        """ generated source for method getCurrentMethod """
+        return BaseLFValidator.self.getCurrentMethod()
+
+    def getChain(self):
+        """ generated source for method getChain """
+        return BaseLFValidator.self.getChain()
+
+    def getCheckMode(self):
+        """ generated source for method getCheckMode """
+        return BaseLFValidator.self.getCheckMode()
+
+    def getContext(self):
+        """ generated source for method getContext """
+        return BaseLFValidator.self.getContext()
+
+
 class BaseLFValidator(AbstractLFValidator):
     """ generated source for class BaseLFValidator """
     # @Check(CheckType.FAST)
@@ -57,24 +82,3 @@ class BaseLFValidator(AbstractLFValidator):
     #
     # @author Christian Menard <christian.menard@tu-dresden.de>
     #
-    class ValidatorStateAccess(object):
-        """ generated source for class ValidatorStateAccess """
-        def getCurrentObject(self):
-            """ generated source for method getCurrentObject """
-            return BaseLFValidator.self.getCurrentObject()
-
-        def getCurrentMethod(self):
-            """ generated source for method getCurrentMethod """
-            return BaseLFValidator.self.getCurrentMethod()
-
-        def getChain(self):
-            """ generated source for method getChain """
-            return BaseLFValidator.self.getChain()
-
-        def getCheckMode(self):
-            """ generated source for method getCheckMode """
-            return BaseLFValidator.self.getCheckMode()
-
-        def getContext(self):
-            """ generated source for method getContext """
-            return BaseLFValidator.self.getContext()

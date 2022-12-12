@@ -34,7 +34,7 @@ from org.lflang.lf import Deadline
 #  * @author{Marten Lohstroh <marten@berkeley.edu>}
 #  * @author{Edward A. Lee <eal@berkeley.edu>}
 #  
-class DeadlineInstance(object):
+class DeadlineInstance:
     """ generated source for class DeadlineInstance """
     # 	 * Create a new deadline instance associated with the given reaction
     # 	 * instance.
@@ -57,4 +57,4 @@ class DeadlineInstance(object):
     # // Public methods.
     def __str__(self):
         """ generated source for method toString """
-        return "DeadlineInstance " + self.maxDelay.__str__()
+        return "DeadlineInstance " + str(self.maxDelay)()

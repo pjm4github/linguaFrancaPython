@@ -23,7 +23,7 @@ class PythonTypes(CTypes):
     #      
     def __init__(self, errorReporter):
         """ generated source for method __init__ """
-        super(PythonTypes, self).__init__(errorReporter)
+        super().__init__(errorReporter)
 
     def getTargetUndefinedType(self):
         """ generated source for method getTargetUndefinedType """
@@ -38,7 +38,7 @@ class PythonTypes(CTypes):
     #      
     def getPythonType(self, type):
         """ generated source for method getPythonType """
-        result = super(PythonTypes, self).getTargetType(type)
+        result = super().getTargetType(type)
         if result == "double":
             result = "float"
         elif result == "string":

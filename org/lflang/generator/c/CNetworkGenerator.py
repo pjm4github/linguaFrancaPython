@@ -40,7 +40,7 @@ from org.lflang.generator import ReactionInstance
 #  * @author {Soroush Bateni <soroush@utdallas.edu>}
 #  * @author {Hou Seng Wong <housengw@berkeley.edu>}
 #  
-class CNetworkGenerator(object):
+class CNetworkGenerator:
     """ generated source for class CNetworkGenerator """
     @classmethod
     def isSharedPtrType(cls, type, types):
@@ -117,7 +117,7 @@ class CNetworkGenerator(object):
                 result.pr("lf_set(" + receiveRef + ", msg_shared_ptr);")
             else:
                 result.pr("lf_set(" + receiveRef + ", std::move(" + value + "));")
-        return result.__str__()
+        return str(result)
 
     @classmethod
     def generateNetworkSenderBody(cls, sendingPort, receivingPort, receivingPortID, sendingFed, sendingBankIndex, sendingChannelIndex, receivingFed, type, isPhysical, delay, serializer, types, coordinationType):
@@ -178,7 +178,7 @@ class CNetworkGenerator(object):
             result.pr(ROSSerializer.generateNetworkSerializerCode(variableToSerialize, typeStr, cls.isSharedPtrType(type, types)))
             result.pr("size_t message_length = " + lengthExpression + ";")
             result.pr(sendingFunction + "(" + commonArgs + ", " + pointerExpression + ");")
-        return result.__str__()
+        return str(result)
 
     @classmethod
     def generateNetworkInputControlReactionBody(cls, receivingPortID, maxSTP, isFederatedAndDecentralized):
@@ -190,7 +190,7 @@ class CNetworkGenerator(object):
             result.pr("max_STP = " + GeneratorBase.timeInTargetLanguage(maxSTP) + ";")
         result.pr("// Wait until the port status is known")
         result.pr("wait_until_port_status_known(" + receivingPortID + ", max_STP);")
-        return result.__str__()
+        return str(result)
 
     @classmethod
     def generateNetworkOutputControlReactionBody(cls, port, portID, receivingFederateID, sendingBankIndex, sendingChannelIndex, delay):
@@ -200,4 +200,4 @@ class CNetworkGenerator(object):
         sendRef = CUtil.portRefInReaction(port, sendingBankIndex, sendingChannelIndex)
         additionalDelayString = CGeneratorExtension.getNetworkDelayLiteral(delay)
         result.pr("\n".join([ "// If the output port has not been lf_set for the current logical time,", "// send an ABSENT message to the receiving federate            ", "LF_PRINT_LOG(\"Contemplating whether to send port \"", "          \"absent for port %d to federate %d.\", ", "          " + portID + ", " + receivingFederateID + ");", "if (" + sendRef + " == NULL || !" + sendRef + "->is_present) {", "    // The output port is NULL or it is not present.", "    send_port_absent_to_federate(" + additionalDelayString + ", " + portID + ", " + receivingFederateID + ");", "}")])
-        return result.__str__()
+        return str(result)

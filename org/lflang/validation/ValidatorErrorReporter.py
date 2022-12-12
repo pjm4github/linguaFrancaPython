@@ -55,7 +55,7 @@ class ValidatorErrorReporter(ErrorReporter):
 
     def __init__(self, acceptor, stateAccess):
         """ generated source for method __init__ """
-        super(ValidatorErrorReporter, self).__init__()
+        super().__init__()
         self.acceptor = acceptor
         self.validatorState = stateAccess
 
@@ -92,7 +92,7 @@ class ValidatorErrorReporter(ErrorReporter):
     def reportError_1(self, file, line, message):
         """ generated source for method reportError_1 """
         self.errorsOccurred = True
-        fullMessage = message + " (Reported from " + file.__str__() + " on line " + line.__str__() + ")"
+        fullMessage = message + " (Reported from " + str(file) + " on line " + str(line) + ")"
         self.acceptor.acceptError(fullMessage, self.validatorState.getCurrentObject(), None, ValidationMessageAcceptor.INSIGNIFICANT_INDEX, None)
         return fullMessage
 
@@ -138,14 +138,14 @@ class ValidatorErrorReporter(ErrorReporter):
     @reportWarning.register(object, Path, int, str)
     def reportWarning_1(self, file, line, message):
         """ generated source for method reportWarning_1 """
-        fullMessage = message + " (Reported from " + file.__str__() + " on line " + line.__str__() + ")"
+        fullMessage = message + " (Reported from " + str(file) + " on line " + str(line) + ")"
         self.acceptor.acceptWarning(fullMessage, self.validatorState.getCurrentObject(), None, ValidationMessageAcceptor.INSIGNIFICANT_INDEX, None)
         return fullMessage
 
     @reportInfo.register(object, Path, int, str)
     def reportInfo_1(self, file, line, message):
         """ generated source for method reportInfo_1 """
-        fullMessage = message + " (Reported from " + file.__str__() + " on line " + line.__str__() + ")"
+        fullMessage = message + " (Reported from " + str(file) + " on line " + str(line) + ")"
         self.acceptor.acceptInfo(fullMessage, self.validatorState.getCurrentObject(), None, ValidationMessageAcceptor.INSIGNIFICANT_INDEX, None)
         return fullMessage
 

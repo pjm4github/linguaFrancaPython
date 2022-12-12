@@ -55,7 +55,7 @@ from org.lflang.util import StringUtil
 
 @ExtendWith(InjectionExtension.__class__)
 @InjectWith(LFInjectorProvider.__class__)
-class LinguaFrancaValidationTest(object):
+class LinguaFrancaValidationTest:
     """ generated source for class LinguaFrancaValidationTest """
     #  * Collection of unit tests to ensure validation is done correctly.
     #  * 

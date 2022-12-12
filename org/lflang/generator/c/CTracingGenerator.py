@@ -19,7 +19,7 @@ from org.lflang.generator import TimerInstance
 #  * @author {Soroush Bateni <soroush@utdallas.edu>}
 #  * @author {Hou Seng Wong <housengw@berkeley.edu>}
 #  
-class CTracingGenerator(object):
+class CTracingGenerator:
     """ generated source for class CTracingGenerator """
     #      * If tracing is turned on, then generate code that records
     #      * the full name of the specified reactor instance in the

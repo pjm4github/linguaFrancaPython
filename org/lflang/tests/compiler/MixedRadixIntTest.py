@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 
 from org.lflang.generator import MixedRadixInt
 
-class MixedRadixIntTest(object):
+class MixedRadixIntTest:
     """ generated source for class MixedRadixIntTest """
     #  Constants used many times below.
     radixes = Arrays.asList(2, 3, 4, 5)
@@ -19,7 +19,7 @@ class MixedRadixIntTest(object):
     def create(self):
         """ generated source for method create """
         num = MixedRadixInt(self.digits, self.radixes, None)
-        Assertions.assertEquals("1%2, 2%3, 3%4, 4%5", num.__str__())
+        Assertions.assertEquals("1%2, 2%3, 3%4, 4%5", str(num))
         Assertions.assertEquals(1 + 2 * 2 + 3 * 6 + 4 * 24, num.get())
         altDigits = list(1, 2, 1)
         altNum = MixedRadixInt(altDigits, self.radixes, None)
@@ -45,7 +45,7 @@ class MixedRadixIntTest(object):
         """ generated source for method createWithNullAndSet """
         num = MixedRadixInt(None, self.radixes, None)
         Assertions.assertEquals(0, num.get())
-        Assertions.assertEquals("0%2", num.__str__())
+        Assertions.assertEquals("0%2", str(num))
         num.set(1 + 2 * 2 + 3 * 6 + 4 * 24)
         Assertions.assertEquals(1 + 2 * 2 + 3 * 6 + 4 * 24, num.get())
         mag = num.magnitude()

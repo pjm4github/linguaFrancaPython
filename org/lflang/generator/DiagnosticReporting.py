@@ -17,8 +17,21 @@ from org.lflang.ErrorReporter import ErrorReporter
 class DiagnosticSeverity:
     pass
 
+class Strategy:
+    """ generated source for interface Strategy """
+    __metaclass__ = ABCMeta
+        #          * Parse the validation output and report any errors
+    #          * that it contains.
+    #          * @param validationOutput any validation output
+    #          * @param errorReporter any error reporter
+    #          * @param map the map from generated files to CodeMaps
+    #
+    @abstractmethod
+    def report(self, validationOutput, errorReporter, map):
+        """ generated source for method report """
 
-class DiagnosticReporting(object):
+
+class DiagnosticReporting:
     """ generated source for class DiagnosticReporting """
     def __init__(self):
         """ generated source for method __init__ """
@@ -26,18 +39,6 @@ class DiagnosticReporting(object):
 
     #      * A means of parsing the output of a validator.
     #      
-    class Strategy(object):
-        """ generated source for interface Strategy """
-        __metaclass__ = ABCMeta
-            #          * Parse the validation output and report any errors
-        #          * that it contains.
-        #          * @param validationOutput any validation output
-        #          * @param errorReporter any error reporter
-        #          * @param map the map from generated files to CodeMaps
-        #          
-        @abstractmethod
-        def report(self, validationOutput, errorReporter, map):
-            """ generated source for method report """
 
     #      * Format the given data as a human-readable message.
     #      * @param message An error message.

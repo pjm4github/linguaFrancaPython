@@ -30,6 +30,6 @@ class LFLanguageServer(KGraphLanguageServerExtension):
     def hover(self, params, cancelIndicator):
         """ generated source for method hover """
         try:
-            return super(LFLanguageServer, self).hover(params, cancelIndicator)
+            return super().hover(params, cancelIndicator)
         except IndexError as e:
             return IHoverService.EMPTY_HOVER

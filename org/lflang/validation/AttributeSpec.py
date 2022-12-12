@@ -40,7 +40,7 @@ from org.lflang.lf.LfPackage import Literals
 #  * @author{Clément Fournier, TU Dresden, INSA Rennes}
 #  * @author{Shaokai Lin <shaokai@berkeley.edu>}
 #  
-class AttributeSpec(object):
+class AttributeSpec:
     """ generated source for class AttributeSpec """
     paramSpecByName = None
     VALUE_ATTR = "value"

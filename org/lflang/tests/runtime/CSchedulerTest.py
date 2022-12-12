@@ -21,7 +21,7 @@ class CSchedulerTest(TestBase):
     """ generated source for class CSchedulerTest """
     def __init__(self):
         """ generated source for method __init__ """
-        super(CSchedulerTest, self).__init__(Target.C)
+        super().__init__(Target.C)
 
     #      * Swap the default runtime scheduler with other supported versions and
     #      * run all the supported tests. Only run tests for a specific non-default
@@ -50,4 +50,4 @@ class CSchedulerTest(TestBase):
 
     def runTest(self, scheduler, categories):
         """ generated source for method runTest """
-        self.runTestsForTargets(Message.DESC_SCHED_SWAPPING + scheduler.__str__() + ".", categories.contains, True)
+        self.runTestsForTargets(Message.DESC_SCHED_SWAPPING + str(scheduler) + ".", categories.contains, True)

@@ -77,51 +77,55 @@ class Language:
     pass
 
 
+class LFLsCreator(AbstractLsCreator):
+    """ generated source for class LFLsCreator """
+    def createLSModules(self, socket):
+        """ generated source for method createLSModules """
+        return Modules.override(super().createLSModules(socket)).with_(AbstractGenericModule())
+
+    constraints = None
+    rectPack = None
+    lfExtension = None
+
+    def getLanguageServerExtensions(self):
+        """ generated source for method getLanguageServerExtensions """
+        self.constraints = self.injector.getInstance(LayeredInteractiveLanguageServerExtension.__class__)
+        self.rectPack = self.injector.getInstance(RectpackingInteractiveLanguageServerExtension.__class__)
+        self.lfExtension = self.injector.getInstance(LFLanguageServerExtension.__class__)
+        return list(self.injector.getInstance(LFRegistrationLanguageServerExtension.__class__), self.constraints, self.rectPack, self.lfExtension)
+
+    def getRemoteInterface(self):
+        """ generated source for method getRemoteInterface """
+        return KGraphLanguageClient.__class__
+
+    def onConnect(self):
+        """ generated source for method onConnect """
+        super().onConnect()
+        self.constraints.setClient(self.languageClient)
+        self.rectPack.setClient(self.languageClient)
+        LanguageServerErrorReporter.setClient(self.languageClient)
+        self.lfExtension.setClient(self.languageClient)
+        #  The following is needed because VS Code treats System.err like System.out and System.out like a shout
+        #  into the void.
+        sys.stdout = sys.stderr
+
+
+class LFLanguageRegistration(ILanguageRegistration):
+    """ generated source for class LFLanguageRegistration """
+    def bindAndRegisterLanguages(self):
+        """ generated source for method bindAndRegisterLanguages """
+        LFIdeSetup.doSetup()
+
+
+class LFRegistrationLanguageServerExtension(AbstractRegistrationLanguageServerExtension):
+    """ generated source for class LFRegistrationLanguageServerExtension """
+    def getLanguageExtensions(self):
+        """ generated source for method getLanguageExtensions """
+        return list(Language("lf", "Lingua Franca", []))
+
+
 class LanguageDiagramServer(AbstractLanguageServer):
     """ generated source for class LanguageDiagramServer """
-    class LFLsCreator(AbstractLsCreator):
-        """ generated source for class LFLsCreator """
-        def createLSModules(self, socket):
-            """ generated source for method createLSModules """
-            return Modules.override(super(LFLsCreator, self).createLSModules(socket)).with_(AbstractGenericModule())
-
-        constraints = None
-        rectPack = None
-        lfExtension = None
-
-        def getLanguageServerExtensions(self):
-            """ generated source for method getLanguageServerExtensions """
-            self.constraints = self.injector.getInstance(LayeredInteractiveLanguageServerExtension.__class__)
-            self.rectPack = self.injector.getInstance(RectpackingInteractiveLanguageServerExtension.__class__)
-            self.lfExtension = self.injector.getInstance(LFLanguageServerExtension.__class__)
-            return list(self.injector.getInstance(LFRegistrationLanguageServerExtension.__class__), self.constraints, self.rectPack, self.lfExtension)
-
-        def getRemoteInterface(self):
-            """ generated source for method getRemoteInterface """
-            return KGraphLanguageClient.__class__
-
-        def onConnect(self):
-            """ generated source for method onConnect """
-            super(LFLsCreator, self).onConnect()
-            self.constraints.setClient(self.languageClient)
-            self.rectPack.setClient(self.languageClient)
-            LanguageServerErrorReporter.setClient(self.languageClient)
-            self.lfExtension.setClient(self.languageClient)
-            #  The following is needed because VS Code treats System.err like System.out and System.out like a shout
-            #  into the void.
-            sys.stdout = sys.stderr
-
-    class LFLanguageRegistration(ILanguageRegistration):
-        """ generated source for class LFLanguageRegistration """
-        def bindAndRegisterLanguages(self):
-            """ generated source for method bindAndRegisterLanguages """
-            LFIdeSetup.doSetup()
-
-    class LFRegistrationLanguageServerExtension(AbstractRegistrationLanguageServerExtension):
-        """ generated source for class LFRegistrationLanguageServerExtension """
-        def getLanguageExtensions(self):
-            """ generated source for method getLanguageExtensions """
-            return list(Language("lf", "Lingua Franca", []))
 
     @classmethod
     def main(cls, args):

@@ -23,7 +23,7 @@ from org.lflang.lf import Preamble
 #  * @author {Soroush Bateni <soroush@utdallas.edu>}
 #  * @author {Hou Seng Wong <housengw@berkeley.edu>}
 #  
-class PythonPreambleGenerator(object):
+class PythonPreambleGenerator:
     """ generated source for class PythonPreambleGenerator """
     #      * Generates preambles defined by user for a given reactor.
     #      * The preamble code is put inside the reactor class.
@@ -46,7 +46,7 @@ class PythonPreambleGenerator(object):
         code_ = CodeBuilder()
         code_.pr(CPreambleGenerator.generateDefineDirectives(targetConfig, numFederates, isFederated, srcGenPath, clockSyncIsOn, hasModalReactors))
         code_.pr("#define _LF_GARBAGE_COLLECTED")
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def generateCIncludeStatements(cls, targetConfig, isFederated, hasModalReactors):
@@ -56,4 +56,4 @@ class PythonPreambleGenerator(object):
         code_.pr("#include \"pythontarget.c\"")
         if hasModalReactors:
             code_.pr("#include \"modal_models/definitions.h\"")
-        return code_.__str__()
+        return str(code_)

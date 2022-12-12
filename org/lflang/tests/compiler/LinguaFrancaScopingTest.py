@@ -48,7 +48,7 @@ from org.lflang.generator import LFGenerator
 
 @ExtendWith(InjectionExtension.__class__)
 @InjectWith(LFInjectorProvider.__class__)
-class LinguaFrancaScopingTest(object):
+class LinguaFrancaScopingTest:
     """ generated source for class LinguaFrancaScopingTest """
     #  * Test harness for ensuring that cross-references are 
     #  * established correctly and reported when faulty.

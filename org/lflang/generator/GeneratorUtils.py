@@ -51,7 +51,7 @@ class ResourcesPlugin:
     pass
 
 
-class GeneratorUtils(object):
+class GeneratorUtils:
     """ generated source for class GeneratorUtils """
     def __init__(self):
         """ generated source for method __init__ """

@@ -28,7 +28,7 @@ class CppRos2Test(TestBase):
     """ generated source for class CppRos2Test """
     def __init__(self):
         """ generated source for method __init__ """
-        super(CppRos2Test, self).__init__(Target.CPP)
+        super().__init__(Target.CPP)
 
     #      * Run C++ tests with the ros2 target property set
     #      

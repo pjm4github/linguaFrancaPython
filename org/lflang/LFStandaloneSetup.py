@@ -8,15 +8,127 @@
 # import com.google.inject.Guice
 # import com.google.inject.Injector
 # import com.google.inject.Module
+from enum import Enum
+from include.overloading import overloaded
+from lflang.LFRuntimeModule import LFRuntimeModule
+from lflang.LFStandaloneSetupGenerated import LFStandaloneSetupGenerated
+
+
+class Stage(Enum):
+    #    * We're running in a tool (an IDE plugin for example). We need binding meta data but not a
+    #    * functioning Injector. Do not inject members of instances. Do not load eager singletons. Do as
+    #    * little as possible so our tools run nice and snappy. Injectors created in this stage cannot be
+    #    * used to satisfy injections.
+    TOOL = 0
+    #    * We want fast startup times at the expense of runtime performance and some up front error
+    #    * checking.
+    DEVELOPMENT = 1
+    #   /** We want to catch errors as early as possible and take performance hits up front. */
+    PRODUCTION = 2
+
+
+class Guice:
+    """
+    /**
+     * The entry point to the Guice framework. Creates {@link Injector}s from {@link Module}s.
+     *
+     * <p>Guice supports a model of development that draws clear boundaries between APIs,
+     * Implementations of these APIs, Modules which configure these implementations, and finally
+     * Applications which consist of a collection of Modules. It is the Application, which typically
+     * defines your {@code main()} method, that bootstraps the Guice Injector using the {@code Guice}
+     * class, as in this example:
+     *
+     * <pre>
+     *     public class FooApplication {
+     *       public static void main(String[] args) {
+     *         Injector injector = Guice.createInjector(
+     *             new ModuleA(),
+     *             new ModuleB(),
+     *             . . .
+     *             new FooApplicationFlagsModule(args)
+     *         );
+     *
+     *         // Now just bootstrap the application and you're done
+     *         FooStarter starter = injector.getInstance(FooStarter.class);
+     *         starter.runApplication();
+     *       }
+     *     }
+     * </pre>
+     */
+     """
+    @overloaded
+    def createInjector(self, modules):
+        """
+        /**
+        * Creates an injector for the given set of modules. This is equivalent to calling {@link
+        * #createInjector(Stage, Module...)} with Stage.DEVELOPMENT.
+        *
+        * @throws CreationException if one or more errors occur during injector construction
+        */
+        """
+        return self.createInjector(list(modules))
+
+    @createInjector.register(object, list)
+    def createInjector_0(self, modules):
+        """
+        /**
+        * Creates an injector for the given set of modules. This is equivalent to calling {@link
+        * #createInjector(Stage, Iterable)} with Stage.DEVELOPMENT.
+        *
+        * @throws CreationException if one or more errors occur during injector creation
+        */
+        """
+        return self.createInjector(Stage.DEVELOPMENT, modules)
+
+    @createInjector.register(object, int, list)
+    def createInjector_1(self, stage, modules):
+        """
+        /**
+        * Creates an injector for the given set of modules, in a given development stage.
+        *
+        * @throws CreationException if one or more errors occur during injector creation.
+        */
+        """
+
+        return self.createInjector(stage, list(modules))
+
+    @createInjector.register(object, int, dict)
+    def createInjector_2(self, stage, *modules):
+        """
+        /**
+        * Creates an injector for the given set of modules, in a given development stage.
+        *
+        * @throws CreationException if one or more errors occur during injector construction
+        */
+        """
+
+        return self.__dict__.update(modules)
 
 # 
 #  * Initialization support for running Xtext languages without
 #  * Equinox extension registry.
 #  *
 #  * See {@link LFRuntimeModule}, the base Guice module for LF services.
-#  
+#
+
+class Modules2:
+    def mixin(self, m):
+        if len(m) == 0:
+            return None
+        current = m[0]
+        for m_i in m[1:]:
+            current.__dict__.update(m_i)
+        return current
+
 class LFStandaloneSetup(LFStandaloneSetupGenerated):
-    """ generated source for class LFStandaloneSetup """
+    """
+    /**
+     * Initialization support for running Xtext languages without
+     * Equinox extension registry.
+     *
+     * See {@link LFRuntimeModule}, the base Guice module for LF services.
+     */
+    """
     module_ = None
 
     @overloaded
@@ -25,7 +137,7 @@ class LFStandaloneSetup(LFStandaloneSetupGenerated):
         super(LFStandaloneSetup, self).__init__()
         self.module_ = LFRuntimeModule()
 
-    @__init__.register(object, A)
+    @__init__.register(object, dict)
     def __init___0(self, *modules):
         """ generated source for method __init___0 """
         super(LFStandaloneSetup, self).__init__()

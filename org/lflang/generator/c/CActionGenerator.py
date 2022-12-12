@@ -22,9 +22,10 @@ from lflang import ASTUtils, Target
 from lflang.generator import GeneratorBase
 from lflang.generator.CodeBuilder import CodeBuilder
 from lflang.generator.c import CUtil, CGenerator
+from lflang.generator.c.CGenerator import variableStructType
 
 
-class CActionGenerator(object):
+class CActionGenerator:
     """ generated source for class CActionGenerator """
     #      * For each action of the specified reactor instance, generate initialization code
     #      * for the offset and period fields.
@@ -103,12 +104,14 @@ class CActionGenerator(object):
         code_.pr("typedef struct {")
         code_.indent()
         code_.pr("trigger_t* trigger;")
-        code_.pr(valueDeclaration(action, target, types))
-        code_.pr("\n".join([ "bool is_present;", "bool has_value;", "lf_token_t* token;")])
-        code_.pr(federatedExtension.__str__())
+        code_.pr(cls.valueDeclaration(action, target, types))
+        code_.pr("\n".join(["bool is_present;",
+                            "bool has_value;",
+                            "lf_token_t* token;"]))
+        code_.pr(str(federatedExtension))
         code_.unindent()
         code_.pr("} " + variableStructType(action, decl) + ";")
-        return code_.__str__()
+        return str(code_)
 
     #      * For the specified action, return a declaration for action struct to
     #      * contain the value of the action. An action of

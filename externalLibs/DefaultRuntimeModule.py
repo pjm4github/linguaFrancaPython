@@ -10,125 +10,65 @@
 #  
 # package: org.eclipse.xtext.service
 # import org.eclipse.emf.ecore.EPackage
-#
-# import org.eclipse.emf.ecore.EValidator
-#
-# import org.eclipse.emf.ecore.resource.ResourceSet
-#
-# import org.eclipse.emf.ecore.util.Diagnostician
-#
-# import org.eclipse.xtext.common.services.DefaultTerminalConverters
-#
-# import org.eclipse.xtext.formatting.IFormatter
-#
-# import org.eclipse.xtext.formatting.INodeModelFormatter
-#
-# import org.eclipse.xtext.formatting.impl.DefaultNodeModelFormatter
-#
-# import org.eclipse.xtext.formatting.impl.OneWhitespaceFormatter
-#
-# import org.eclipse.xtext.linking.ILinkingService
-#
-# import org.eclipse.xtext.linking.LinkingScopeProviderBinding
-#
-# import org.eclipse.xtext.linking.impl.DefaultLinkingService
-#
-# import org.eclipse.xtext.linking.lazy.LazyLinker
-#
-# import org.eclipse.xtext.linking.lazy.LazyLinkingResource
-#
-# import org.eclipse.xtext.linking.lazy.LazyURIEncoder
-#
-# import org.eclipse.xtext.naming.IQualifiedNameProvider
-#
-# import org.eclipse.xtext.naming.SimpleNameProvider
-#
-# import org.eclipse.xtext.parser.EclipseProjectPropertiesEncodingProvider
-#
-# import org.eclipse.xtext.parser.IEncodingProvider
-#
-# import org.eclipse.xtext.parser.antlr.AntlrTokenToStringConverter
-#
-# import org.eclipse.xtext.parser.antlr.ITokenDefProvider
-#
-# import org.eclipse.xtext.parser.antlr.NullTokenDefProvider
-#
-# import org.eclipse.xtext.parser.impl.PartialParsingHelper
-#
-# import org.eclipse.xtext.parsetree.reconstr.ITransientValueService
-#
-# import org.eclipse.xtext.parsetree.reconstr.impl.DefaultTransientValueService
-#
-# import org.eclipse.xtext.resource.DefaultFragmentProvider
-#
-# import org.eclipse.xtext.resource.DefaultLocationInFileProvider
-#
-# import org.eclipse.xtext.resource.IContainer
-#
-# import org.eclipse.xtext.resource.IFragmentProvider
-#
-# import org.eclipse.xtext.resource.ILocationInFileProvider
-#
-# import org.eclipse.xtext.resource.IResourceDescriptions
-#
-# import org.eclipse.xtext.resource.IResourceFactory
-#
-# import org.eclipse.xtext.resource.IResourceServiceProvider
-#
-# import org.eclipse.xtext.resource.SynchronizedXtextResourceSet
-#
-# import org.eclipse.xtext.resource.XtextResource
-#
-# import org.eclipse.xtext.resource.XtextResourceFactory
-#
-# import org.eclipse.xtext.resource.XtextResourceSet
-#
-# import org.eclipse.xtext.resource.impl.IsAffectedExtension
-#
-# import org.eclipse.xtext.resource.impl.IsAffectedExtension.AllIsAffectedExtensions
-#
-# import org.eclipse.xtext.resource.impl.ResourceDescriptionsProvider
-#
-# import org.eclipse.xtext.resource.impl.ResourceSetBasedResourceDescriptions
-#
-# import org.eclipse.xtext.resource.impl.SimpleResourceDescriptionsBasedContainerManager
-#
-# import org.eclipse.xtext.scoping.IGlobalScopeProvider
-#
-# import org.eclipse.xtext.scoping.IScopeProvider
-#
-# import org.eclipse.xtext.scoping.impl.ImportUriGlobalScopeProvider
-#
-# import org.eclipse.xtext.scoping.impl.SimpleLocalScopeProvider
-#
-# import org.eclipse.xtext.serializer.ISerializer
-#
-# import org.eclipse.xtext.serializer.sequencer.BacktrackingSemanticSequencer
-#
-# import org.eclipse.xtext.serializer.sequencer.GenericSequencer
-#
-# import org.eclipse.xtext.serializer.sequencer.ISemanticSequencer
-#
-# import org.eclipse.xtext.serializer.tokens.SerializerScopeProviderBinding
-#
-# import org.eclipse.xtext.validation.CancelableDiagnostician
-#
-# import org.eclipse.xtext.validation.IConcreteSyntaxValidator
-#
-# import org.eclipse.xtext.validation.INamesAreUniqueValidationHelper
-#
-# import org.eclipse.xtext.validation.impl.ConcreteSyntaxValidator
-#
+# import eclipse.emf.ecore.EValidator
+# import eclipse.emf.ecore.resource.ResourceSet
+# import eclipse.emf.ecore.util.Diagnostician
+# import eclipse.xtext.common.services.DefaultTerminalConverters
+# import eclipse.xtext.formatting.IFormatter
+# import eclipse.xtext.formatting.INodeModelFormatter
+# import eclipse.xtext.formatting.impl.DefaultNodeModelFormatter
+# import eclipse.xtext.formatting.impl.OneWhitespaceFormatter
+# import eclipse.xtext.linking.ILinkingService
+# import eclipse.xtext.linking.LinkingScopeProviderBinding
+# import eclipse.xtext.linking.impl.DefaultLinkingService
+# import eclipse.xtext.linking.lazy.LazyLinker
+# import eclipse.xtext.linking.lazy.LazyLinkingResource
+# import eclipse.xtext.linking.lazy.LazyURIEncoder
+# import eclipse.xtext.naming.IQualifiedNameProvider
+# import eclipse.xtext.naming.SimpleNameProvider
+# import eclipse.xtext.parser.EclipseProjectPropertiesEncodingProvider
+# import eclipse.xtext.parser.IEncodingProvider
+# import eclipse.xtext.parser.antlr.AntlrTokenToStringConverter
+# import eclipse.xtext.parser.antlr.ITokenDefProvider
+# import eclipse.xtext.parser.antlr.NullTokenDefProvider
+# import eclipse.xtext.parser.impl.PartialParsingHelper
+# import eclipse.xtext.parsetree.reconstr.ITransientValueService
+# import eclipse.xtext.parsetree.reconstr.impl.DefaultTransientValueService
+# import eclipse.xtext.resource.DefaultFragmentProvider
+# import eclipse.xtext.resource.DefaultLocationInFileProvider
+# import eclipse.xtext.resource.IContainer
+# import eclipse.xtext.resource.IFragmentProvider
+# import eclipse.xtext.resource.ILocationInFileProvider
+# import eclipse.xtext.resource.IResourceDescriptions
+# import eclipse.xtext.resource.IResourceFactory
+# import eclipse.xtext.resource.IResourceServiceProvider
+# import eclipse.xtext.resource.SynchronizedXtextResourceSet
+# import eclipse.xtext.resource.XtextResource
+# import eclipse.xtext.resource.XtextResourceFactory
+# import eclipse.xtext.resource.XtextResourceSet
+# import eclipse.xtext.resource.impl.IsAffectedExtension
+# import eclipse.xtext.resource.impl.IsAffectedExtension.AllIsAffectedExtensions
+# import eclipse.xtext.resource.impl.ResourceDescriptionsProvider
+# import eclipse.xtext.resource.impl.ResourceSetBasedResourceDescriptions
+# import eclipse.xtext.resource.impl.SimpleResourceDescriptionsBasedContainerManager
+# import eclipse.xtext.scoping.IGlobalScopeProvider
+# import eclipse.xtext.scoping.IScopeProvider
+# import eclipse.xtext.scoping.impl.ImportUriGlobalScopeProvider
+# import eclipse.xtext.scoping.impl.SimpleLocalScopeProvider
+# import eclipse.xtext.serializer.ISerializer
+# import eclipse.xtext.serializer.sequencer.BacktrackingSemanticSequencer
+# import eclipse.xtext.serializer.sequencer.GenericSequencer
+# import eclipse.xtext.serializer.sequencer.ISemanticSequencer
+# import eclipse.xtext.serializer.tokens.SerializerScopeProviderBinding
+# import eclipse.xtext.validation.CancelableDiagnostician
+# import eclipse.xtext.validation.IConcreteSyntaxValidator
+# import eclipse.xtext.validation.INamesAreUniqueValidationHelper
+# import eclipse.xtext.validation.impl.ConcreteSyntaxValidator
 # import com.google.common.collect.ImmutableList
-#
 # import com.google.inject.Binder
-#
 # import com.google.inject.Key
-#
 # import com.google.inject.Provider
-#
 # import com.google.inject.TypeLiteral
-#
 # import com.google.inject.name.Names
 
 # 
@@ -136,7 +76,187 @@
 #  * @author Sven Efftinge
 #  * @author Jan Koehnlein
 #
+from xmlrpc.client import Boolean
+
 from externalLibs.AbstractGenericModule import AbstractGenericModule
+from lflang.AbstractLFRuntimeModule import AntlrTokenToStringConverter
+from lflang.cli.LFStandaloneModule import EValidator
+from lflang.lf.Serializer import Serializer
+from lflang.lf.impl.LfPackageImpl import EPackage
+
+
+class DispatchingProvider:
+    pass
+
+
+class IEncodingProvider:
+    pass
+
+
+class IEncodingProviderDispatcher(DispatchingProvider, IEncodingProvider):
+    def __init__(self, ):
+        pass
+        """ generated source for class IEncodingProviderDispatcher """
+
+
+class IResourceServiceProvider:
+    pass
+
+
+class CancelableDiagnostician:
+    pass
+
+
+class DefaultFragmentProvider:
+    pass
+
+
+class DefaultTransientValueService:
+    pass
+
+
+class DefaultLocationInFileProvider:
+    pass
+
+
+class OneWhitespaceFormatter:
+    pass
+
+
+class DefaultNodeModelFormatter:
+    pass
+
+
+class SuppressWarnings:
+    pass
+
+
+class BacktrackingSemanticSequencer:
+    pass
+
+
+class ConcreteSyntaxValidator:
+    pass
+
+
+class XtextResourceFactory:
+    pass
+
+
+class DefaultLinkingService:
+    pass
+
+
+class SimpleLocalScopeProvider:
+    pass
+
+
+class IScopeProvider:
+    pass
+
+
+class SerializerScopeProviderBinding:
+    pass
+
+
+class LinkingScopeProviderBinding:
+    pass
+
+
+class ImportUriGlobalScopeProvider:
+    pass
+
+
+class IResourceDescriptions:
+    pass
+
+
+class ResourceSetBasedResourceDescriptions:
+    pass
+
+
+class SimpleNameProvider:
+    pass
+
+
+class LazyLinker:
+    pass
+
+
+class DefaultTerminalConverters:
+    pass
+
+
+class PartialParsingHelper:
+    pass
+
+
+class NullTokenDefProvider:
+    pass
+
+
+class DefaultEcoreElementFactory:
+    pass
+
+
+class LazyLinkingResource:
+    pass
+
+
+class XtextResourceSet:
+    pass
+
+
+class SynchronizedXtextResourceSet:
+    pass
+
+
+class SimpleResourceDescriptionsBasedContainerManager:
+    pass
+
+
+class EclipseProjectPropertiesEncodingProvider:
+    pass
+
+
+class Names:
+    pass
+
+
+class ResourceDescriptionsProvider:
+    pass
+
+
+class ISemanticSequencer:
+    pass
+
+
+class GenericSequencer:
+    pass
+
+
+class LazyURIEncoder:
+    pass
+
+
+class TypeLiteral:
+    pass
+
+
+class AllIsAffectedExtensions:
+    pass
+
+
+class IsAffectedExtension:
+    pass
+
+
+class Key:
+    pass
+
+
+class INamesAreUniqueValidationHelper:
+    pass
 
 
 class DefaultRuntimeModule(AbstractGenericModule):
@@ -153,7 +273,7 @@ class DefaultRuntimeModule(AbstractGenericModule):
         """ generated source for method bindEPackageRegistry """
         return EPackage.Registry.INSTANCE
 
-    def bindIResourceServiceProvider$Registry(self):
+    def bindIResourceServiceProvider_Registry(self):
         """ generated source for method bindIResourceServiceProvider$Registry """
         return IResourceServiceProvider.Registry.INSTANCE
 
@@ -184,7 +304,7 @@ class DefaultRuntimeModule(AbstractGenericModule):
     @SuppressWarnings("deprecation")
     def bindISerializer(self):
         """ generated source for method bindISerializer """
-        return org.eclipse.xtext.parsetree.reconstr.Serializer.__class__
+        return Serializer.__class__
 
     # 
     # 	 * @since 2.0
@@ -209,9 +329,7 @@ class DefaultRuntimeModule(AbstractGenericModule):
         """ generated source for method bindIScopeProvider """
         return SimpleLocalScopeProvider.__class__
 
-    # 
-    # 	 * @since 2.4
-    # 	 
+    # @since 2.4
     def configureSerializerIScopeProvider(self, binder):
         """ generated source for method configureSerializerIScopeProvider """
         binder.bind(IScopeProvider.__class__).annotatedWith(SerializerScopeProviderBinding.__class__).to(IScopeProvider.__class__)
@@ -254,7 +372,7 @@ class DefaultRuntimeModule(AbstractGenericModule):
 
     def bindIAstFactory(self):
         """ generated source for method bindIAstFactory """
-        return org.eclipse.xtext.parser.DefaultEcoreElementFactory.__class__
+        return DefaultEcoreElementFactory.__class__
 
     def bindXtextResource(self):
         """ generated source for method bindXtextResource """
@@ -268,7 +386,7 @@ class DefaultRuntimeModule(AbstractGenericModule):
         """ generated source for method bindXtextResourceSet """
         return SynchronizedXtextResourceSet.__class__
 
-    def bindIContainer$Manager(self):
+    def bindIContainer_Manager(self):
         """ generated source for method bindIContainer$Manager """
         return SimpleResourceDescriptionsBasedContainerManager.__class__
 
@@ -284,8 +402,7 @@ class DefaultRuntimeModule(AbstractGenericModule):
         """ generated source for method provideIEncodingProvider """
         return IEncodingProviderDispatcher.__class__
 
-    class IEncodingProviderDispatcher(DispatchingProvider, IEncodingProvider):
-        """ generated source for class IEncodingProviderDispatcher """
+
 
     def configureIResourceDescriptionsBuilderScope(self, binder):
         """ generated source for method configureIResourceDescriptionsBuilderScope """

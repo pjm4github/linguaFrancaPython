@@ -11,7 +11,7 @@ from org.lflang.lf import ReactorDecl
 
 from org.lflang.lf import StateVar
 
-class PythonStateGenerator(object):
+class PythonStateGenerator:
     """ generated source for class PythonStateGenerator """
     #      * Generate state variable instantiations for reactor "decl"
     #      * @param decl The reactor declaration to generate state variables.

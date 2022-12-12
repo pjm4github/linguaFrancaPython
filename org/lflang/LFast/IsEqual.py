@@ -70,6 +70,7 @@ from org.lflang.lf import Visibility
 from org.lflang.lf import WidthSpec
 from org.lflang.lf import WidthTerm
 
+
 class IsEqual(LfSwitch):
     """ generated source for class IsEqual """
 

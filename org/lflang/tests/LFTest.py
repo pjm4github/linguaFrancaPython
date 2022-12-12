@@ -138,9 +138,9 @@ class LFTest:
             print("Reason: " + self.result.message + " Exit code: " + self.exitValue)
             if self.exitValue == "139":
                 print("This exit code typically indicates a segfault. In this case, the execution output is likely missing or incomplete.")
-            self.printIfNotEmpty("Reported issues", self.issues.__str__())
-            self.printIfNotEmpty("Compilation output", self.compilationLog.__str__())
-            self.printIfNotEmpty("Execution output", self.execLog.__str__())
+            self.printIfNotEmpty("Reported issues", str(self.issues))
+            self.printIfNotEmpty("Compilation output", str(self.compilationLog))
+            self.printIfNotEmpty("Execution output", str(self.execLog))
             print("+---------------------------------------------------------------------------+")
 
     @classmethod
@@ -179,7 +179,7 @@ class Result(Enum):
         self.message = message
 
 
-class ExecutionLogger(object):
+class ExecutionLogger:
     """ generated source for class ExecutionLogger """
     def __init__(self):
         self.buffer = ""

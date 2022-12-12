@@ -17,7 +17,7 @@ from lflang.generator.c import CUtil
 from lflang.lf import ParameterReference
 
 
-class CParameterGenerator(object):
+class CParameterGenerator:
     """ generated source for class CParameterGenerator """
     #      * Return a C expression that can be used to initialize the specified
     #      * parameter instance. If the parameter initializer refers to other
@@ -63,4 +63,4 @@ class CParameterGenerator(object):
         for parameter in ASTUtils.allParameters(reactor):
             code_.prSourceLineNumber(parameter)
             code_.pr(types.getTargetType(parameter) + " " + parameter.__name__ + ";")
-        return code_.__str__()
+        return str(code_)

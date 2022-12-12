@@ -19,7 +19,7 @@ from org.lflang.util.LFCommand import LFCommand
 #  * @author Peter Donovan <peterdonovan@berkeley.edu>
 #  
 
-class GetUserMessage(object):
+class GetUserMessage:
     """ generated source for interface GetUserMessage """
     __metaclass__ = ABCMeta
 
@@ -52,7 +52,7 @@ class Status(Enum):
         self.gum = gum
 
 
-class GeneratorResult(object):
+class GeneratorResult:
     """ generated source for class GeneratorResult """
 
 

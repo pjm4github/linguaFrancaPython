@@ -79,7 +79,7 @@ class LFScopeProviderImpl(AbstractLFScopeProvider):
             return getScopeForReactorDecl(context, reference)
         elif isinstance(context, (ImportedReactor)):
             return getScopeForImportedReactor(context, reference)
-        return super(LFScopeProviderImpl, self).getScope(context, reference)
+        return super().getScope(context, reference)
 
     #      * Filter out candidates that do not originate from the file listed in
     #      * this particular import statement.
@@ -153,7 +153,7 @@ class LFScopeProviderImpl(AbstractLFScopeProvider):
                 if instanceName != None:
                     for instance in instances:
                         defn = toDefinition(instance.getReactorClass())
-                        if defn != None and instance.__name__ == instanceName.__str__():
+                        if defn != None and instance.__name__ == str(instanceName):
                             if type == TRIGGER:
                                 pass
                             elif type == SOURCE:
@@ -178,7 +178,7 @@ class LFScopeProviderImpl(AbstractLFScopeProvider):
                     candidates.extend(allTimers(reactor))
                     return Scopes.scopeFor(candidates)
                 elif type == SOURCE:
-                    return super(LFScopeProviderImpl, self).getScope(variable, reference)
+                    return super().getScope(variable, reference)
                 elif type == EFFECT:
                     candidates = []
                     if mode != None:
@@ -196,7 +196,7 @@ class LFScopeProviderImpl(AbstractLFScopeProvider):
                 else:
                     return Scopes.scopeFor(emptyList())
         else:
-            return super(LFScopeProviderImpl, self).getScope(variable, reference)
+            return super().getScope(variable, reference)
 
     def getRefType(self, variable):
         """ generated source for method getRefType """

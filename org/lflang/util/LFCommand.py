@@ -45,7 +45,7 @@
 #  * <p>
 #  * This is a wrapper around ProcessBuilder which allows for a more convenient usage in our code base.
 #  
-class LFCommand(object):
+class LFCommand:
     """ generated source for class LFCommand """
     #      * The period with which the cancel indicator is
     #      * checked and the output and error streams are

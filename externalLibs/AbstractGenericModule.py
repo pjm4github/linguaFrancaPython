@@ -9,32 +9,56 @@
 #  * SPDX-License-Identifier: EPL-2.0
 #  
 # package: org.eclipse.xtext.service
-import java.io.IOException
-
-import java.io.InputStream
-
-import java.lang.reflect.Method
-
-import java.util.Properties
-
-import org.apache.log4j.Logger
-
-import com.google.inject.Binder
-
-import com.google.inject.Module
-
-import com.google.inject.name.Names
+# import java.io.IOException
+#
+# import java.io.InputStream
+#
+# import java.lang.reflect.Method
+#
+# import java.util.Properties
+#
+# import org.apache.log4j.Logger
+#
+# import com.google.inject.Binder
+#
+# import com.google.inject.Module
+#
+# import com.google.inject.name.Names
 
 # 
 #  * @author Heiko Behrens - Initial contribution and API
 #  * @author Sven Efftinge
 #  * @author Sebastian Zarnekow
-#  
+#
+from logging import Logger
+
+from externalLibs.DefaultRuntimeModule import Names
+from include.SpecialExceptions import IllegalStateException, RuntimeException
+from lflang.cli.LFStandaloneModule import Module
+from lflang.util.Properties import Properties
+
+
+class CompoundModule:
+    pass
+
+
+class FreeModule:
+    pass
+
+
+class BindModule:
+    pass
+
+
+class ProviderModule:
+    pass
+
+
 class AbstractGenericModule(Module):
     """ generated source for class AbstractGenericModule """
     def configure(self, binder):
         """ generated source for method configure """
-        compound = getBindings()
+        compound = self.getBindings()
         compound.configure(binder)
 
     def getBindings(self):
@@ -48,7 +72,7 @@ class AbstractGenericModule(Module):
                 elif method_.__name__.startsWith("provide"):
                     result.add(ProviderModule(method_, self))
                 elif method_.__name__.startsWith("configure"):
-                    if not method_.__name__ == "configure" and len(length) and method_.getParameterTypes()[0] == Binder.__class__:
+                    if not method_.__name__ == "configure" and len(self.length) and method_.getParameterTypes()[0] == Binder.__class__:
                         result.add(FreeModule(method_, self))
             except Exception as e:
                 self.LOGGER.warn("Trying to use method " + method_.toGenericString() + " for configuration failed", e)
@@ -57,7 +81,7 @@ class AbstractGenericModule(Module):
     def bindProperties(self, binder, propertyFilePath):
         """ generated source for method bindProperties """
         try:
-            in_ = getClass().getClassLoader().getResourceAsStream(propertyFilePath)
+            in_ = self.getClass().getClassLoader().getResourceAsStream(propertyFilePath)
             if in_ != None:
                 properties = Properties()
                 properties.load(in_)
@@ -70,7 +94,7 @@ class AbstractGenericModule(Module):
     def tryBindProperties(self, binder, propertyFilePath):
         """ generated source for method tryBindProperties """
         try:
-            in_ = getClass().getClassLoader().getResourceAsStream(propertyFilePath)
+            in_ = self.getClass().getClassLoader().getResourceAsStream(propertyFilePath)
             if in_ != None:
                 properties = Properties()
                 properties.load(in_)

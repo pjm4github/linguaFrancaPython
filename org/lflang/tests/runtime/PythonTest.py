@@ -46,7 +46,7 @@ class PythonTest(RuntimeTest):
     """ generated source for class PythonTest """
     def __init__(self):
         """ generated source for method __init__ """
-        super(PythonTest, self).__init__(Target.Python)
+        super().__init__(Target.Python)
 
     def supportsFederatedExecution(self):
         """ generated source for method supportsFederatedExecution """

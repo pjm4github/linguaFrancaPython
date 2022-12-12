@@ -13,7 +13,7 @@ from lflang import ASTUtils
 from lflang.generator.c import CUtil
 
 
-class CModesGenerator(object):
+class CModesGenerator:
     """ generated source for class CModesGenerator """
     #      * Generate fields in the self struct for mode instances
     #      *

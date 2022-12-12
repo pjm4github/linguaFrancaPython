@@ -15,7 +15,7 @@ from lflang.generator.CodeBuilder import CodeBuilder
 from lflang.generator.c import CUtil
 
 
-class CPortGenerator(object):
+class CPortGenerator:
     """ generated source for class CPortGenerator """
     #      * Generate fields in the self struct for input and output ports
     #      *
@@ -52,10 +52,10 @@ class CPortGenerator(object):
         #  these fields for any port.
         code_.pr("\n".join([ "bool is_present;", "lf_sparse_io_record_t* sparse_record;", "int destination_channel;")])
         code_.pr(valueDeclaration(port, target, errorReporter, types))
-        code_.pr("\n".join([ "int num_destinations;", "lf_token_t* token;", "int length;", "void (*destructor) (void* value);", "void* (*copy_constructor) (void* value);", federatedExtension.__str__())])
+        code_.pr("\n".join([ "int num_destinations;", "lf_token_t* token;", "int length;", "void (*destructor) (void* value);", "void* (*copy_constructor) (void* value);", str(federatedExtension))])
         code_.unindent()
         code_.pr("} " + variableStructType(port, decl) + ";")
-        return code_.__str__()
+        return str(code_)
 
     #      * Allocate memory for the input port.
     #      * @param input The input port

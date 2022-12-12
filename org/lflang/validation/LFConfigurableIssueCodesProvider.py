@@ -16,5 +16,5 @@ class LFConfigurableIssueCodesProvider(ConfigurableIssueCodesProvider):
 
     def initialize(self, acceptor):
         """ generated source for method initialize """
-        super(LFConfigurableIssueCodesProvider, self).initialize(acceptor)
+        super().initialize(acceptor)
         acceptor.accept(create(self.DEPRECATED_MODEL_PART, SeverityConverter.SEVERITY_WARNING))

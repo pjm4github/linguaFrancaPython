@@ -274,7 +274,9 @@ from lflang.TimeUnit import TimeUnit
 from lflang.federated.FedFileConfig import FedFileConfig
 from lflang.federated.launcher.FedCLauncher import FedCLauncher
 from lflang.federated.serialization.FedROS2CPPSerialization import FedROS2CPPSerialization
-from lflang.generator import GeneratorBase, GeneratorUtils, IntegratedBuilder, GeneratorResult
+from lflang.generator.GeneratorUtils import GeneratorUtils
+from lflang.generator.IntegratedBuilder import IntegratedBuilder
+from lflang.generator.GeneratorResult import GeneratorResult
 import re
 from lflang.generator.GeneratorBase import GeneratorBase
 
@@ -290,11 +292,11 @@ from lflang.generator.c import CUtil, CModesGenerator, CTimerGenerator, CReactio
     CMainGenerator, InteractingContainedReactors
 from lflang.generator.c.CCmakeGenerator import CCmakeGenerator
 from lflang.generator.c.CTypes import CTypes
-from lflang.lf import ActionOrigin
+from lflang.lf.ActionOrigin import ActionOrigin
 from lflang.lf.Action import Action
 from lflang.lf.Input import Input
 from lflang.lf.Reactor import Reactor
-from lflang.util import FileUtil
+from lflang.util.FileUtil import FileUtil
 
 
 class StringExtensions:
@@ -313,12 +315,16 @@ class Executors:
     pass
 
 
+class Exceptions:
+    pass
+
+
 class CGenerator(GeneratorBase):
     """ generated source for class CGenerator """
     @overloaded
     def __init__(self, fileConfig, errorReporter, CCppMode, types):
         """ generated source for method __init__ """
-        super().__init__(errorReporter)
+        super().__init__(fileConfig, errorReporter)
         self.CCppMode = CCppMode
         self.types = types
         self.fileConfig = fileConfig
@@ -367,18 +373,16 @@ class CGenerator(GeneratorBase):
         self.modalReactorCount = 0
         self.modalStateResetCount = 0
 
-
-
     @__init__.register(object, FileConfig, ErrorReporter, bool)
     def __init___0(self, fileConfig, errorReporter, CCppMode):
         """ generated source for method __init___0 """
-        super().__init__()
+        super().__init__(fileConfig, errorReporter)
         self.__init__(fileConfig, errorReporter, CCppMode, CTypes(errorReporter))
 
     @__init__.register(object, FileConfig, ErrorReporter)
     def __init___1(self, fileConfig, errorReporter):
         """ generated source for method __init___1 """
-        super().__init__()
+        super().__init__(fileConfig, errorReporter)
         self.__init__(fileConfig, errorReporter, False)
 
     # //////////////////////////////////////////
@@ -387,7 +391,7 @@ class CGenerator(GeneratorBase):
     #       
     def setCSpecificDefaults(self):
         """ generated source for method setCSpecificDefaults """
-        if not self.self.targetConfig.useCmake and StringExtensions.isNullOrEmpty(self.targetConfig.compiler):
+        if not self.self.targetConfig.useCmake and self.targetConfig.compiler=="":
             if self.CCppMode:
                 self.targetConfig.compiler = "g++"
                 self.targetConfig.compilerFlags.extend(["-O2", "-Wno-write-strings"])
@@ -412,10 +416,10 @@ class CGenerator(GeneratorBase):
         """ generated source for method accommodatePhysicalActionsIfPresent """
         #  If there are any physical actions, ensure the threaded engine is used and that
         #  keepalive is set to true, unless the user has explicitly set it to false.
-        for resource in GeneratorUtils.getResources(reactors):
-            actions = Iterables.filter(IteratorExtensions.toIterable(resource.getAllContents()), Action.__class__)
+        for resource in GeneratorUtils.getResources(self.reactors):
+            actions = [a for a in resource.getAllContents() if isinstance(a, Action.__class__)]
             for action in actions:
-                if Objects.equal(action.getOrigin(), ActionOrigin.PHYSICAL):
+                if action.getOrigin() == ActionOrigin.PHYSICAL:
                     #  If the unthreaded runtime is not requested by the user, use the threaded runtime instead
                     #  because it is the only one currently capable of handling asynchronous events.
                     if not self.targetConfig.threading and not self.targetConfig.setByUser.contains(TargetProperty.THREADING):
@@ -713,7 +717,7 @@ class CGenerator(GeneratorBase):
     def checkModalReactorSupport(self, __):
         """ generated source for method checkModalReactorSupport """
         #  Modal reactors are currently only supported for non federated applications
-        super(CGenerator, self).checkModalReactorSupport(not self.isFederated)
+        super().checkModalReactorSupport(not self.isFederated)
 
     def getConflictingConnectionsInModalReactorsBody(self, source, dest):
         """ generated source for method getConflictingConnectionsInModalReactorsBody """
@@ -733,8 +737,8 @@ class CGenerator(GeneratorBase):
             if self.hasDeadlines(reactors):
                 if not self.targetConfig.setByUser.contains(TargetProperty.SCHEDULER):
                     self.targetConfig.schedulerType = TargetProperty.SchedulerOption.GEDF_NP
-        self.targetConfig.compileAdditionalSources.append("core" + os.sep + "threaded" + os.sep + "scheduler_" + self.targetConfig.schedulerType.__str__() + ".c")
-        print("******** Using the " + self.targetConfig.schedulerType.__str__() + " runtime scheduler.")
+        self.targetConfig.compileAdditionalSources.append("core" + os.sep + "threaded" + os.sep + "scheduler_" + str(self.targetConfig.schedulerType) + ".c")
+        print("******** Using the " + str(self.targetConfig.schedulerType) + " runtime scheduler.")
         self.targetConfig.compileAdditionalSources.append("core" + os.sep + "utils" + os.sep + "semaphore.c")
 
     def hasDeadlines(self, reactors):
@@ -819,7 +823,7 @@ class CGenerator(GeneratorBase):
         """ generated source for method pickCompilePlatform """
         osName = System.getProperty("os.name").lower()
         if self.targetConfig.platform != Platform.AUTO:
-            osName = self.targetConfig.platform.__str__()
+            osName = str(self.targetConfig.platform)
         if osName.contains("arduino"):
             return
         elif osName.contains("mac") or osName.contains("darwin"):
@@ -889,7 +893,7 @@ class CGenerator(GeneratorBase):
 
     def generateConstructor(self, reactor, federate, constructorCode):
         """ generated source for method generateConstructor """
-        self.code_.pr(CConstructorGenerator.generateConstructor(reactor, federate, constructorCode.__str__()))
+        self.code_.pr(CConstructorGenerator.generateConstructor(reactor, federate, str(constructorCode)))
 
     def generateAuxiliaryStructs(self, decl):
         """ generated source for method generateAuxiliaryStructs """

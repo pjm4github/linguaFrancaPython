@@ -164,7 +164,16 @@ from include.overloading import overloaded
 #  * Modifications always return a new RuntimeRange.
 #  *
 #  * @author{Edward A. Lee <eal@berkeley.edu>}
-#  
+#
+
+
+# ////////////////////////////////////////////////////////
+# // Public inner classes
+#      * Special case of RuntimeRange for PortInstance.
+#
+
+
+
 class RuntimeRange():
     """ generated source for class RuntimeRange """
     #      * Create a new range representing the full width of the specified instance
@@ -177,7 +186,7 @@ class RuntimeRange():
     @overloaded
     def __init__(self, instance, interleaved):
         """ generated source for method __init__ """
-        super(RuntimeRange, self).__init__()
+        super().__init__()
         self.__init__(instance, 0, 0, interleaved)
 
     #      * Create a new range representing a range of the specified instance
@@ -192,7 +201,7 @@ class RuntimeRange():
     @__init__.register(object, T, int, int, Set)
     def __init___0(self, instance, start, width, interleaved):
         """ generated source for method __init___0 """
-        super(RuntimeRange, self).__init__()
+        super().__init__()
         self.instance = instance
         self.start = start
         if interleaved != None:
@@ -465,25 +474,23 @@ class RuntimeRange():
     #  Record of which levels are interleaved. 
     _interleaved = set()
 
-    # ////////////////////////////////////////////////////////
-    # // Public inner classes
-    #      * Special case of RuntimeRange for PortInstance.
-    #      
-    class Port(RuntimeRange):
-        """ generated source for class Port """
-        @overloaded
-        def __init__(self, instance):
-            """ generated source for method __init__ """
-            super(Port, self).__init__(None)
 
-        @__init__.register(object, PortInstance, Set)
-        def __init___0(self, instance, interleaved):
-            """ generated source for method __init___0 """
-            super(Port, self).__init__(interleaved)
 
-        @__init__.register(object, PortInstance, int, int, Set)
-        def __init___1(self, instance, start, width, interleaved):
-            """ generated source for method __init___1 """
-            super(Port, self).__init__(interleaved)
+class Port(RuntimeRange):
+    """ generated source for class Port """
 
-RuntimeRange.#      * and vice versa.  This returns a new RuntimeRange.
+    @overloaded
+    def __init__(self, instance):
+        """ generated source for method __init__ """
+        super().__init__(None)
+
+    @__init__.register(object, PortInstance, Set)
+    def __init___0(self, instance, interleaved):
+        """ generated source for method __init___0 """
+        super().__init__(interleaved)
+
+    @__init__.register(object, PortInstance, int, int, Set)
+    def __init___1(self, instance, start, width, interleaved):
+        """ generated source for method __init___1 """
+        super().__init__(interleaved)
+

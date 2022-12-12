@@ -22,17 +22,20 @@ from org.lflang.util.LFCommand
 #  *
 #  * @author Peter Donovan <peterdonovan@berkeley.edu>
 #  
+
+class Mode:
+    """ generated source for enum Mode """
+    STANDALONE = 'STANDALONE'
+    EPOCH = 'EPOCH'
+    LSP_FAST = 'LSP_FAST'
+    LSP_MEDIUM = 'LSP_MEDIUM'
+    LSP_SLOW = 'LSP_SLOW'
+    UNDEFINED = 'UNDEFINED'
+
+
 class LFGeneratorContext(IGeneratorContext):
     """ generated source for interface LFGeneratorContext """
     __metaclass__ = ABCMeta
-    class Mode:
-        """ generated source for enum Mode """
-        STANDALONE = 'STANDALONE'
-        EPOCH = 'EPOCH'
-        LSP_FAST = 'LSP_FAST'
-        LSP_MEDIUM = 'LSP_MEDIUM'
-        LSP_SLOW = 'LSP_SLOW'
-        UNDEFINED = 'UNDEFINED'
 
     #      * Return the mode of operation, which indicates how the compiler has been invoked
     #      * (e.g., from within Epoch, from the command line, or via a Language Server).
@@ -113,7 +116,7 @@ class LFGeneratorContext(IGeneratorContext):
     #               String relativeExecutable = fileConfig.srcPkgPath.relativize(executable).__str__();
     #               LFCommand command = interpreter != null ?
     #                   LFCommand.get(interpreter, list(relativeExecutable), true, fileConfig.srcPkgPath) :
-    #                   LFCommand.get(isWindows ? executable.__str__() : relativeExecutable, list(), true, fileConfig.srcPkgPath);
+    #                   LFCommand.get(isWindows ? str(executable) : relativeExecutable, list(), true, fileConfig.srcPkgPath);
     #              finish(new GeneratorResult(status, executable, command, codeMaps));
     #          } else {
     #              finish(new GeneratorResult(status, null, null, codeMaps));

@@ -24,7 +24,7 @@ from org.lflang.lf import Assignment
 
 from org.lflang.lf import Parameter
 
-class PythonParameterGenerator(object):
+class PythonParameterGenerator:
     """ generated source for class PythonParameterGenerator """
     #      * Generate Python code that instantiates and initializes parameters for a reactor 'decl'.
     #      *

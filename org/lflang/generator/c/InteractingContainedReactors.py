@@ -16,7 +16,7 @@
 from lflang import ASTUtils
 
 
-class InteractingContainedReactors(object):
+class InteractingContainedReactors:
     """ generated source for class InteractingContainedReactors """
     #      * Data structure that for each instantiation of a contained
     #      * reactor. This provides a set of input and output ports that trigger

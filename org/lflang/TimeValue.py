@@ -29,6 +29,8 @@
 #
 from TimeUnit import TimeUnit
 import sys
+
+
 class TimeValue:
     # The maximum value of this type. This is approximately equal to 292 years.
     MAX_VALUE = sys.maxsize, TimeUnit.NANO
@@ -74,7 +76,7 @@ class TimeValue:
 
     @classmethod
     def makeNanosecs(cls, time, unit):
-        if unit == None:
+        if unit is None:
             return time  #  == 0, see constructor.
         if unit == TimeUnit.NANO:
             return time
@@ -149,7 +151,6 @@ class TimeValue:
         :param t2:
         :return:
         """
-        """ generated source for method max """
         return t2 if t1.isEarlierThan(t2) else t1
 
     #  Return the earliest of both values. 
@@ -199,9 +200,6 @@ class TimeValue:
             return False
 
     def __add__(self, other):
-        return self.append(other)
-
-    def add(self, b):
         """
         Return the sum of this duration and the one represented by b.
         <p>
@@ -209,20 +207,20 @@ class TimeValue:
         of the units of both operands except if only one of the units
         is TimeUnit.NONE. In that case, the unit of the other input is used.
 
-        @param b The right operand
+        @param other The right operand
         @return A new TimeValue (the current value will not be affected)
         :return:
         """
         try:
-            sumOfNumbers = self.toNanoSeconds() + b.toNanoSeconds()
+            sumOfNumbers = self.toNanoSeconds() + other.toNanoSeconds()
         except ValueError as overflow:
             return self.MAX_VALUE
-        if self.unit == None or b.unit == None:
+        if self.unit == None or other.unit == None:
             # A time value with no unit is necessarily zero. So
             # if this is null, (this + b) == b, if b is none, (this+b) == this.
-            return self if b.unit == None else b
-        isThisUnitSmallerThanBUnit = self.unit.compareTo(b.unit) <= 0
-        smallestUnit = self.unit if isThisUnitSmallerThanBUnit else b.unit
+            return self if other.unit == None else other
+        isThisUnitSmallerThanBUnit = self.unit.compareTo(other.unit) <= 0
+        smallestUnit = self.unit if isThisUnitSmallerThanBUnit else other.unit
         #  Find the appropriate divider to bring sumOfNumbers from nanoseconds to returnUnit
         unitDivider = self.makeNanosecs(1, smallestUnit)
         return TimeValue(sumOfNumbers / unitDivider, smallestUnit)

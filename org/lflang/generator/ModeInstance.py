@@ -34,6 +34,38 @@ from org.lflang.lf import VarRef
 #  *  
 #  * @author{Alexander Schulz-Rosengarten <als@informatik.uni-kiel.de>}
 #  
+
+
+# //////////////////////////////////////////////////
+#  Data class.
+class Transition(NamedInstance, VarRef):
+    """ generated source for class Transition """
+    source = None
+    target = None
+    reaction = None
+    type = None
+
+    def __init__(self, source, target, reaction, definition):
+        """ generated source for method __init__ """
+        super().__init__(source.parent)
+        self.source = source
+        self.target = target
+        self.reaction = reaction
+        self.type = ModeTransition.RESET if definition.getTransition() == None else definition.getTransition()
+
+    def getName(self):
+        """ generated source for method getName """
+        return self.source.__name__ + " -> " + self.target + " by " + self.reaction.__name__
+
+    def root(self):
+        """ generated source for method root """
+        return self.parent.root()
+
+    def getType(self):
+        """ generated source for method getType """
+        return self.type
+
+
 class ModeInstance(NamedInstance, Mode):
     """ generated source for class ModeInstance """
     #      * Create a new reaction instance from the specified definition
@@ -46,7 +78,7 @@ class ModeInstance(NamedInstance, Mode):
     #      
     def __init__(self, definition, parent):
         """ generated source for method __init__ """
-        super(ModeInstance, self).__init__(parent)
+        super().__init__(parent)
         collectMembers()
 
     # //////////////////////////////////////////////////
@@ -147,31 +179,3 @@ class ModeInstance(NamedInstance, Mode):
             if instance != None:
                 self.reactions.append(instance)
 
-    # //////////////////////////////////////////////////
-    #  Data class.
-    class Transition(NamedInstance, VarRef):
-        """ generated source for class Transition """
-        source = None
-        target = None
-        reaction = None
-        type = None
-
-        def __init__(self, source, target, reaction, definition):
-            """ generated source for method __init__ """
-            super(Transition, self).__init__(source.parent)
-            self.source = source
-            self.target = target
-            self.reaction = reaction
-            self.type = ModeTransition.RESET if definition.getTransition() == None else definition.getTransition()
-
-        def getName(self):
-            """ generated source for method getName """
-            return self.source.__name__ + " -> " + self.target + " by " + self.reaction.__name__
-
-        def root(self):
-            """ generated source for method root """
-            return self.parent.root()
-
-        def getType(self):
-            """ generated source for method getType """
-            return self.type

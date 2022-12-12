@@ -110,7 +110,7 @@ class ToStringBuilder:
         pass
 
 
-class ReactorFigureComponents(object):
+class ReactorFigureComponents:
     """ generated source for class ReactorFigureComponents """
     outer = None
     reactor = None
@@ -118,7 +118,7 @@ class ReactorFigureComponents(object):
 
     def __init__(self, outer, reactor, figures):
         """ generated source for method __init__ """
-        super(ReactorFigureComponents, self).__init__()
+        super().__init__()
         self.outer = outer
         self.reactor = reactor
         self.figures = figures
@@ -160,7 +160,7 @@ class ReactorFigureComponents(object):
         b.append("outer", self.outer)
         b.append("reactor", self.reactor)
         b.append("figures", self.figures)
-        return b.__str__()
+        return str(b)()
 
     def getOuter(self):
         """ generated source for method getOuter """

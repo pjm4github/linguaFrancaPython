@@ -11,7 +11,7 @@ from org.lflang.util.LFCommand
 #  *
 #  * @author Peter Donovan <peterdonovan@berkeley.edu>
 #  
-class ValidationStrategy(object):
+class ValidationStrategy:
     """ generated source for interface ValidationStrategy """
     __metaclass__ = ABCMeta
     #      * Return the command that produces validation output in association

@@ -84,13 +84,13 @@ class PythonGenerator(CGenerator):
     @overloaded
     def __init__(self, fileConfig, errorReporter):
         """ generated source for method __init__ """
-        super(PythonGenerator, self).__init__()
+        super().__init__()
         self.__init__(fileConfig, errorReporter, PythonTypes(errorReporter))
 
     @__init__.register(object, FileConfig, ErrorReporter, PythonTypes)
     def __init___0(self, fileConfig, errorReporter, types):
         """ generated source for method __init___0 """
-        super(PythonGenerator, self).__init__(types)
+        super().__init__(types)
         self.targetConfig.compiler = "gcc"
         self.targetConfig.compilerFlags = []
         self.targetConfig.linkerFlags = ""
@@ -159,14 +159,14 @@ class PythonGenerator(CGenerator):
         pythonClassesInstantiation.pr(PythonReactorGenerator.generateListsToHoldClassInstances(main, federate))
         #  Instantiate generated classes
         pythonClassesInstantiation.pr(PythonReactorGenerator.generatePythonClassInstantiations(main, federate, main))
-        return "\n".join([ pythonClasses.__str__(), "", "# Instantiate classes", pythonClassesInstantiation.__str__()])
+        return "\n".join([ str(pythonClasses), "", "# Instantiate classes", str(pythonClassesInstantiation)])
 
     # Generate the Python code constructed from reactor classes and user-written classes.
     # @return the code body
     #       
     def generatePythonCode(self, federate, pyModuleName):
         """ generated source for method generatePythonCode """
-        return "\n".join([ "import os", "import sys", "sys.path.append(os.path.dirname(__file__))", "# List imported names, but do not use pylint's --extension-pkg-allow-list option", "# so that these names will be assumed present without having to compile and install.", "# pylint: disable=no-name-in-module, import-error", "from " + pyModuleName + " import (", "    Tag, action_capsule_t, compare_tags, get_current_tag, get_elapsed_logical_time,", "    get_elapsed_physical_time, get_logical_time, get_microstep, get_physical_time,", "    get_start_time, port_capsule, request_stop, schedule_copy,", "    start", ")", "# pylint: disable=c-extension-no-member", "import " + pyModuleName + " as lf", "try:", "    from LinguaFrancaBase.constants import BILLION, FOREVER, NEVER, instant_t, interval_t", "    from LinguaFrancaBase.functions import (", "        DAY, DAYS, HOUR, HOURS, MINUTE, MINUTES, MSEC, MSECS, NSEC, NSECS, SEC, SECS, USEC,", "        USECS, WEEK, WEEKS", "    )", "    from LinguaFrancaBase.classes import Make", "except ModuleNotFoundError:", "    print(\"No module named \'LinguaFrancaBase\'. \"", "          \"Install using \\\"pip3 install LinguaFrancaBase\\\".\")", "    sys.exit(1)", "import copy", "", self.pythonPreamble.__str__(), "", self.generatePythonReactorClasses(federate), "", PythonMainGenerator.generateCode()])
+        return "\n".join([ "import os", "import sys", "sys.path.append(os.path.dirname(__file__))", "# List imported names, but do not use pylint's --extension-pkg-allow-list option", "# so that these names will be assumed present without having to compile and install.", "# pylint: disable=no-name-in-module, import-error", "from " + pyModuleName + " import (", "    Tag, action_capsule_t, compare_tags, get_current_tag, get_elapsed_logical_time,", "    get_elapsed_physical_time, get_logical_time, get_microstep, get_physical_time,", "    get_start_time, port_capsule, request_stop, schedule_copy,", "    start", ")", "# pylint: disable=c-extension-no-member", "import " + pyModuleName + " as lf", "try:", "    from LinguaFrancaBase.constants import BILLION, FOREVER, NEVER, instant_t, interval_t", "    from LinguaFrancaBase.functions import (", "        DAY, DAYS, HOUR, HOURS, MINUTE, MINUTES, MSEC, MSECS, NSEC, NSECS, SEC, SECS, USEC,", "        USECS, WEEK, WEEKS", "    )", "    from LinguaFrancaBase.classes import Make", "except ModuleNotFoundError:", "    print(\"No module named \'LinguaFrancaBase\'. \"", "          \"Install using \\\"pip3 install LinguaFrancaBase\\\".\")", "    sys.exit(1)", "import copy", "", str(self.pythonPreamble), "", self.generatePythonReactorClasses(federate), "", PythonMainGenerator.generateCode()])
 
     # Generate the setup.py required to compile and install the module.
     # Currently, the package name is based on filename which does not support sharing the setup.py for multiple .lf files.
@@ -242,7 +242,7 @@ class PythonGenerator(CGenerator):
         code_.prComment("file:/" + FileUtil.toUnixString(fileConfig.srcFile))
         code_.pr(PythonPreambleGenerator.generateCDefineDirectives(targetConfig, len(federates), isFederated, self.fileConfig.getSrcGenPath(), clockSyncIsOn(), hasModalReactors))
         code_.pr(PythonPreambleGenerator.generateCIncludeStatements(targetConfig, isFederated, hasModalReactors))
-        return code_.__str__()
+        return str(code_)
 
     def generateTopLevelPreambles(self):
         """ generated source for method generateTopLevelPreambles """
@@ -337,7 +337,7 @@ class PythonGenerator(CGenerator):
         self.targetConfig.noCompile = True
         self.targetConfig.useCmake = False
         cGeneratedPercentProgress = (IntegratedBuilder.VALIDATED_PERCENT_PROGRESS + 100) / 2
-        super(PythonGenerator, self).doGenerate(resource, SubContext(context, IntegratedBuilder.VALIDATED_PERCENT_PROGRESS, cGeneratedPercentProgress))
+        super().doGenerate(resource, SubContext(context, IntegratedBuilder.VALIDATED_PERCENT_PROGRESS, cGeneratedPercentProgress))
         compilingFederatesContext = SubContext(context, cGeneratedPercentProgress, 100)
         self.targetConfig.noCompile = compileStatus
         if errorsOccurred():
@@ -393,7 +393,7 @@ class PythonGenerator(CGenerator):
         """ generated source for method generateForwardBody """
         outputName = ASTUtils.generateVarRef(port)
         if CUtil.isTokenType(ASTUtils.getInferredType(action), self.types):
-            return super(PythonGenerator, self).generateForwardBody(action, port)
+            return super().generateForwardBody(action, port)
         else:
             return "lf_set(" + outputName + ", " + action.__name__ + "->token->value);"
 
@@ -401,7 +401,7 @@ class PythonGenerator(CGenerator):
         """ generated source for method generateReaction """
         reactor = ASTUtils.toDefinition(decl)
         if reactor.__name__.contains(GEN_DELAY_CLASS_NAME) or ((mainDef != None and decl == mainDef.getReactorClass() or mainDef == decl) and reactor.isFederated()):
-            super(PythonGenerator, self).generateReaction(reaction, decl, reactionIndex)
+            super().generateReaction(reaction, decl, reactionIndex)
             return
         code_.pr(PythonReactionGenerator.generateCReaction(reaction, decl, reactionIndex, mainDef, errorReporter, self.types, isFederatedAndDecentralized()))
 
@@ -440,7 +440,7 @@ class PythonGenerator(CGenerator):
 
     def setUpGeneralParameters(self):
         """ generated source for method setUpGeneralParameters """
-        super(PythonGenerator, self).setUpGeneralParameters()
+        super().setUpGeneralParameters()
         if hasModalReactors:
             self.targetConfig.compileAdditionalSources.append("modal_models/impl.c")
 

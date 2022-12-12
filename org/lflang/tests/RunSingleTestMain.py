@@ -52,7 +52,7 @@ from org.lflang.tests.runtime import TypeScriptTest
 #  *
 #  * @author Clément Fournier
 #  
-class RunSingleTestMain(object):
+class RunSingleTestMain:
     """ generated source for class RunSingleTestMain """
     TEST_FILE_PATTERN = re.compile("(test/(\\w+))/src/([^/]++/)*(\\w+.lf)")
 

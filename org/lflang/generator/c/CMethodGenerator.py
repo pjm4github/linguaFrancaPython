@@ -12,7 +12,7 @@ from lflang.generator.CodeBuilder import CodeBuilder
 from lflang.generator.c import CUtil
 
 
-class CMethodGenerator(object):
+class CMethodGenerator:
     """ generated source for class CMethodGenerator """
     #      * Generate macro definitions for methods.
     #      * @param reactor The reactor.
@@ -62,7 +62,7 @@ class CMethodGenerator(object):
         code_.pr(body)
         code_.unindent()
         code_.pr("}")
-        return code_.__str__()
+        return str(code_)
 
     #  
     #      * Generate method functions definition for a reactor.
@@ -135,4 +135,4 @@ class CMethodGenerator(object):
                 result.append(" ")
                 result.append(arg.__name__)
         result.append(")")
-        return result.__str__()
+        return str(result)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """ generated source for module CConstructorGenerator """
 # package: org.lflang.generator.c
+from lflang.generator.c.CUtil import CUtil
 from org.lflang.federated import FederateInstance
 
 from org.lflang.generator import CodeBuilder
@@ -11,7 +12,7 @@ from org.lflang.lf import ReactorDecl
 #  * Generates C constructor code for a reactor.
 #  *
 #  
-class CConstructorGenerator(object):
+class CConstructorGenerator:
     """ generated source for class CConstructorGenerator """
     #      * Generate a constructor for the specified reactor in the specified federate.
     #      * @param reactor The parsed reactor data structure.
@@ -31,4 +32,4 @@ class CConstructorGenerator(object):
         code_.pr("return self;")
         code_.unindent()
         code_.pr("}")
-        return code_.__str__()
+        return str(code_)

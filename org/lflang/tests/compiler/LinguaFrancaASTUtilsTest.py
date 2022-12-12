@@ -61,7 +61,7 @@ from org.lflang.tests.LFInjectorProvider
 #  
 @ExtendWith(InjectionExtension.__class__)
 @InjectWith(LFInjectorProvider.__class__)
-class LinguaFrancaASTUtilsTest(object):
+class LinguaFrancaASTUtilsTest:
     """ generated source for class LinguaFrancaASTUtilsTest """
     parser = None
 

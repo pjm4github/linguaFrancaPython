@@ -48,7 +48,7 @@ from lflang.lf.ParameterReference import ParameterReference
 from lflang.lf.VarRef import VarRef
 
 
-class FedASTUtils(object):
+class FedASTUtils:
     #  A helper class for AST transformations needed for federated
     #  execution.
     #

@@ -27,13 +27,13 @@
 #  * POSSIBILITY OF SUCH DAMAGE.
 #  
 # package: org.lflang.federated.launcher
-from org.lflang import ErrorReporter
-
-from org.lflang import FileConfig
-
-from org.lflang import TargetConfig
-
-from org.lflang.federated import FederateInstance
+# from org.lflang import ErrorReporter
+#
+# from org.lflang import FileConfig
+#
+# from org.lflang import TargetConfig
+#
+# from org.lflang.federated import FederateInstance
 import FedLauncher
 # 
 #  * Utility class that can be used to create a launcher for federated LF programs
@@ -41,7 +41,8 @@ import FedLauncher
 #  * 
 #  * @author Soroush Bateni <soroush@utdallas.edu>
 #  *
-#  
+
+
 class FedPyLauncher(FedLauncher):
     """ generated source for class FedPyLauncher """
     #      *
@@ -51,7 +52,7 @@ class FedPyLauncher(FedLauncher):
     #      
     def __init__(self, targetConfig, fileConfig, errorReporter):
         """ generated source for method __init__ """
-        super(FedPyLauncher, self).__init__(errorReporter)
+        super().__init__(targetConfig, fileConfig, errorReporter)
 
     #      * Return the command that will execute a remote federate, assuming that the current
     #      * directory is the top-level project folder. This is used to create a launcher script
@@ -61,16 +62,20 @@ class FedPyLauncher(FedLauncher):
     #      
     def executeCommandForRemoteFederate(self, federate):
         """ generated source for method executeCommandForRemoteFederate """
-        return "python3 src-gen/" + fileConfig.name + "/" + federate.name + "/" + fileConfig.name + "_" + federate.name + " -i '$FEDERATION_ID'"
+        return "python3 src-gen/" + self.fileConfig.name + "/" + federate.name + "/" + self.fileConfig.name + "_" + \
+               federate.name + " -i '$FEDERATION_ID'"
 
-    #      * Return the command that will execute a local federate, assuming that the current
-    #      * directory is the top-level project folder. This is used to create a launcher script
-    #      * for federates.
-    #      * 
-    #      * @param federate The federate to execute.
-    #      
-    def executeCommandForLocalFederate(self, fileConfig, federate):
+    @staticmethod
+    def executeCommandForLocalFederate(fileConfig, federate):
+        """
+        Return the command that will execute a local federate, assuming that the current
+        directory is the top-level project folder. This is used to create a launcher script
+        for federates.
+
+        :param fileConfig:
+        :param federate: The federate to execute
+        :return:
+        """
         """ generated source for method executeCommandForLocalFederate """
-        return "python3 " + fileConfig.getSrcGenPath() + "/" + federate.name + "/" + fileConfig.name + "_" + federate.name + ".py -i $FEDERATION_ID"
-
-FedPyLauncher.#      * Create an instance of FedPyLauncher.
+        return "python3 " + fileConfig.getSrcGenPath() + "/" + federate.name + "/" + \
+               fileConfig.name + "_" + federate.name + ".py -i $FEDERATION_ID"

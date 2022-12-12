@@ -46,7 +46,7 @@ from lflang.lf import Port
 from lflang.util import FileUtil
 
 
-class CUtil(object):
+class CUtil:
     """ generated source for class CUtil """
     #      * Suffix that when appended to the name of a federated reactor yields
     #      * the name of its corresponding RTI executable.
@@ -456,7 +456,7 @@ class CUtil(object):
             result.append(")")
         if 0 == len(result):
             return "0"
-        return result.__str__()
+        return str(result)
 
     #      * Return a unique type for the "self" struct of the specified
     #      * reactor class from the reactor class.
@@ -574,7 +574,7 @@ class CUtil(object):
             FileUtil.copyDirectoryFromClassPath(fileName, dstDir.resolve(filenameWithoutPath), False)
             return filenameWithoutPath
         except IOError as ex:
-            System.err.println("WARNING: Failed to find file or directory " + fileName)
+            sys.stderr.write("WARNING: Failed to find file or directory " + fileName)
         return ""
 
 # ////////////////////////////////////////////////////
@@ -593,7 +593,7 @@ class CUtil(object):
 #      * FIXME: If the VSCode branch passes code review
 #      *  without significant revision, this mechanism will probably be replaced.
 #
-class ReportCommandErrors(object):
+class ReportCommandErrors:
     """ generated source for interface ReportCommandErrors """
     __metaclass__ = ABCMeta
     @abstractmethod

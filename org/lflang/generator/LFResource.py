@@ -14,7 +14,7 @@ from org.lflang.TargetConfig
 #  * 
 #  * @author Soroush Bateni <soroush@utdallas.edu>
 #  
-class LFResource(object):
+class LFResource:
     """ generated source for class LFResource """
     def __init__(self, resource, fileConfig, targetConfig):
         """ generated source for method __init__ """

@@ -114,5 +114,5 @@ class LFGlobalScopeProvider(ImportUriGlobalScopeProvider):
                             if uniqueImportURIs == None or uniqueImportURIs.append(includedUri):
                                 resources.append(resource.getResourceSet().getResource(includedUri, True))
                         except RuntimeException as e:
-                            System.err.println("Unable to import " + includedUri + ": " + e.getMessage())
+                            sys.stderr.write("Unable to import " + includedUri + ": " + e.getMessage())
         return resources

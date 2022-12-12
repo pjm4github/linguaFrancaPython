@@ -12,7 +12,7 @@ from org.lflang.util import StringUtil
 
 from org.lflang.TargetProperty import Platform
 
-class CMainGenerator(object):
+class CMainGenerator:
     """ generated source for class CMainGenerator """
     targetConfig = None
 
@@ -37,7 +37,7 @@ class CMainGenerator(object):
         code_ = CodeBuilder()
         code_.pr(generateMainFunction())
         code_.pr(generateSetDefaultCliOption())
-        return code_.__str__()
+        return str(code_)()
 
     #      * Generate the `main` function.
     #      

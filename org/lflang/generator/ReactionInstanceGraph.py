@@ -58,7 +58,7 @@ class ReactionInstanceGraph(PrecedenceGraph, ReactionInstance, Runtime):
     #      
     def __init__(self, main):
         """ generated source for method __init__ """
-        super(ReactionInstanceGraph, self).__init__()
+        super().__init__()
         self.main = main
         rebuild()
 

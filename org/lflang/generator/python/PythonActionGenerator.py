@@ -7,7 +7,7 @@ from org.lflang.lf import ReactorDecl
 
 from org.lflang.generator.c import CGenerator
 
-class PythonActionGenerator(object):
+class PythonActionGenerator:
     """ generated source for class PythonActionGenerator """
     @classmethod
     def generateAliasTypeDef(cls, decl, action, genericActionType):

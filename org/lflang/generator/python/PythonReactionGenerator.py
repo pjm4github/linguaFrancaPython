@@ -13,7 +13,7 @@ from lflang.generator.python import PyUtil, PythonPortGenerator
 from lflang.lf import Action, Mode, Output, Input, VarRef, Port
 
 
-class PythonReactionGenerator(object):
+class PythonReactionGenerator:
     """ generated source for class PythonReactionGenerator """
     #      * Generate code to call reaction numbered "reactionIndex" in reactor "decl".
     #      * @param decl The reactor containing the reaction
@@ -85,7 +85,7 @@ class PythonReactionGenerator(object):
                              "",
                              "/* Release the thread. No Python API allowed beyond this point. */",
                              PyUtil.generateGILReleaseCode()]))
-        return code_.__str__()
+        return str(code_)
 
     #      * Generate the reaction in the .c file, which calls the Python reaction through the CPython interface.
     #      *
@@ -115,7 +115,7 @@ class PythonReactionGenerator(object):
         if reaction.getDeadline() != None:
             code_.pr(cls.generateFunction(CReactionGenerator.generateDeadlineFunctionHeader(decl, reactionIndex), cInit, reaction.getDeadline().getCode(), cls.generateCPythonDeadlineCaller(decl, reactionIndex, pyObjects)))
         code_.pr("#include " + f'"{CCoreFilesUtils.getCTargetSetUndefHeader()}"')
-        return code_.__str__()
+        return str(code_)
 
     @classmethod
     def generateFunction(cls, header, init, code_, pyCaller):
@@ -128,7 +128,7 @@ class PythonReactionGenerator(object):
         function_.pr(pyCaller)
         function_.unindent()
         function_.pr("}")
-        return function_.__str__()
+        return str(function_)
 
     #      * Generate necessary Python-specific initialization code for <code>reaction<code> that belongs to reactor
     #      * <code>decl<code>.
@@ -179,7 +179,7 @@ class PythonReactionGenerator(object):
                         code_.pr(PythonPortGenerator.generateVariablesForSendingToContainedReactors(pyObjects, effect.getContainer(), effect.getVariable()))
                     else:
                         errorReporter.reportError(reaction, "In generateReaction(): " + effect.getVariable().__name__ + " is neither an input nor an output.")
-        return code_.__str__()
+        return str(code_)
 
     #      * Generate parameters and their respective initialization code for a reaction function
     #      * The initialization code is put at the beginning of the reaction before user code
@@ -295,7 +295,7 @@ class PythonReactionGenerator(object):
         for reaction in instance.reactions:
             #  Create a PyObject for each reaction
             code_.pr(cls.generateCPythonReactionLinker(instance, reaction, nameOfSelfStruct))
-        return code_.__str__()
+        return str(code_)
 
     #      * Generate Python code to link cpython functions to python functions for a reaction.
     #      * @param instance The reactor instance.
@@ -311,7 +311,7 @@ class PythonReactionGenerator(object):
             code_.pr(cls.generateCPythonFunctionLinker(nameOfSelfStruct, cls.generateCPythonSTPFunctionName(reaction.index), instance, cls.generatePythonSTPFunctionName(reaction.index)))
         if reaction.getDefinition().getDeadline() != None:
             code_.pr(cls.generateCPythonFunctionLinker(nameOfSelfStruct, cls.generateCPythonDeadlineFunctionName(reaction.index), instance, cls.generatePythonDeadlineFunctionName(reaction.index)))
-        return code_.__str__()
+        return str(code_)
 
     #      * Generate code to link "pythonFunctionName" to "cpythonFunctionName" in "nameOfSelfStruct" of "instance".
     #      * @param nameOfSelfStruct the self struct name of instance
@@ -340,7 +340,7 @@ class PythonReactionGenerator(object):
         code_.pr(inits)
         code_.pr(reactionBody)
         code_.pr("return 0")
-        return code_.__str__()
+        return str(code_)
 
     #      * Generate the Python code for reactions in reactor
     #      * @param reactor The reactor
@@ -354,7 +354,7 @@ class PythonReactionGenerator(object):
         for reaction in reactions:
             code_.pr(cls.generatePythonReaction(reactor, reaction, reactionIndex))
             reactionIndex += 1
-        return code_.__str__()
+        return str(code_)
 
     #      * Generate the Python code for reaction in reactor
     #      * @param reactor The reactor
@@ -369,14 +369,14 @@ class PythonReactionGenerator(object):
         inits = CodeBuilder()
         #  Will contain initialization code for some parameters
         PythonReactionGenerator.generatePythonReactionParametersAndInitializations(reactionParameters, inits, reactor, reaction)
-        code_.pr(cls.generatePythonFunction(cls.generatePythonReactionFunctionName(reactionIndex), inits.__str__(), ASTUtils.toText(reaction.getCode()), reactionParameters))
+        code_.pr(cls.generatePythonFunction(cls.generatePythonReactionFunctionName(reactionIndex), str(inits), ASTUtils.toText(reaction.getCode()), reactionParameters))
         #  Generate code for the STP violation handler function, if there is one.
         if reaction.getStp() != None:
             code_.pr(cls.generatePythonFunction(cls.generatePythonSTPFunctionName(reactionIndex), "", ASTUtils.toText(reaction.getStp().getCode()), reactionParameters))
         #  Generate code for the deadline violation function, if there is one.
         if reaction.getDeadline() != None:
             code_.pr(cls.generatePythonFunction(cls.generatePythonDeadlineFunctionName(reactionIndex), "", ASTUtils.toText(reaction.getDeadline().getCode()), reactionParameters))
-        return code_.__str__()
+        return str(code_)
 
     #  Return the function name of the reaction inside the self struct in the .c file.
     #      *  @param reactionIndex The reaction index.

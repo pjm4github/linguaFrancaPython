@@ -32,7 +32,7 @@ class Range():
     #      
     def __init__(self, startInclusive, endExclusive):
         """ generated source for method __init__ """
-        super(Range, self).__init__()
+        super().__init__()
         assert startInclusive.compareTo(endExclusive) <= 0
         self.start = startInclusive
         self.end = endExclusive
@@ -87,7 +87,7 @@ class Range():
 
     # @param s a String that represents a Range, formatted
     #          like the output of {@code Range::toString}
-    # @return the Range r such that {@code r.__str__()}
+    # @return the Range r such that {@code str(r)}
     # equals {@code s}
     #       
     @classmethod

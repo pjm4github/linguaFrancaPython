@@ -39,4 +39,4 @@ class InvalidSourceException(RuntimeException):
     #  Create a new instance of the exception with the given message. 
     def __init__(self, message):
         """ generated source for method __init__ """
-        super(InvalidSourceException, self).__init__(message)
+        super().__init__(message)

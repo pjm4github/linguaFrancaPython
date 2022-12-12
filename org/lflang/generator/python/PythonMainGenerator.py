@@ -33,7 +33,7 @@
 #  * @author Soroush Bateni <soroush@utdallas.edu>
 #  *
 #  
-class PythonMainGenerator(object):
+class PythonMainGenerator:
     """ generated source for class PythonMainGenerator """
     #      * Generate the main function code
     #      
@@ -42,4 +42,4 @@ class PythonMainGenerator(object):
         """ generated source for method generateCode """
         code_ = ""
         code_.append("# The main function\n" + "def main(argv):\n" + "    start(argv)\n" + "\n" + "# As is customary in Python programs, the main() function\n" + "# should only be executed if the main module is active.\n" + "if __name__==\"__main__\":\n" + "    main(sys.argv)\n")
-        return code_.__str__()
+        return str(code_)

@@ -98,19 +98,6 @@ class CompileActionHandler(AbstractHandler):
 
     #      * Internal class for an LF file, possibly open in an editor.
     #      
-    class LFFile(object):
-        """ generated source for class LFFile """
-        resource = None
-        file = None
-        project = None
-        editor = None
-
-        def __init__(self, resource, file, project, editor):
-            """ generated source for method __init__ """
-            self.resource = resource
-            self.file = file
-            self.project = project
-            self.editor = editor
 
     def execute(self, event):
         """ generated source for method execute """
@@ -190,3 +177,18 @@ class CompileActionHandler(AbstractHandler):
                             if file == (editor.getResource()):
                                 return (editor)
         return None
+
+
+class LFFile(object):
+    """ generated source for class LFFile """
+    resource = None
+    file = None
+    project = None
+    editor = None
+
+    def __init__(self, resource, file, project, editor):
+        """ generated source for method __init__ """
+        self.resource = resource
+        self.file = file
+        self.project = project
+        self.editor = editor

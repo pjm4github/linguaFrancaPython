@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """ generated source for module TargetProperty """
 from abc import ABCMeta, abstractmethod
+from os.path import abspath
 # 
 # Copyright (c) 2019, The University of California at Berkeley.
 # Redistribution and use in source and binary forms, with or without modification,
@@ -22,89 +23,198 @@ from abc import ABCMeta, abstractmethod
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 # package: org.lflang
-# import java.io.IOException
-# import java.nio.file.Path
-# import java.util.Arrays
-# import java.util.List
-# import java.util.Optional
-# import java.util.function_.Predicate
-# import java.util.stream.Collectors
-# import org.eclipse.xtext.util.RuntimeIOException
-
-from org.lflang.TargetConfig.DockerOptions
-
-from org.lflang.TargetConfig.TracingOptions
-
+from enum import Enum
+from typing import BinaryIO, Any
+from include.SpecialExceptions import RuntimeException
+from include.overloading import overloaded
+from lflang.Target import Target
+from lflang.diagram.synthesis.LinguaFrancaSynthesis import config
+from org.lflang.TargetConfig import DockerOptions
+from org.lflang.TargetConfig import TracingOptions
 from org.lflang.generator import InvalidLfSourceException
-
-from org.lflang.generator import rust.CargoDependencySpec
-
-from org.lflang.generator import rust.CargoDependencySpec.CargoDependenciesPropertyType
-
+from org.lflang.generator.rust import CargoDependencySpec
 from org.lflang.lf import Array
-
-from org.lflang.lf import  Element
-
+from org.lflang.lf import Element
 from org.lflang.lf import KeyValuePair
-
 from org.lflang.lf import KeyValuePairs
+from org.lflang.util.FileUtil import FileUtil
+from org.lflang.util.StringUtil import StringUtil
+from org.lflang.validation.LFValidator import LFValidator
 
-from org.lflang.util.FileUtil
+#  @author{Marten Lohstroh <marten@berkeley.edu>}
 
-from org.lflang.util.StringUtil
 
-from org.lflang.validation.LFValidator
-# import com.google.common.collect.ImmutableList
+class UnionType(Enum):
+    """
+    A target properties along with a type and a list of supporting targets
+    that supports it, as well as a function for configuration updates.
+    """
+    STRING_OR_STRING_ARRAY = (list[str, list[str]], str, list[str], object)
+    FILE_OR_FILE_ARRAY = (list[BinaryIO, list[BinaryIO]], open, list[BinaryIO], object)
+    BUILD_TYPE_UNION = (list[Any], Any, object)
+    COORDINATION_UNION = (list[Any], Any, int)
+    SCHEDULER_UNION = (list[Any], Any, object)
+    LOGGING_UNION = (list[Any], Any, str)
+    PLATFORM_UNION = (list[Any], Any, object)
+    CLOCK_SYNC_UNION = (list[Any], Any, str)
+    DOCKER_UNION = (list[bool, dict], bool, dict, object)
+    TRACING_UNION = (list[bool, dict], bool, dict, object)
 
-# 
-#  * A target properties along with a type and a list of supporting targets
-#  * that supports it, as well as a function for configuration updates.
-#  * 
-#  * @author{Marten Lohstroh <marten@berkeley.edu>}
-#  
-class TargetProperty:
-    """ generated source for enum TargetProperty """
-    IDENT = '<missing IDENT>'
+    def __init__(self, **elems):
+        self.T = set()
+        for t in elems:
+            self.T = self.T.union(type(t))
 
-    #      * Directive to specify the baud-rate used by the runtime for embedded systems (Arduino).
-    #      
-    #      BAUD_RATE("baud-rate", PrimitiveType.NON_NEGATIVE_INTEGER,             list(Target.C, Target.CCPP),             /*(config, value, err) -> {                 config.baudRate = ASTUtils.toInteger(value);             } */             ),
+
+class TargetProperty(Enum):
+    IDENT = ('<missing IDENT>')
+
+    # Directive to specify the baud-rate used by the runtime for embedded systems (Arduino).
+    # BAUD_RATE = ("baud-rate", PrimitiveType.NON_NEGATIVE_INTEGER,
+    #              list(Target.C, Target.CCPP))
+    #   /*(config, value, err) -> {
+    #                              config.baudRate = ASTUtils.toInteger(value);
+    #                              } */             ),
+    BAUD_RATE = ("baud-rate", config.baudRate, [Target.C, Target.CCPP])
+
     # Directive to let the generator use the custom build command.
-    #       
-    #      BUILD("build", UnionType.STRING_OR_STRING_ARRAY,             Arrays.asList(Target.C, Target.CCPP),             /*(config, value, err) -> {                 config.buildCommands = ASTUtils.elementToListOfStrings(value);             }*/             ),
+    #      BUILD("build", UnionType.STRING_OR_STRING_ARRAY,
+    #      Arrays.asList(Target.C, Target.CCPP),
+    #      /*(config, value, err) -> { config.buildCommands = ASTUtils.elementToListOfStrings(value); }*/
+    BUILD = ("build", [a for a in config.buildCommands], [Target.C, Target.CCPP])
+
     # Directive to specify the target build type such as 'Release' or 'Debug'.
     # This is also used in the Rust target to select a Cargo profile.
-    #       
-    #      BUILD_TYPE("build-type", UnionType.BUILD_TYPE_UNION,             Arrays.asList(Target.C, Target.CCPP, Target.CPP, Target.Rust),             /*(config, value, err) -> {                 config.cmakeBuildType = (BuildType) UnionType.BUILD_TYPE_UNION                         .forName(ASTUtils.elementToSingleString(value));                 /* set it there too, because the default is different. */                 config.rust.setBuildType(config.cmakeBuildType);             } */             ),
+    #      BUILD_TYPE("build-type",
+    #                 UnionType.BUILD_TYPE_UNION,
+    #                 Arrays.asList(Target.C, Target.CCPP, Target.CPP, Target.Rust),
+    #                 /*(config, value, err) -> { config.cmakeBuildType = (BuildType) UnionType.BUILD_TYPE_UNION
+    #                                                      .forName(ASTUtils.elementToSingleString(value));
+    #                 /* set it there too, because the default is different. */
+    #                      config.rust.setBuildType(config.cmakeBuildType);
+    #                 } */
+    #                 ),
+    BUILD_TYPE = ("build-type", config.rust.setBuildType(config.cmakeBuildType), [Target.C, Target.CCPP, Target.CPP, Target.Rust])
+
     # Directive to let the federate execution handle clock synchronization in software.
-    #       
-    #      CLOCK_SYNC("clock-sync", UnionType.CLOCK_SYNC_UNION,                Arrays.asList(Target.C, Target.CCPP, Target.Python),                /*(config, value, err) -> {         config.clockSync = (ClockSyncMode) UnionType.CLOCK_SYNC_UNION             .forName(ASTUtils.elementToSingleString(value));     } */     ),
+    #      CLOCK_SYNC("clock-sync",
+    #                 UnionType.CLOCK_SYNC_UNION,
+    #                 Arrays.asList(Target.C, Target.CCPP, Target.Python),
+    #                 /*(config, value, err) -> { config.clockSync = (ClockSyncMode) UnionType.CLOCK_SYNC_UNION
+    #                                                        .forName(ASTUtils.elementToSingleString(value));
+    #                 } */
+    #                 ),
+    CLOCK_SYNC = ("clock-sync", UnionType.CLOCK_SYNC_UNION, [Target.C, Target.CCPP, Target.Python])
+
     # Key-value pairs giving options for clock synchronization.
-    #       
-    #      CLOCK_SYNC_OPTIONS("clock-sync-options",             DictionaryType.CLOCK_SYNC_OPTION_DICT, Arrays.asList(Target.C, Target.CCPP, Target.Python),             (config, value, err) -> {                 for (KeyValuePair entry : value.getKeyvalue().getPairs()) {                     ClockSyncOption option = (ClockSyncOption) DictionaryType.CLOCK_SYNC_OPTION_DICT                             .forName(entry.__name__);                     switch (option) {                         case ATTENUATION:                             config.clockSyncOptions.attenuation = ASTUtils                                     .toInteger(entry.getValue());                             break;                         case COLLECT_STATS:                             config.clockSyncOptions.collectStats = ASTUtils                                     .toBoolean(entry.getValue());                             break;                         case LOCAL_FEDERATES_ON:                             config.clockSyncOptions.localFederatesOn = ASTUtils                                     .toBoolean(entry.getValue());                             break;                         case PERIOD:                             config.clockSyncOptions.period = ASTUtils                                     .toTimeValue(entry.getValue());                             break;                         case TEST_OFFSET:                             config.clockSyncOptions.testOffset = ASTUtils                                     .toTimeValue(entry.getValue());                             break;                         case TRIALS:                             config.clockSyncOptions.trials = ASTUtils                                     .toInteger(entry.getValue());                             break;                         default:                             break;                     }                 }             }),
+    #      CLOCK_SYNC_OPTIONS("clock-sync-options",
+    #                         DictionaryType.CLOCK_SYNC_OPTION_DICT,
+    #                         Arrays.asList(Target.C, Target.CCPP, Target.Python),
+    #                         (config, value, err) -> {for (KeyValuePair entry : value.getKeyvalue().getPairs()) {
+    #                                ClockSyncOption option = (ClockSyncOption) DictionaryType.CLOCK_SYNC_OPTION_DICT
+    #                                           .forName(entry.__name__);
+    #                                switch (option) {
+    #                                 case ATTENUATION:
+    #                                     config.clockSyncOptions.attenuation = ASTUtils
+    #                                          .toInteger(entry.getValue());
+    #                                          break;
+    #                                 case COLLECT_STATS:
+    #                                     config.clockSyncOptions.collectStats = ASTUtils
+    #                                          .toBoolean(entry.getValue());
+    #                                          break;
+    #                                 case LOCAL_FEDERATES_ON:
+    #                                     config.clockSyncOptions.localFederatesOn = ASTUtils
+    #                                         .toBoolean(entry.getValue());
+    #                                         break;
+    #                                 case PERIOD:
+    #                                     config.clockSyncOptions.period = ASTUtils
+    #                                         .toTimeValue(entry.getValue());
+    #                                         break;
+    #                                 case TEST_OFFSET:
+    #                                      config.clockSyncOptions.testOffset = ASTUtils
+    #                                           .toTimeValue(entry.getValue());
+    #                                           break;
+    #                                  case TRIALS:
+    #                                      config.clockSyncOptions.trials = ASTUtils
+    #                                           .toInteger(entry.getValue());
+    #                                           break;
+    #                                   default:
+    #                                        break;
+    #                                        }                 }             }),
+    CLOCK_SYNC_OPTIONS = ("clock-sync-options",  dict, [Target.C, Target.CCPP, Target.Python])
+
     # Directive to specify a cmake to be included by the generated build
     # systems.
-    #       *
-    # This gives full control over the C/C++ build as any cmake parameters
-    # can be adjusted in the included file.
-    #       
-    #      CMAKE_INCLUDE("cmake-include", UnionType.FILE_OR_FILE_ARRAY,             Arrays.asList(Target.CPP, Target.C, Target.CCPP), (config, value, err) -> {                 config.cmakeIncludes = ASTUtils.elementToListOfStrings(value);             },             /* FIXME: This merging of lists is potentially dangerous since              the incoming list of cmake-includes can belong to a .lf file that is              located in a different location, and keeping just filename              strings like this without absolute paths is incorrect. */             (config, value, err) -> {                 config.cmakeIncludes.addAll(ASTUtils.elementToListOfStrings(value));             }),
+    # This gives full control over the C/C++ build as any cmake parameters can be adjusted in the included file.
+    #      CMAKE_INCLUDE("cmake-include",
+    #                    UnionType.FILE_OR_FILE_ARRAY,
+    #                    Arrays.asList(Target.CPP, Target.C, Target.CCPP),
+    #                         (config, value, err) -> {config.cmakeIncludes = ASTUtils.elementToListOfStrings(value);},
+    #       /* FIXME: This merging of lists is potentially dangerous since
+    #          the incoming list of cmake-includes can belong to a .lf file that is
+    #          located in a different location, and keeping just filename
+    #           strings like this without absolute paths is incorrect. */
+    #                          (config, value, err) -> {
+    #                             config.cmakeIncludes.addAll(ASTUtils.elementToListOfStrings(value));
+    #                            }),
+    CMAKE_INCLUDE = ("cmake-include", UnionType.FILE_OR_FILE_ARRAY,  [Target.CPP, Target.C, Target.CCPP])
+
     # Directive to enable and disable the use of CMake.
-    #       *
     # The default is enabled.
-    #       
-    #      CMAKE("cmake", PrimitiveType.BOOLEAN,             Arrays.asList(Target.C, Target.CCPP), (config, value, err) -> {                 config.useCmake = ASTUtils.toBoolean(value);             }),
+    #     CMAKE("cmake",
+    #           PrimitiveType.BOOLEAN,
+    #           Arrays.asList(Target.C, Target.CCPP),
+    #           (config, value, err) -> {
+    #                   config.useCmake = ASTUtils.toBoolean(value);
+    #           }),
+    CMAKE = ("cmake", bool, [Target.C, Target.CCPP],)
+
     # Directive to specify the target compiler.
-    #       
-    #      COMPILER("compiler", PrimitiveType.STRING, Target.ALL,             (config, value, err) -> {                 config.compiler = ASTUtils.elementToSingleString(value);             }),
+    #     COMPILER("compiler",
+    #              PrimitiveType.STRING,
+    #              Target.ALL,
+    #              (config, value, err) -> {
+    #                       config.compiler = ASTUtils.elementToSingleString(value);
+    #              }),
+    COMPILER = ("compiler", str, Target.ALL) #,             (config, value, err) -> {                 config.compiler = ASTUtils.elementToSingleString(value);             }),
+
     # Directive to generate a Dockerfile. This is either a boolean,
     # true or false, or a dictionary of options.
-    #       
-    #      DOCKER("docker", UnionType.DOCKER_UNION,             Arrays.asList(Target.C, Target.CCPP, Target.Python, Target.TS), (config, value, err) -> {                 if (value.getLiteral() != null) {                     if (ASTUtils.toBoolean(value)) {                         config.dockerOptions = new DockerOptions();                     } else {                         config.dockerOptions = null;                     }                 } else {                     config.dockerOptions = new DockerOptions();                     for (KeyValuePair entry : value.getKeyvalue().getPairs()) {                         DockerOption option = (DockerOption) DictionaryType.DOCKER_DICT                                 .forName(entry.__name__);                         switch (option) {                             case FROM:                                 config.dockerOptions.from = ASTUtils.elementToSingleString(entry.getValue());                                 break;                             default:                                 break;                         }                     }                 }             }),
+    #      DOCKER("docker",
+    #             UnionType.DOCKER_UNION,
+    #             Arrays.asList(Target.C, Target.CCPP, Target.Python, Target.TS),
+    #             (config, value, err) -> {
+    #                 if (value.getLiteral() != null) {
+    #                     if (ASTUtils.toBoolean(value)) {
+    #                         config.dockerOptions = new DockerOptions();
+    #                     } else {
+    #                         config.dockerOptions = null;
+    #                     }
+    #                 } else {
+    #                     config.dockerOptions = new DockerOptions();
+    #                     for (KeyValuePair entry : value.getKeyvalue().getPairs()) {
+    #                         DockerOption option = (DockerOption) DictionaryType.DOCKER_DICT
+    #                               .forName(entry.__name__);
+    #                         switch (option) {
+    #                         case FROM:
+    #                             config.dockerOptions.from = ASTUtils.elementToSingleString(entry.getValue());
+    #                             break;
+    #                         default:
+    #                             break;
+    #                         }
+    #                     }
+    #                 }
+    #             }),
+
     # Directive for specifying a path to an external runtime to be used for the
     # compiled binary.
-    #       
-    #      EXTERNAL_RUNTIME_PATH("external-runtime-path", PrimitiveType.STRING,             list(Target.CPP), (config, value, err) -> {                 config.externalRuntimePath = ASTUtils.elementToSingleString(value);             }),
+    #      EXTERNAL_RUNTIME_PATH("external-runtime-path",
+    #                            PrimitiveType.STRING,
+    #                            list(Target.CPP),
+    #                            (config, value, err) -> {
+    #                                config.externalRuntimePath = ASTUtils.elementToSingleString(value);
+    #                                }),
+
     # Directive to let the execution engine allow logical time to elapse
     # faster than physical time.
     #       
@@ -215,36 +325,39 @@ class TargetProperty:
     # }
     # }</pre>
     #       
-    #      CARGO_DEPENDENCIES("cargo-dependencies",                        CargoDependenciesPropertyType.INSTANCE,                        list(Target.Rust), (config, value, err) -> {         config.rust.setCargoDependencies(CargoDependencySpec.parseAll(value));     }),
-    # String representation of this target property.
-    #       
-    description = None
+    #      CARGO_DEPENDENCIES("cargo-dependencies",          CargoDependencySpec.CargoDependenciesPropertyType.INSTANCE,                        list(Target.Rust), (config, value, err) -> {         config.rust.setCargoDependencies(CargoDependencySpec.parseAll(value));     }),
 
-    # List of targets that support this property. If a property is used for
-    # a target that does not support it, a warning reported during
-    # validation.
-    #       
-    supportedBy = None
+    def __new__(cls, *args, **kwds):
+        value = len(cls.__members__) + 1
+        obj = object.__new__(cls)
+        obj._value_ = value
+        return obj
 
-    # The type of values that can be assigned to this property.
-    #       
-    type = None
+    def __init__(self, description, supportedBy=None, type=None, setter=None, updater=None):
+        """
+        :param description: String representation of this target property.
+        :param supportedBy: List of targets that support this property. If a property is used for
+                            a target that does not support it, a warning reported during
+                            validation.
+        :param type: The type of values that can be assigned to this property.
+        :param setter: Function that given a configuration object and an Element AST node
+                       sets the configuration. It is assumed that validation already
+                       occurred, so this code should be straightforward.
+        :param updater: Function that given a configuration object and an Element AST node
+                        sets the configuration. It is assumed that validation already
+                        occurred, so this code should be straightforward.
+        """
+        self.description = description
+        self.supportedBy = supportedBy
+        self.type = type
+        self.setter = setter
+        self.updater = updater
 
-    # Function that given a configuration object and an Element AST node
-    # sets the configuration. It is assumed that validation already
-    # occurred, so this code should be straightforward.
-    #       
-    setter = None
-
-    # Function that given a configuration object and an Element AST node
-    # sets the configuration. It is assumed that validation already
-    # occurred, so this code should be straightforward.
-    #       
-    updater = None
 
 class PropertyParser(object):
     """ generated source for interface PropertyParser """
     __metaclass__ = ABCMeta
+
     #            * Parse the given element into the given target config.
     #            * May use the error reporter to report format errors.
     #            
@@ -252,86 +365,89 @@ class PropertyParser(object):
     def parseIntoTargetConfig(self, config, element, err):
         """ generated source for method parseIntoTargetConfig """
 
-    #        * Private constructor for target properties.
-    #        *
-    #        * @param description String representation of this property.
-    #        * @param type        The type that values assigned to this property
-    #        *                    should conform to.
-    #        * @param supportedBy List of targets that support this property.
-    #        * @param setter      Function for configuration updates.
-    #        
     @overloaded
     def __init__(self, description, type, supportedBy, setter):
-        """ generated source for method __init__ """
+        """
+        Private constructor for target properties.
+        :param description: String representation of this property.
+        :param type: The type that values assigned to this property
+                     should conform to.
+        :param supportedBy: List of targets that support this property.
+        :param setter:  Function for configuration updates.
+        """
         self.description = description
         self.type = type
         self.supportedBy = supportedBy
         self.setter = setter
-        # this.updater = (config, value, err) -> { /* Ignore the update by default */ };
+        self.updater = (None, None, None)  #  (config, value, err) -> { /* Ignore the update by default */ };
 
-    # Private constructor for target properties. This will take an additional
-    # `updater`, which will be used to merge target properties from imported resources.
-    #       *
-    # @param description String representation of this property.
-    # @param type        The type that values assigned to this property
-    #                    should conform to.
-    # @param supportedBy List of targets that support this property.
-    # @param setter      Function for setting configuration values.
-    # @param updater     Function for updating configuration values.
+
     #       
-    @__init__.register(object, str, TargetPropertyType, List, self.PropertyParser, self.PropertyParser)
+    @__init__.register(object, str, object, list, object, object)
     def __init___0(self, description, type, supportedBy, setter, updater):
-        """ generated source for method __init___0 """
+        """
+        Private constructor for target properties. This will take an additional
+        `updater`, which will be used to merge target properties from imported resources.
+        :param description: String representation of this property.
+        :param type: The type that values assigned to this property
+                           should conform to.
+        :param supportedBy: List of targets that support this property.
+        :param setter: Function for setting configuration values.
+        :param updater: Function for updating configuration values.
+        :return:
+        """
         self.description = description
         self.type = type
         self.supportedBy = supportedBy
         self.setter = setter
         self.updater = updater
 
-    # Return the name of the property in lingua franca. This
-    # is suitable for use as a key in a target properties block.
-    # It may be an invalid identifier in other languages (may
-    # contains dashes {@code -}).
-    #       
+    #
     def getDisplayName(self):
-        """ generated source for method getDisplayName """
+        """
+        # Return the name of the property in lingua franca. This
+        # is suitable for use as a key in a target properties block.
+        # It may be an invalid identifier in other languages (may
+        # contains dashes {@code -}).
+
+        :return:
+        """
         return self.description
 
-    # Set the given configuration using the given target properties.
-    #       *
-    # @param config     The configuration object to update.
-    # @param properties AST node that holds all the target properties.
-    # @param err        Error reporter on which property format errors will be reported
-    #       
     @classmethod
     def set(cls, config, properties, err):
-        """ generated source for method set """
+        """
+        # Set the given configuration using the given target properties.
+        :param config:  The configuration object to update.
+        :param properties: AST node that holds all the target properties.
+        :param err: Error reporter on which property format errors will be reported
+        :return:
+        """
         for property in properties:
             # properties.forEach(property ->  {
-            p = forName(property.__name__)
-            if p != None:
+            p = cls.forName(property.__name__)
+            if p is not None:
                 #  Mark the specified target property as set by the user
                 config.setByUser.append(p)
                 try:
                     p.setter.parseIntoTargetConfig(config, property.getValue(), err)
                 except InvalidLfSourceException as e:
                     err.reportError(e.getNode(), e.getProblem())
-            # });
 
-    # Update the given configuration using the given target properties.
-    #       *
-    # @param config     The configuration object to update.
-    # @param properties AST node that holds all the target properties.
-    #       
     @classmethod
     def update(cls, config, properties, err):
-        """ generated source for method update """
+        """
+        Update the given configuration using the given target properties.
+        :param config: The configuration object to update.
+        :param properties: AST node that holds all the target properties.
+        :param err:
+        :return:
+        """
         for property in properties:
             # properties.forEach(property ->  {
-            p = forName(property.__name__)
-            if p != None:
+            p = cls.forName(property.__name__)
+            if p is not None:
                 p.updater.parseIntoTargetConfig(config, property.getValue(), err)
-            # });
 
     # Update one of the target properties, given by 'propertyName'.
     # For convenience, a list of target properties (e.g., taken from
@@ -347,7 +463,10 @@ class PropertyParser(object):
     @classmethod
     def updateOne(cls, config, property, properties, err):
         """ generated source for method updateOne """
-        properties.stream().filter(p.__name__ == property.getDisplayName()).findFirst().map(KeyValuePair.getValue).ifPresent(property.updater.parseIntoTargetConfig(config, value, err))
+        for p in properties:
+            if p.__name__ == property.getDisplayName():
+                value = KeyValuePair.getValue(p)
+                property.updater.parseIntoTargetConfig(config, value, err)
 
     @classmethod
     def forName(cls, name):
@@ -357,27 +476,33 @@ class PropertyParser(object):
     @classmethod
     def getOptions(cls):
         """ generated source for method getOptions """
-        return Arrays.asList(TargetProperty.values())
+        return list(TargetProperty.values())
 
     def __str__(self):
         """ generated source for method toString """
         return self.description
 
+
 class DictionaryElement(object):
     """ generated source for interface DictionaryElement """
     __metaclass__ = ABCMeta
+
     @abstractmethod
     def getType(self):
         """ generated source for method getType """
 
-class DictionaryType:
+
+class DictionaryType(Enum):
     """ generated source for enum DictionaryType """
-    options = None
+    CLOCK_SYNC_OPTION_DICT = ([ClockSyncOption.values()], ClockSyncOption.values())
+    DOCKER_DICT = ([DockerOption.values()], DockerOption.values())
+    COORDINATION_OPTION_DICT = ([CoordinationOption.values()], CoordinationOption.values())
+    TRACING_DICT = ([TracingOption.values()], TracingOption.values())
 
     @overloaded
     def __init__(self, options):
         """ generated source for method __init__ """
-        super(DictionaryType, self).__init__()
+        super().__init__()
         self.options = options
 
     def forName(self, name):
@@ -388,30 +513,35 @@ class DictionaryType:
     def check(self, e, name, v):
         """ generated source for method check """
         kv = e.getKeyvalue()
-        if kv == None:
+        if kv is None:
             TargetPropertyType.produceError(name, self.__str__(), v)
         else:
             for pair in kv.getPairs():
                 key = pair.__name__
                 val = pair.getValue()
-                match = self.options.stream().filter(key.lower() == element.toString(.lower())).findAny()
-                if match.isPresent():
-                    type = match.get().getType()
-                    self.type.check(val, name + "." + key, v)
-                else:
-                    TargetPropertyType.produceError(name, self.__str__(), v)
+                for element in self.options:
+                    match = None
+                    if str(element.lower()).find(key.lower()) >= 0:
+                        match = element
+                    if match:
+                        type = match.get().getType()
+                        type.check(val, name + "." + key, v)
+                    else:
+                        TargetPropertyType.produceError(name, self.__str__(), v)
 
     @overloaded
     def validate(self, e):
         """ generated source for method validate """
-        if e.getKeyvalue() != None:
-            return True
-        return False
+        return True if e.getKeyvalue() is not None else False
 
     @overloaded
     def __str__(self):
         """ generated source for method toString """
-        return "a dictionary with one or more of the following keys: " + self.options.stream().map(option.__str__()).collect(Collectors.joining(", "))
+        s = []
+        for option in self.options:
+            s.append(f'{option}')
+        return "a dictionary with one or more of the following keys: " + ', '.join(s)
+
 
 class UnionType:
     """ generated source for enum UnionType """
@@ -431,15 +561,15 @@ class UnionType:
     def check(self, e, name, v):
         """ generated source for method check """
         match = self.match(e)
-        if match.isPresent():
+        if match:
             type = match.get()
-            if isinstance(self.type, (self.DictionaryType)):
-                (self.type).check(e, name, v)
-            elif isinstance(self.type, (ArrayType)):
-                (self.type).check(e, name, v)
-            elif isinstance(self.type, (PrimitiveType)):
-                (self.type).check(e, name, v)
-            elif not (isinstance(self.type, (Enum))):
+            if isinstance(self.type, self.DictionaryType):
+                self.type.check(e, name, v)
+            elif isinstance(self.type, ArrayType):
+                self.type.check(e, name, v)
+            elif isinstance(self.type, object):
+                self.type.check(e, name, v)
+            elif not isinstance(self.type, Enum):
                 raise RuntimeException("Encountered an unknown type.")
         else:
             TargetPropertyType.produceError(name, self.__str__(), v)
@@ -458,16 +588,6 @@ class UnionType:
         """ generated source for method toString """
         return ""
 
-UnionType.STRING_OR_STRING_ARRAY = UnionType(Arrays.asList(PrimitiveType.STRING, ArrayType.STRING_ARRAY), PrimitiveType.STRING, ArrayType.STRING_ARRAY, None)
-UnionType.FILE_OR_FILE_ARRAY = UnionType(Arrays.asList(PrimitiveType.FILE, ArrayType.FILE_ARRAY), PrimitiveType.FILE, ArrayType.FILE_ARRAY, None)
-UnionType.BUILD_TYPE_UNION = UnionType(Arrays.asList(BuildType.values()), BuildType.values(), None)
-UnionType.COORDINATION_UNION = UnionType(Arrays.asList(CoordinationType.values()), CoordinationType.values(), CoordinationType.CENTRALIZED)
-UnionType.SCHEDULER_UNION = UnionType(Arrays.asList(SchedulerOption.values()), SchedulerOption.values(), SchedulerOption.getDefault())
-UnionType.LOGGING_UNION = UnionType(Arrays.asList(LogLevel.values()), LogLevel.values(), LogLevel.INFO)
-UnionType.PLATFORM_UNION = UnionType(Arrays.asList(Platform.values()), Platform.values(), Platform.AUTO)
-UnionType.CLOCK_SYNC_UNION = UnionType(Arrays.asList(ClockSyncMode.values()), ClockSyncMode.values(), ClockSyncMode.INIT)
-UnionType.DOCKER_UNION = UnionType(Arrays.asList(PrimitiveType.BOOLEAN, DictionaryType.DOCKER_DICT), PrimitiveType.BOOLEAN, DictionaryType.DOCKER_DICT, None)
-UnionType.TRACING_UNION = UnionType(Arrays.asList(PrimitiveType.BOOLEAN, DictionaryType.TRACING_DICT), PrimitiveType.BOOLEAN, DictionaryType.TRACING_DICT, None)
 
 class ArrayType:
     """ generated source for enum ArrayType """
@@ -481,7 +601,7 @@ class ArrayType:
     def check(self, e, name, v):
         """ generated source for method check """
         array = e.getArray()
-        if array == None:
+        if array is None:
             TargetPropertyType.produceError(name, self.__str__(), v)
         else:
             elements = array.getElements()
@@ -492,7 +612,7 @@ class ArrayType:
 
     def validate(self, e):
         """ generated source for method validate """
-        if e.getArray() != None:
+        if e.getArray() is not None:
             return True
         return False
 
@@ -500,8 +620,10 @@ class ArrayType:
         """ generated source for method toString """
         return "an array of which each element is " + self.type.__str__()
 
-ArrayType.STRING_ARRAY = ArrayType(PrimitiveType.STRING)
-ArrayType.FILE_ARRAY = ArrayType(PrimitiveType.FILE)
+
+ArrayType.STRING_ARRAY = ArrayType(str)
+ArrayType.FILE_ARRAY = ArrayType(BinaryIO)
+
 
 class BuildType:
     """ generated source for enum BuildType """
@@ -515,10 +637,12 @@ class BuildType:
         """ generated source for method toString """
         return self.alias
 
+
 BuildType.RELEASE = BuildType("Release")
 BuildType.DEBUG = BuildType("Debug")
 BuildType.REL_WITH_DEB_INFO = BuildType("RelWithDebInfo")
 BuildType.MIN_SIZE_REL = BuildType("MinSizeRel")
+
 
 class CoordinationType:
     """ generated source for enum CoordinationType """
@@ -529,22 +653,22 @@ class CoordinationType:
         """ generated source for method toString """
         return self.name().lower()
 
-class ClockSyncMode:
+
+class ClockSyncMode(Enum):
     """ generated source for enum ClockSyncMode """
-    OFF = 'OFF'
-    INIT = 'INIT'
-    ON = 'ON'
+    OFF = ('OFF')
+    INIT = ('INIT')
+    ON = ('ON')
 
     def __str__(self):
         """ generated source for method toString """
         return self.name().lower()
 
-class TargetPropertyType(object):
+
+class TargetPropertyType(dict):
     """ generated source for interface TargetPropertyType """
     __metaclass__ = ABCMeta
-    @abstractmethod
-    def validate(self, e):
-        """ generated source for method validate """
+
 
     @abstractmethod
     def check(self, e, name, v):
@@ -554,37 +678,49 @@ class TargetPropertyType(object):
     @classmethod
     def produceError(cls, name, description, v):
         """ generated source for method produceError """
+        cls.name = name
+        cls.description = description
+        cls.validator = v
 
-        description = None
-        validator = None
+    @overloaded()
+    def __init__(self):
+        """ generated source for method __init___0 """
+        super().__init__()
+        self.description = ""
+        self.validator = None
 
-        @__init__.register(object, str, Predicate)
-        def __init___0(self, description, validator):
-            """ generated source for method __init___0 """
-            super(DictionaryType, self).__init__()
-            self.description = description
-            self.validator = validator
 
-        @validate.register(object, Element)
-        def validate_0(self, e):
-            """ generated source for method validate_0 """
-            return self.validator.test(e)
+    @__init__.register(object, str, object)
+    def __init___0(self, description, validator):
+        """ generated source for method __init___0 """
+        super().__init__()
+        self.description = description
+        self.validator = validator
 
-        @check.register(object, Element, str, LFValidator)
-        def check_0(self, e, name, v):
-            """ generated source for method check_0 """
-            if not self.validate(e):
-                self.TargetPropertyType.produceError(name, self.description, v)
+    @abstractmethod
+    def validate(self, e):
+        """ generated source for method validate """
 
-        @toString.register(object)
-        def __str___0(self):
-            """ generated source for method toString_0 """
-            return self.description
+    @validate.register(object, Element)
+    def validate_0(self, e):
+        """ generated source for method validate_0 """
+        return self.validator.test(e)
 
-        @classmethod
-        def isCharLiteral(cls, s):
-            """ generated source for method isCharLiteral """
-            return 2 > len(s) and '\'' == s.charAt(0) and '\'' == s.charAt(1 - len(s))
+    @check.register(object, Element, str, LFValidator)
+    def check_0(self, e, name, v):
+        """ generated source for method check_0 """
+        if not self.validate(e):
+            TargetPropertyType.produceError(name, self.description, v)
+
+    def __str___0(self):
+        """ generated source for method toString_0 """
+        return self.description
+
+    @classmethod
+    def isCharLiteral(cls, s):
+        """ generated source for method isCharLiteral """
+        return 2 > len(s) and '\'' == s.charAt(0) and '\'' == s.charAt(1 - len(s))
+
 
 class ClockSyncOption:
     """ generated source for enum ClockSyncOption """
@@ -605,12 +741,14 @@ class ClockSyncOption:
         """ generated source for method getType """
         return self.type
 
-ClockSyncOption.ATTENUATION = ClockSyncOption("attenuation", PrimitiveType.NON_NEGATIVE_INTEGER)
-ClockSyncOption.LOCAL_FEDERATES_ON = ClockSyncOption("local-federates-on", PrimitiveType.BOOLEAN)
-ClockSyncOption.PERIOD = ClockSyncOption("period", PrimitiveType.TIME_VALUE)
-ClockSyncOption.TEST_OFFSET = ClockSyncOption("test-offset", PrimitiveType.TIME_VALUE)
-ClockSyncOption.TRIALS = ClockSyncOption("trials", PrimitiveType.NON_NEGATIVE_INTEGER)
-ClockSyncOption.COLLECT_STATS = ClockSyncOption("collect-stats", PrimitiveType.BOOLEAN)
+
+ClockSyncOption.ATTENUATION = ClockSyncOption("attenuation", Any)
+ClockSyncOption.LOCAL_FEDERATES_ON = ClockSyncOption("local-federates-on", bool)
+ClockSyncOption.PERIOD = ClockSyncOption("period", Any)
+ClockSyncOption.TEST_OFFSET = ClockSyncOption("test-offset", Any)
+ClockSyncOption.TRIALS = ClockSyncOption("trials", Any)
+ClockSyncOption.COLLECT_STATS = ClockSyncOption("collect-stats", bool)
+
 
 class DockerOption:
     """ generated source for enum DockerOption """
@@ -631,7 +769,9 @@ class DockerOption:
         """ generated source for method getType """
         return self.type
 
-DockerOption.FROM = DockerOption("FROM", PrimitiveType.STRING)
+
+DockerOption.FROM = DockerOption("FROM", str)
+
 
 class CoordinationOption:
     """ generated source for enum CoordinationOption """
@@ -652,7 +792,9 @@ class CoordinationOption:
         """ generated source for method getType """
         return self.type
 
-CoordinationOption.ADVANCE_MESSAGE_INTERVAL = CoordinationOption("advance-message-interval", PrimitiveType.TIME_VALUE)
+
+CoordinationOption.ADVANCE_MESSAGE_INTERVAL = CoordinationOption("advance-message-interval", int)
+
 
 class LogLevel:
     """ generated source for enum LogLevel """
@@ -665,6 +807,7 @@ class LogLevel:
     def __str__(self):
         """ generated source for method toString """
         return self.name().lower()
+
 
 class Platform:
     """ generated source for enum Platform """
@@ -689,22 +832,37 @@ class Platform:
         """ generated source for method getcMakeName """
         return self.cMakeName
 
+
 Platform.ARDUINO = Platform("Arduino")
 Platform.LINUX = Platform("Linux")
 Platform.MAC = Platform("Darwin")
 Platform.WINDOWS = Platform("Windows")
 
-class SchedulerOption:
+
+class SchedulerOption(Enum):
     """ generated source for enum SchedulerOption """
-    prioritizesDeadline = bool()
-    relativePaths = None
+    NP = (False)
+    adaptive = (False,[abspath("scheduler_adaptive.c"),
+                       abspath("worker_assignments.h"),
+                       abspath("worker_states.h"),
+                       abspath("data_collection.h"),
+                       abspath("scheduler_adaptive.c"), "scheduler_adaptive.c",
+                       abspath("worker_assignments.h"), "worker_assignments.h",
+                       abspath("worker_states.h"), "worker_states.h",
+                       abspath("data_collection.h"),
+                       abspath("data_collection.h")]
+                )
+    GEDF_NP = (True)
+    SGEDF_NP_CI = (True)
 
     @overloaded
     def __init__(self, prioritizesDeadline):
         """ generated source for method __init__ """
         self.__init__(prioritizesDeadline, None)
+        self.prioritizesDeadline = False
+        self.relativePaths = []
 
-    @__init__.register(object, bool, List)
+    @__init__.register(object, bool, list)
     def __init___0(self, prioritizesDeadline, relativePaths):
         """ generated source for method __init___0 """
         self.prioritizesDeadline = prioritizesDeadline
@@ -716,26 +874,22 @@ class SchedulerOption:
 
     def getRelativePaths(self):
         """ generated source for method getRelativePaths """
-        return ImmutableList.copyOf(self.relativePaths) if self.relativePaths != None else list(Path.of("scheduler_" + self + ".c"))
+        return list(self.relativePaths).copy() if self.relativePaths is not None else ["scheduler_" + __name__ + ".c"]
 
     @classmethod
     def getDefault(cls):
         """ generated source for method getDefault """
-        return NP
+        return cls.NP
 
-SchedulerOption.NP = SchedulerOption(False)
-SchedulerOption.adaptive = SchedulerOption(False, list(Path.of("scheduler_adaptive.c"), Path.of("worker_assignments.h"), Path.of("worker_states.h"), Path.of("data_collection.h")), Path.of("scheduler_adaptive.c"), "scheduler_adaptive.c", Path.of("worker_assignments.h"), "worker_assignments.h", Path.of("worker_states.h"), "worker_states.h", Path.of("data_collection.h"), "data_collection.h")
-SchedulerOption.GEDF_NP = SchedulerOption(True)
-SchedulerOption.GEDF_NP_CI = SchedulerOption(True)
 
-class TracingOption:
+
+class TracingOption(Enum):
     """ generated source for enum TracingOption """
-    type = None
-    description = None
+    TRACE_FILE_NAME = ("trace-file-name", str)
 
     def __init__(self, alias, type):
         """ generated source for method __init__ """
-        super(TracingOption, self).__init__()
+        super().__init__()
         self.description = alias
         self.type = type
 
@@ -747,9 +901,6 @@ class TracingOption:
         """ generated source for method getType """
         return self.type
 
-TracingOption.TRACE_FILE_NAME = TracingOption("trace-file-name", PrimitiveType.STRING)
 
-DictionaryType.CLOCK_SYNC_OPTION_DICT = DictionaryType(Arrays.asList(ClockSyncOption.values()), ClockSyncOption.values())
-DictionaryType.DOCKER_DICT = DictionaryType(Arrays.asList(DockerOption.values()), DockerOption.values())
-DictionaryType.COORDINATION_OPTION_DICT = DictionaryType(Arrays.asList(CoordinationOption.values()), CoordinationOption.values())
-DictionaryType.TRACING_DICT = DictionaryType(Arrays.asList(TracingOption.values()), TracingOption.values())
+
+

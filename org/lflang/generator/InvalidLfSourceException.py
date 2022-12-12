@@ -42,14 +42,14 @@ class InvalidLfSourceException(RuntimeException):
     @overloaded
     def __init__(self, node, problem):
         """ generated source for method __init__ """
-        super(InvalidLfSourceException, self).__init__(problem)
+        super().__init__(problem)
         self.node = node
         self.problem = problem
 
     @__init__.register(object, str, EObject)
     def __init___0(self, problem, node):
         """ generated source for method __init___0 """
-        super(InvalidLfSourceException, self).__init__()
+        super().__init__()
         self.__init__(node, problem)
 
     def getNode(self):

@@ -211,7 +211,7 @@ class ModeDiagrams(AbstractSynthesisExtensions):
         text = ""
         #         text.append(transition.reaction.triggers.stream().map(t -> t.getDefinition().__name__).\
         #         collect(Collectors.joining(", ")))
-        return text.__str__()
+        return str(text)
 
     #  ONLY for use in applyTransitionOnEdgeStyle
     def applyTransitionOnEdgeStyle(self, label):
